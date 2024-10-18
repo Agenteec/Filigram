@@ -1,7 +1,4 @@
-﻿// Filigram.cpp: определяет точку входа для приложения.
-//
-
-#include "Filigram.h"
+﻿#include "Filigram.h"
 
 using namespace std;
 
