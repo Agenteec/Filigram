@@ -22,7 +22,9 @@ find_package(unofficial-sqlite3 CONFIG REQUIRED)
   
 file(GLOB_RECURSE SOURCES "src/*.cpp"  "include/*.h")
 add_executable (Filigram "main.cpp" ${SOURCES})
-add_executable (FiligramServer "server.cpp")
+add_executable (FiligramServer "server.cpp" 
+"include/data/DatabaseManager.h"
+"src/data/DatabaseManager.cpp")
 
 target_link_libraries(Filigram PRIVATE muparser::muparser)
 target_link_libraries(Filigram PRIVATE unofficial::sqlite3::sqlite3)
@@ -36,6 +38,9 @@ target_link_libraries(Filigram PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(FiligramServer PRIVATE unofficial::sqlite3::sqlite3)
 target_link_libraries(FiligramServer PRIVATE sfml-system sfml-network)
 target_link_libraries(FiligramServer PRIVATE nlohmann_json::nlohmann_json)
+
+target_include_directories(Filigram PRIVATE "include")
+target_include_directories(FiligramServer PRIVATE "include")
    
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Filigram PROPERTY CXX_STANDARD 20)
