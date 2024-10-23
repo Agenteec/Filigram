@@ -8,7 +8,8 @@
 #include <implot.h>
 #include <vector>
 #include <muParser.h>
-#include <data/User.h>
+#include <data/SQLModels.hpp>
+#include <spdlog/spdlog.h>
 
 #define cu8(str) reinterpret_cast<const char*>(u8##str)
 
@@ -26,6 +27,12 @@ static bool initImgui(sf::RenderWindow& window)
 
 class MainWindow
 {
+    class CurrentUser
+    {
+    public:
+        std::string password;
+        std::string username;
+    };
     sf::RenderWindow* window;
     sf::Image logo;
    
@@ -40,7 +47,7 @@ class MainWindow
 
 
     bool rememberMe;
-    User currentUser;
+    CurrentUser currentUser;
 
 
 public:

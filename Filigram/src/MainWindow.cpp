@@ -1,10 +1,10 @@
-#include <MainWindow.h>
+п»ї#include <MainWindow.h>
 
 MainWindow::MainWindow() :
     window(new sf::RenderWindow(sf::VideoMode(800, 600), L"Filigram", sf::Style::Default)),
-    onChat(false),
+    onChat(true),
     onRegister(false),
-    onLogin(true)
+    onLogin(false)
 {
     init();
 }
@@ -36,7 +36,7 @@ void MainWindow::init()
 {
     initImgui(*window);
     window->setVerticalSyncEnabled(true);
-    font.loadFromFile("Assets/fonts/Roboto-Light.ttf");
+    font.loadFromFile("Assets/fonts/Roboto-Regular.ttf");
     logo.loadFromFile("Assets/images/logo.png");
     window->setIcon(202,161, logo.getPixelsPtr());
 
@@ -92,33 +92,49 @@ void MainWindow::loginImWindow(bool isOpen)
         return;
 
     static std::string password;
+    static bool passwordRed = false;
+    static bool passwordRedChanger = false;
+    static bool usernameRed = false;
+    static bool usernameRedChanger = false;
+
+
+
     ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.5f, window->getSize().y * 0.5f), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(window->getSize().x / 2 - window->getSize().x * 0.25f, window->getSize().y / 2 - window->getSize().y * 0.25f), ImGuiCond_Always);
 
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
     ImGui::Begin(cu8("##Login"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
-    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(cu8("Вход")).x) / 2);
-    ImGui::Text(cu8("Вход"));
+    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(cu8("Р’С…РѕРґ")).x) / 2);
+    ImGui::Text(cu8("Р’С…РѕРґ"));
     ImGui::Separator();
 
-    ImGui::Text(cu8("Имя пользователя:"));
+    ImGui::Text(cu8("РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ:"));
     ImGui::PushItemWidth(-1.0f);
-    ImGui::InputText("##Username", &currentUser.username);
-
+    if(usernameRed)ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.8f, 0.1f, 0.0f, 0.5f));
+    if (ImGui::InputText("##Username", &currentUser.username))
+    {
+        usernameRedChanger = false;
+    }
+    if (usernameRed)ImGui::PopStyleColor();
     
-    ImGui::Text(cu8("Пароль:"));
+    ImGui::Text(cu8("РџР°СЂРѕР»СЊ:"));
     ImGui::PushItemWidth(-1.0f);
-    ImGui::InputText("##Password", &password, ImGuiInputTextFlags_Password);
-
-    ImGui::Checkbox(cu8("Запомнить меня"), &rememberMe);
+    if (passwordRed)ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.8f, 0.1f, 0.0f, 0.5f));
+    if (ImGui::InputText("##Password", &password, ImGuiInputTextFlags_Password))
+    {
+        passwordRedChanger = false;
+    }
+    if (passwordRed)ImGui::PopStyleColor();
+    ImGui::Checkbox(cu8("Р—Р°РїРѕРјРЅРёС‚СЊ РјРµРЅСЏ"), &rememberMe);
     
-    if (ImGui::Button(cu8("Регистрация"))) {
+    if (ImGui::Button(cu8("Р РµРіРёСЃС‚СЂР°С†РёСЏ"))) {
         onLogin = false;
         onRegister = true;
     }
     ImGui::SameLine();
-    if (ImGui::Button(cu8("Вход"))) {
+    if (ImGui::Button(cu8("Р’С…РѕРґ"))) {
+
         onLogin = false;
     }
 
@@ -126,6 +142,8 @@ void MainWindow::loginImWindow(bool isOpen)
 
     ImGui::End();
     ImGui::PopStyleColor();
+    usernameRed = usernameRedChanger;
+    passwordRed = passwordRedChanger;
 }
 
 void MainWindow::registerImWindow(bool isOpen)
@@ -133,38 +151,66 @@ void MainWindow::registerImWindow(bool isOpen)
     if (!isOpen)
         return;
 
-    static std::string password;
+    static std::string password1;
+    static std::string password2;
+    static bool passwordsDoNotMatch = false;
+    static bool passwordIsTooShort = false;
     ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.5f, window->getSize().y * 0.5f), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(window->getSize().x / 2 - window->getSize().x * 0.25f, window->getSize().y / 2 - window->getSize().y * 0.25f), ImGuiCond_Always);
 
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
     ImGui::Begin(cu8("##Register"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
-    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(cu8("Регистрация")).x) / 2);
-    ImGui::Text(cu8("Регистрация"));
+    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(cu8("Р РµРіРёСЃС‚СЂР°С†РёСЏ")).x) / 2);
+    ImGui::Text(cu8("Р РµРіРёСЃС‚СЂР°С†РёСЏ"));
     ImGui::Separator();
 
-    ImGui::Text(cu8("Имя пользователя:"));
+    ImGui::Text(cu8("РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ:"));
     ImGui::PushItemWidth(-1.0f);
     ImGui::InputText("##RUsername", &currentUser.username);
 
 
-    ImGui::Text(cu8("Пароль:"));
+    ImGui::Text(cu8("РџР°СЂРѕР»СЊ:"));
     ImGui::PushItemWidth(-1.0f);
-    ImGui::InputText("##Password1", &password, ImGuiInputTextFlags_Password);
+    ImGui::InputText("##Password1", &password1, ImGuiInputTextFlags_Password);
 
-    ImGui::Text(cu8("Повторите пароль:"));
+    ImGui::Text(cu8("РџРѕРІС‚РѕСЂРёС‚Рµ РїР°СЂРѕР»СЊ:"));
     ImGui::PushItemWidth(-1.0f);
-    ImGui::InputText("##Password2", &password, ImGuiInputTextFlags_Password);
+    ImGui::InputText("##Password2", &password2, ImGuiInputTextFlags_Password);
+
+    if (passwordsDoNotMatch)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.7f, 0.0f, 1.0f));
+        ImGui::Text(cu8("РџР°СЂРѕР»Рё РЅРµ СЃРѕРІРїР°РґР°СЋС‚"));
+        ImGui::PopStyleColor();
+    }
+    if (passwordIsTooShort)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+        ImGui::Text(cu8("РџР°СЂРѕР»СЊ СЃР»РёС€РєРѕРј РєРѕСЂРѕС‚РєРёР№ < 8 СЃРёРјРІРѕР»РѕРІ"));
+        ImGui::PopStyleColor();
+    }
 
 
-    if (ImGui::Button(cu8("Регистрация"))) {
-        onRegister = false;
+    passwordsDoNotMatch = !password1._Equal(password2);
+    
+
+
+    if (ImGui::Button(cu8("Р РµРіРёСЃС‚СЂР°С†РёСЏ"))) {
+        passwordIsTooShort = password1.length() < 8;
+        if (!passwordIsTooShort && !passwordsDoNotMatch)
+        {
+            onRegister = false;
+            password1.clear();
+            password2.clear();
+        }
     }
     ImGui::SameLine();
-    if (ImGui::Button(cu8("Вход"))) {
+    if (ImGui::Button(cu8("Р’С…РѕРґ"))) {
         onLogin = true;
         onRegister = false;
+        password1.clear();
+        password2.clear();
     }
 
 
