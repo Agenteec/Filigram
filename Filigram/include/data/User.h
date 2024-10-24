@@ -1,8 +1,7 @@
 #pragma once
 #include <string>
 
-class User
-{
+class User{
 public:
 	std::string username;
 	std::string passwordHash;
