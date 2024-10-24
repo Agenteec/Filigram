@@ -399,12 +399,12 @@ void MainWindow::processServerResponse(const json& response) {
 }
 
 void MainWindow::loadMessagesForChat(int chatId) {
-    // Функция для загрузки сообщений чата (запрос к серверу может быть добавлен)
-    currentChatMessages.clear();  // Очистить список перед загрузкой новых сообщений
+    
+    currentChatMessages.clear();
 
     for (const auto& message : messagesList) {
         if (message.getChatId() == chatId) {
-            currentChatMessages.push_back(message);  // Добавляем сообщения для выбранного чата
+            currentChatMessages.push_back(message);
         }
     }
 }
