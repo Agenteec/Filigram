@@ -1,9 +1,18 @@
 #pragma once
-#include <iostream>
-#include <sqlite3.h>
+#include <vector>
 #include <string>
+#include <random>
+#include <stdexcept>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
+
+#include <argon2.h>
+#include <sqlite3.h>
 #include <spdlog/spdlog.h>
 
+#include <data/SQLModels.hpp>
+#include <data/PasswordManager.hpp>
 class DatabaseManager {
 public:
     enum class StatusCode {
@@ -13,8 +22,7 @@ public:
         LOGIN_FAILED,
         USER_NOT_FOUND,
         _ERROR,
-        //--\\
-        \\--//
+        Insufficient_Rights_ERROR,
         COUNT
     };
 
@@ -34,123 +42,40 @@ public:
         }
     }
 
-    void createTables() {
-        const char* createUsersTable = R"(
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                last_login DATETIME
-            );
-        )";
+    void createTables();
 
-        const char* createChatsTable = R"(
-            CREATE TABLE IF NOT EXISTS chats (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                chat_name TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                last_activity DATETIME
-            );
-        )";
+    void executeSQL(const char* sql);
 
-        const char* createChatMembersTable = R"(
-            CREATE TABLE IF NOT EXISTS chat_members (
-                chat_id INTEGER,
-                user_id INTEGER,
-                joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (chat_id, user_id),
-                FOREIGN KEY (chat_id) REFERENCES chats(id),
-                FOREIGN KEY (user_id) REFERENCES users(id)
-            );
-        )";
+    StatusCode registerUser(const std::string& username, const std::string& password);
+    StatusCode loginUser(const std::string& username, const std::string& password, int& id);
 
-        const char* createMessagesTable = R"(
-            CREATE TABLE IF NOT EXISTS messages (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                chat_id INTEGER,
-                user_id INTEGER,
-                message_text TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (chat_id) REFERENCES chats(id),
-                FOREIGN KEY (user_id) REFERENCES users(id)
-            );
-        )";
+    StatusCode createChat(const std::string& chatName, int& chatId, const std::string& chatType = "private");
+    StatusCode addChatMember(int chatId, int userId, const std::string& role = "member", int adderId = 0);
+    StatusCode removeChatMember(int chatId, int userId);
 
-        const char* createMediaTable = R"(
-            CREATE TABLE IF NOT EXISTS media (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                message_id INTEGER,
-                media_type TEXT NOT NULL,
-                media_path TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (message_id) REFERENCES messages(id)
-            );
-        )";
+    StatusCode insertMessage(int chatId, int userId, const std::string& messageText);
+    StatusCode insertMedia(int messageId, const std::string& mediaType, const std::string& mediaPath);
 
-        executeSQL(createUsersTable);
-        executeSQL(createChatsTable);
-        executeSQL(createChatMembersTable);
-        executeSQL(createMessagesTable);
-        executeSQL(createMediaTable);
-    }
+    std::vector<Media> getMediaByMessageId(int messageId);
+    std::vector<Message> getMessages(int chatId);
+    std::optional<User> GetUser(int userId);
+    std::optional<Chat> GetChat(int chatId);
 
-    void executeSQL(const char* sql) {
-        char* errorMessage = nullptr;
-        if (sqlite3_exec(db, sql, nullptr, nullptr, &errorMessage) != SQLITE_OK) {
-            spdlog::error("SQL execution error: {}", errorMessage);
-            sqlite3_free(errorMessage);
-        }
-    }
-    StatusCode registerUser(const std::string& username, const std::string& password) {
-        std::string checkUserSQL = "SELECT COUNT(*) FROM users WHERE username = ?";
-        sqlite3_stmt* stmt;
-        sqlite3_prepare_v2(db, checkUserSQL.c_str(), -1, &stmt, nullptr);
-        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
+    bool isUserInChat(int chatId, int userId);
 
-        int count = 0;
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
-            count = sqlite3_column_int(stmt, 0);
-        }
-        sqlite3_finalize(stmt);
+    StatusCode deleteUser(int userId);
+    StatusCode updateUserProfile(int userId, const std::string& fieldName, const std::string& newValue);
+    std::vector<Chat> getUserChats(int userId);
 
-        if (count > 0) {
-            return StatusCode::USER_ALREADY_EXISTS;
-        }
-
-        // Хэширование
-        std::string passwordHash = password; // Заменить
-
-        std::string insertUserSQL = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
-        sqlite3_prepare_v2(db, insertUserSQL.c_str(), -1, &stmt, nullptr);
-        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, passwordHash.c_str(), -1, SQLITE_STATIC);
-
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
-            sqlite3_finalize(stmt);
-            return StatusCode::INSERT_ERROR;
-        }
-        sqlite3_finalize(stmt);
-        return StatusCode::SUCCESS;
-    }
-
-    StatusCode loginUser(const std::string& username, const std::string& password) {
-        std::string checkUserSQL = "SELECT password_hash FROM users WHERE username = ?";
-        sqlite3_stmt* stmt;
-        sqlite3_prepare_v2(db, checkUserSQL.c_str(), -1, &stmt, nullptr);
-        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
-
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
-            std::string storedHash = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-            // Хэширование
-            if (storedHash == password) { // Заменить
-                sqlite3_finalize(stmt);
-                return StatusCode::SUCCESS;
-            }
-        }
-        sqlite3_finalize(stmt);
-        return StatusCode::LOGIN_FAILED;
-    }
 private:
     sqlite3* db = nullptr;
+   
+
+    std::string getCurrentTime() {
+        auto now = std::chrono::system_clock::now();
+        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+        std::ostringstream oss;
+        oss << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S");
+        return oss.str();
+    }
 };
