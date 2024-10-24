@@ -2,39 +2,87 @@
 
 MainWindow::MainWindow() :
     window(new sf::RenderWindow(sf::VideoMode(800, 600), L"Filigram", sf::Style::Default)),
-    onChat(true),
-    onRegister(false),
-    onLogin(false)
+    onChat(false),
+    onRegister(true),
+    onLogin(false),
+    client(nullptr),
+    connectionStatus(Disconnected)
 {
     init();
 }
 
-MainWindow::~MainWindow()
-{
-	delete window;
+MainWindow::~MainWindow() {
+    stop();
+    delete window;
 }
 
-void MainWindow::start()
-{
-    auto handle = window->getSystemHandle();
+
+void MainWindow::start() {
+    clientThread = std::thread([this]() {
+        client = new ServerClient("127.0.0.1", 53000);
+
+        runningNetworking.store(true);
+        while (runningNetworking.load()) {
+            if (connectionStatus != Connected && runningNetworking.load()) {
+                connectionStatus = Connecting;
+                if (client->connect()) {
+                    connectionStatus = Connected;
+                }
+                else {
+                    spdlog::error("Failed to connect to server.");
+                }
+            }
+
+            json request;
+            {
+                std::unique_lock<std::mutex> lock(queueMutex);
+                cv.wait(lock, [this] { return !requestQueue.empty() || !runningNetworking; });
+                if (!runningNetworking) break;
+                request = requestQueue.front();
+                requestQueue.pop();
+            }
+
+            if (client->sendRequest(request)) {
+                spdlog::info("Request sent successfully.");
+            }
+            else {
+                spdlog::error("Request failed.");
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        delete client;
+        });
+
+    clientReceiverThread = std::thread([this]() {
+        while (runningNetworking.load()) {
+            json response;
+            if (client->receiveResponse(response)) {
+                processServerResponse(response);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        });
+
     started = true;
-    sf::Clock time;
-    while (window->isOpen() && started)
-    {
-        sf::Time elapsedTime = time.restart();
+    sf::Clock clock;
+    while (window->isOpen() && started) {
+        sf::Time elapsedTime = clock.restart();
         update(elapsedTime);
         render(elapsedTime);
     }
 }
 
-void MainWindow::stop()
-{
-    started = false;
+void MainWindow::stop() {
+    runningNetworking.store(false);
+    cv.notify_all();
+    if (clientThread.joinable()) clientThread.join();
+    if (clientReceiverThread.joinable()) clientReceiverThread.join();
 }
 
 void MainWindow::init()
 {
-    initImgui(*window);
+    initIMgui(*window);
     window->setVerticalSyncEnabled(true);
     font.loadFromFile("Assets/fonts/Roboto-Regular.ttf");
     logo.loadFromFile("Assets/images/logo.png");
@@ -51,7 +99,7 @@ void MainWindow::update(const sf::Time& elapsedTime)
 void MainWindow::render(const sf::Time& elapsedTime)
 {
     auto& refWindow = *window;
-
+    refWindow.clear(sf::Color(14, 22, 33));
     //login & register
     registerImWindow(onRegister);
     loginImWindow(onLogin);
@@ -61,7 +109,7 @@ void MainWindow::render(const sf::Time& elapsedTime)
     listChatsImWindow(onChat);
     chatImWindow(onChat);
     //Chats
-    refWindow.clear(sf::Color(14, 22, 33));
+    
     ImGui::SFML::Render(refWindow);
     refWindow.display();
 }
@@ -77,8 +125,9 @@ void MainWindow::handleEvent()
         switch (event.type)
         {
         case sf::Event::Closed:
-            refWindow.close();
             stop();
+            refWindow.close();
+            
             break;
         default:
             break;
@@ -134,8 +183,16 @@ void MainWindow::loginImWindow(bool isOpen)
     }
     ImGui::SameLine();
     if (ImGui::Button(cu8("Вход"))) {
+        if (currentUser.username.empty() || password.empty()) {
 
-        onLogin = false;
+            
+        }
+        else
+        {
+            sendLoginRequest(currentUser.username, password);
+
+        }
+        
     }
 
 
@@ -200,9 +257,8 @@ void MainWindow::registerImWindow(bool isOpen)
         passwordIsTooShort = password1.length() < 8;
         if (!passwordIsTooShort && !passwordsDoNotMatch)
         {
-            onRegister = false;
-            password1.clear();
-            password2.clear();
+            currentUser.password = password1;
+            sendRegistrationRequest(currentUser.username, password1);
         }
     }
     ImGui::SameLine();
@@ -219,34 +275,136 @@ void MainWindow::registerImWindow(bool isOpen)
     ImGui::PopStyleColor();
 }
 
-void MainWindow::listChatsImWindow(bool isOpen)
-{
-    if (!isOpen)
-        return;
+void MainWindow::listChatsImWindow(bool isOpen) {
+    if (!isOpen) return;
 
     ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.25f, window->getSize().y), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
-    ImGui::Begin(cu8("Chats"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+    ImGui::Begin(cu8("Список чатов"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+    for (const auto& chat : chatList) {
+        if (ImGui::Selectable(chat.getChatName().c_str())) {
+            currentChat = chat;
+            onChat = true;
+            loadMessagesForChat(currentChat.getId());
+        }
+    }
 
     ImGui::End();
-    ImGui::PopStyleColor();
 }
 
-void MainWindow::chatImWindow(bool isOpen)
-{
-    if (!isOpen)
-        return;
+void MainWindow::chatImWindow(bool isOpen) {
+    if (!isOpen || currentChat.getChatName().empty()) return;
 
     ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.75f, window->getSize().y), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(window->getSize().x * 0.25f, 0), ImGuiCond_Always);
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
-    ImGui::Begin(cu8("Chat"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+    ImGui::Begin(cu8("Чат"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
+    for (const auto& message : currentChatMessages) {
+        ImGui::TextWrapped(message.getMessageText().c_str());
+    }
 
+    static std::string newMessage;
+    ImGui::InputText("Сообщение", &newMessage);
+    if (ImGui::Button("Отправить")) {
+        if (!newMessage.empty()) {
+            sendMessage(newMessage);
+            newMessage.clear();
+        }
+    }
 
     ImGui::End();
-    ImGui::PopStyleColor();
+}
+
+void MainWindow::sendMessage(const std::string& message) {
+    json request;
+    request["action"] = "send_message";
+    request["message"] = message;
+    request["chat_id"] = currentChat.getId();
+
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
+void MainWindow::sendRegistrationRequest(const std::string& username, const std::string& password) {
+    json request;
+    request["action"] = "register";
+    request["username"] = username;
+    request["password"] = password;
+
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
+void MainWindow::sendLoginRequest(const std::string& username, const std::string& password) {
+    json request;
+    request["action"] = "login";
+    request["username"] = username;
+    request["password"] = password;
+
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
+void MainWindow::processServerResponse(const json& response) {
+    spdlog::info(response.dump());
+
+    std::string action = response["action"];
+    if (action == "login") {
+        if (response["status"] == "success") {
+            spdlog::info("Login ok");
+            onLogin = false;
+            onRegister = false;
+            onChat = true;
+        }
+        else {
+            spdlog::error("Login error: {}", response["message"].get<std::string>());
+        }
+    }
+    else if (action == "register") {
+        if (response["status"] == "success") {
+            spdlog::info("Register ok");
+            sendLoginRequest(currentUser.username, currentUser.password);
+        }
+        else {
+            spdlog::error("Register error: {}", response["message"].get<std::string>());
+        }
+    }
+    else if (action == "new_message") {
+        
+        Message newMessage = Message(
+            response["message_id"],
+            response["chat_id"],
+            response["user_id"],
+            response["message_text"],
+            response["created_at"],
+            response["status"]
+        );
+        messageQueue.push(newMessage);
+        if (newMessage.getChatId() == currentChat.getId()) {
+            currentChatMessages.push_back(newMessage);
+        }
+    }
+}
+
+void MainWindow::loadMessagesForChat(int chatId) {
+    // Функция для загрузки сообщений чата (запрос к серверу может быть добавлен)
+    currentChatMessages.clear();  // Очистить список перед загрузкой новых сообщений
+
+    for (const auto& message : messagesList) {
+        if (message.getChatId() == chatId) {
+            currentChatMessages.push_back(message);  // Добавляем сообщения для выбранного чата
+        }
+    }
 }
