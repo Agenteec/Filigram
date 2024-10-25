@@ -388,15 +388,15 @@ std::optional<User> DatabaseManager::GetUser(int userId)
     if (sqlite3_step(stmt) == SQLITE_ROW) {
 
         int id = sqlite3_column_int(stmt, 0);
-        std::string username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        std::string createdAt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        std::string email = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
-        std::string profilePicture = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
-        std::string bio = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
-        std::string status = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6));
-        std::string firstName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
-        std::string lastName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 8));
-        std::string dateOfBirth = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
+        std::string username = (sqlite3_column_type(stmt, 1) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        std::string createdAt = (sqlite3_column_type(stmt, 2) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        std::string email = (sqlite3_column_type(stmt, 3) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        std::string profilePicture = (sqlite3_column_type(stmt, 4) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        std::string bio = (sqlite3_column_type(stmt, 5) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+        std::string status = (sqlite3_column_type(stmt, 6) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6));
+        std::string firstName = (sqlite3_column_type(stmt, 7) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+        std::string lastName = (sqlite3_column_type(stmt, 8) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 8));
+        std::string dateOfBirth = (sqlite3_column_type(stmt, 9) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
 
 
         User user(id, username, "", createdAt, std::nullopt, email, profilePicture, bio, firstName, lastName, dateOfBirth);

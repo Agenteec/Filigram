@@ -31,64 +31,74 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
             spdlog::info("Client disconnected: {}", client->getRemoteAddress().toString());
             break;
         }
+        json response;
 
         std::string data;
         packet >> data;
-        json request = json::parse(data);
-        json response;
-        response["action"] = request["action"];
-        if (request["action"] == "ping") {
-            response["status"] = "pong";
-            response["action"] = "ping";
-        }
-        else if (request["action"] == "login") {
-            std::string username = request["username"];
-            std::string password = request["password"];
-            int userId = -1;
+        try 
+        {
+            json request = json::parse(data);
 
-            if (dbManager.loginUser(username, password, userId) == DatabaseManager::StatusCode::SUCCESS) {
+            response["action"] = request["action"];
+            if (request["action"] == "ping" && request["status"] == "ping") {
+                response["status"] = "pong";
+                response["action"] = "ping";
+            }
+            else if (request["action"] == "login") {
+                std::string username = request["username"];
+                std::string password = request["password"];
+                int userId = -1;
+
+                if (dbManager.loginUser(username, password, userId) == DatabaseManager::StatusCode::SUCCESS) {
+                    response["status"] = "success";
+                    response["message"] = "Login successful.";
+                    currentUser = dbManager.GetUser(userId);
+                    clientSockets[userId] = client;
+                }
+                else {
+                    response["status"] = "error";
+                    response["message"] = "Login failed.";
+                }
+            }
+            else if (request["action"] == "register") {
+                std::string username = request["username"];
+                std::string password = request["password"];
+                auto status = dbManager.registerUser(username, password);
+
+                if (status == DatabaseManager::StatusCode::SUCCESS) {
+                    response["status"] = "success";
+                    response["message"] = "Registration successful.";
+                }
+                else if (status == DatabaseManager::StatusCode::USER_ALREADY_EXISTS) {
+                    response["status"] = "error";
+                    response["message"] = "User already exists.";
+                }
+                else {
+                    response["status"] = "error";
+                    response["message"] = "Registration failed.";
+                }
+            }
+            else if (request["action"] == "send_message") {
+                std::string message = request["message"];
+                broadcastMessage(message);
                 response["status"] = "success";
-                response["message"] = "Login successful.";
-                currentUser = dbManager.GetUser(userId);
-                clientSockets[userId] = client;
+                response["message"] = "Message sent.";
             }
             else {
                 response["status"] = "error";
-                response["message"] = "Login failed.";
+                response["message"] = "Unknown action.";
             }
-        }
-        else if (request["action"] == "register") {
-            std::string username = request["username"];
-            std::string password = request["password"];
-            auto status = dbManager.registerUser(username, password);
 
-            if (status == DatabaseManager::StatusCode::SUCCESS) {
-                response["status"] = "success";
-                response["message"] = "Registration successful.";
-            }
-            else if (status == DatabaseManager::StatusCode::USER_ALREADY_EXISTS) {
-                response["status"] = "error";
-                response["message"] = "User already exists.";
-            }
-            else {
-                response["status"] = "error";
-                response["message"] = "Registration failed.";
-            }
         }
-        else if (request["action"] == "send_message") {
-            std::string message = request["message"];
-            broadcastMessage(message);
-            response["status"] = "success";
-            response["message"] = "Message sent.";
-        }
-        else {
+        catch (const json::parse_error& e) {
+            response["action"] = "ex";
             response["status"] = "error";
-            response["message"] = "Unknown action.";
+            response["message"] = "Invalid JSON format.";
         }
-
         sf::Packet responsePacket;
         responsePacket << response.dump();
         client->send(responsePacket);
+        
     }
 }
 
@@ -112,7 +122,7 @@ void ChatServer::startPingThread() {
 
             json pingRequest;
             pingRequest["action"] = "ping";
-            pingRequest["status"] = "pong";
+            pingRequest["status"] = "ping";
             std::string pingData = pingRequest.dump();
 
             broadcastMessage(pingData);

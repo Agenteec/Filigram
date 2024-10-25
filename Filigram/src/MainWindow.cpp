@@ -3,8 +3,8 @@
 MainWindow::MainWindow() :
     window(new sf::RenderWindow(sf::VideoMode(800, 600), L"Filigram", sf::Style::Default)),
     onChat(false),
-    onRegister(true),
-    onLogin(false),
+    onRegister(false),
+    onLogin(true),
     client(nullptr),
     connectionStatus(Disconnected)
 {
@@ -16,7 +16,6 @@ MainWindow::~MainWindow() {
     delete window;
 }
 
-
 void MainWindow::start() {
     clientThread = std::thread([this]() {
         client = new ServerClient("127.0.0.1", 53000);
@@ -25,12 +24,24 @@ void MainWindow::start() {
         while (runningNetworking.load()) {
             if (connectionStatus != Connected && runningNetworking.load()) {
                 connectionStatus = Connecting;
-                if (client->connect()) {
-                    connectionStatus = Connected;
+                while (connectionStatus != Connected && runningNetworking.load())
+                {
+                    
+                    spdlog::info("Try connection to server...");
+                    if (client->connect())
+                    {
+                        connectionStatus = Connected;
+                        spdlog::info("Connected to server {}:{}", client->getServerAddress().toString(), client->getServerPort());
+                    }
+                    else
+                    {
+                        spdlog::warn("Failed to connect to server: {}:{}", client->getServerAddress().toString(), client->getServerPort());
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                        
+                        
+                    }
                 }
-                else {
-                    spdlog::error("Failed to connect to server.");
-                }
+                
             }
 
             json request;
@@ -46,6 +57,7 @@ void MainWindow::start() {
                 spdlog::info("Request sent successfully.");
             }
             else {
+                connectionStatus = Disconnected;
                 spdlog::error("Request failed.");
             }
 
@@ -55,6 +67,8 @@ void MainWindow::start() {
         });
 
     clientReceiverThread = std::thread([this]() {
+        while (!runningNetworking.load())
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         while (runningNetworking.load()) {
             json response;
             if (client->receiveResponse(response)) {
@@ -74,6 +88,7 @@ void MainWindow::start() {
 }
 
 void MainWindow::stop() {
+
     runningNetworking.store(false);
     cv.notify_all();
     if (clientThread.joinable()) clientThread.join();
@@ -82,16 +97,42 @@ void MainWindow::stop() {
 
 void MainWindow::init()
 {
+    if (sodium_init() < 0)spdlog::error("Sodium init failed");
+    key = std::vector<unsigned char>(crypto_secretbox_KEYBYTES);
+    for (size_t i = 0; i < crypto_secretbox_KEYBYTES; i++)
+    {
+        key[i] = static_cast<unsigned char>(sin(i) * i);
+    }
+    loadUser();
     initIMgui(*window);
     window->setVerticalSyncEnabled(true);
     font.loadFromFile("Assets/fonts/Roboto-Regular.ttf");
     logo.loadFromFile("Assets/images/logo.png");
     window->setIcon(202,161, logo.getPixelsPtr());
+    shaders["ping"] = std::make_shared<ShaderManager>(Shaders::ping);
+}
 
+void MainWindow::loadUser()
+{
+    std::ifstream file("credentials.enc", std::ios::binary);
+    if (!file) {
+        currentUser.isLoad = false;
+        return;
+    }
+    file.close();
+    PasswordManager::load_credentials("credentials.enc", currentUser.username, currentUser.password, key);
+    currentUser.isLoad = true;
 }
 
 void MainWindow::update(const sf::Time& elapsedTime)
 {
+    if (connectionStatus != Connected)
+        shaders["ping"]->start();
+    else
+        shaders["ping"]->stop();
+    for (auto& shader : shaders)
+        shader.second->update(elapsedTime.asSeconds()*0.1f);
+
     handleEvent();
     ImGui::SFML::Update(*window, elapsedTime);
 }
@@ -100,16 +141,19 @@ void MainWindow::render(const sf::Time& elapsedTime)
 {
     auto& refWindow = *window;
     refWindow.clear(sf::Color(14, 22, 33));
+
     //login & register
     registerImWindow(onRegister);
     loginImWindow(onLogin);
+
     //login & register
 
     //Chats
     listChatsImWindow(onChat);
     chatImWindow(onChat);
     //Chats
-    
+    for (auto& shader:shaders)
+        shader.second->draw(refWindow);
     ImGui::SFML::Render(refWindow);
     refWindow.display();
 }
@@ -125,9 +169,14 @@ void MainWindow::handleEvent()
         switch (event.type)
         {
         case sf::Event::Closed:
-            stop();
             refWindow.close();
+            stop();
             
+            
+            break;
+        case sf::Event::Resized:
+            for (auto& shader : shaders)
+                shader.second->handleResize(refWindow.getSize().x, refWindow.getSize().y, refWindow);
             break;
         default:
             break;
@@ -357,16 +406,51 @@ void MainWindow::sendLoginRequest(const std::string& username, const std::string
     cv.notify_one();
 }
 
+void MainWindow::sendPingRequest(const std::string& status)
+{
+    json request;
+    request["action"] = "ping";
+    request["status"] = status;
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
 void MainWindow::processServerResponse(const json& response) {
     spdlog::info(response.dump());
 
     std::string action = response["action"];
-    if (action == "login") {
+    if (action == "new_message") {
+
+        Message newMessage = Message(
+            response["message_id"],
+            response["chat_id"],
+            response["user_id"],
+            response["message_text"],
+            response["created_at"],
+            response["status"]
+        );
+        messageQueue.push(newMessage);
+        if (newMessage.getChatId() == currentChat.getId()) {
+            currentChatMessages.push_back(newMessage);
+        }
+    }
+    else if (action == "ping" && response["status"] == "ping")
+    {
+        sendPingRequest("pong");
+    }
+    else if (action == "login") {
         if (response["status"] == "success") {
             spdlog::info("Login ok");
             onLogin = false;
             onRegister = false;
             onChat = true;
+            if (rememberMe)
+            {
+                PasswordManager::save_credentials("credentials.enc", currentUser.username, currentUser.password, key);
+            }
         }
         else {
             spdlog::error("Login error: {}", response["message"].get<std::string>());
@@ -381,21 +465,7 @@ void MainWindow::processServerResponse(const json& response) {
             spdlog::error("Register error: {}", response["message"].get<std::string>());
         }
     }
-    else if (action == "new_message") {
-        
-        Message newMessage = Message(
-            response["message_id"],
-            response["chat_id"],
-            response["user_id"],
-            response["message_text"],
-            response["created_at"],
-            response["status"]
-        );
-        messageQueue.push(newMessage);
-        if (newMessage.getChatId() == currentChat.getId()) {
-            currentChatMessages.push_back(newMessage);
-        }
-    }
+    
 }
 
 void MainWindow::loadMessagesForChat(int chatId) {

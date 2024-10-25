@@ -3,10 +3,15 @@
 #include <vector>
 #include <thread>
 #include <future>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <list>
 #include <functional>
 #include <muParser.h>
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 #include <imgui.h>
 #include <imgui-SFML.h>
 #include <imgui_stdlib.h>
@@ -14,10 +19,11 @@
 #include <spdlog/spdlog.h>
 #include <ServerClient.h>
 #include <data/SQLModels.hpp>
-#include <queue>
-#include <mutex>
-#include <condition_variable>
-#include <list>
+#include <data/PasswordManager.hpp>
+#include <shaders/Shaders.h>
+#include <shaders/ShaderManager.h>
+
+
 
 #define cu8(str) reinterpret_cast<const char*>(u8##str)
 
@@ -40,6 +46,7 @@ class MainWindow
     public:
         std::string password;
         std::string username;
+        bool isLoad;
     };
 
     enum ConnectionStatus
@@ -57,6 +64,7 @@ class MainWindow
     std::mutex mtx;
 
     ServerClient* client;
+    std::vector<unsigned char> key;
     sf::RenderWindow* window;
     sf::Image logo;
 
@@ -83,6 +91,7 @@ class MainWindow
     std::list<Message> messagesList;
     std::list<Message> currentChatMessages;
 
+    std::map<std::string, std::shared_ptr<ShaderManager>> shaders;
 public:
     MainWindow();
     ~MainWindow();
@@ -91,6 +100,8 @@ public:
 
 private:
     void init();
+
+    void loadUser();
 
     void update(const sf::Time& elapsedTime);
     void render(const sf::Time& elapsedTime);
@@ -105,6 +116,7 @@ private:
 
     void sendRegistrationRequest(const std::string& username, const std::string& password);
     void sendLoginRequest(const std::string& username, const std::string& password);
+    void sendPingRequest(const std::string& status = "ping");
     void sendMessage(const std::string& message);
     void processServerResponse(const json& response);
 

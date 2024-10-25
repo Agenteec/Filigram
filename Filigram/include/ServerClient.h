@@ -16,6 +16,9 @@ public:
     bool receiveResponse(json& response);
     void startReceiverThread();
 
+    const sf::IpAddress& getServerAddress() const { return serverAddress; }
+    unsigned short getServerPort() const { return serverPort; }
+
 private:
     sf::TcpSocket socket;
     sf::IpAddress serverAddress;

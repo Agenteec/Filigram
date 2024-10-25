@@ -23,6 +23,8 @@ find_package(SFML COMPONENTS system network window graphics CONFIG REQUIRED)
 find_package(muparser CONFIG REQUIRED)
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 find_package(unofficial-argon2 CONFIG REQUIRED)
+find_package(unofficial-sodium CONFIG REQUIRED)
+  
   
 file(GLOB_RECURSE SOURCES "src/*.cpp"  "include/*.h" "include/*.hpp")
 add_executable (Filigram "main.cpp" ${SOURCES})
@@ -41,6 +43,7 @@ target_link_libraries(Filigram PRIVATE implot::implot)
 target_link_libraries(Filigram PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(Filigram PRIVATE spdlog::spdlog)
 target_link_libraries(Filigram PRIVATE unofficial::argon2::libargon2)
+target_link_libraries(Filigram PRIVATE unofficial-sodium::sodium)
 
 
 
@@ -49,6 +52,7 @@ target_link_libraries(FiligramServer PRIVATE sfml-system sfml-network)
 target_link_libraries(FiligramServer PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(FiligramServer PRIVATE spdlog::spdlog)
 target_link_libraries(FiligramServer PRIVATE unofficial::argon2::libargon2)
+target_link_libraries(FiligramServer PRIVATE unofficial-sodium::sodium)
 
 target_include_directories(Filigram PRIVATE "include")
 target_include_directories(FiligramServer PRIVATE "include" "server/include")
