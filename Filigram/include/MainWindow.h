@@ -92,6 +92,7 @@ class MainWindow
     bool started;
 
     bool onChat;
+    bool onChatInfo;
     bool scrollToBottomChat;
     float scrollToBottomChatLevel;
     bool onLogin;
@@ -150,9 +151,13 @@ private:
     void listChatsImWindow(bool isOpen);
     void chatImWindow(bool isOpen);
 
+    void chatInfoWindow(bool isOpen);
+    void openDirectMessage(int userId);
+
     void sendRegistrationRequest(const std::string& username, const std::string& password);
     void sendLoginRequest(const std::string& username, const std::string& password);
     void sendPingRequest(const std::string& status = "ping");
+    void sendNewPrivateChatRequest(int UserId);
     void sendGetUserChatsRequest();
     void sendMessage(const std::string& message);
     void processServerResponse(const json& response);

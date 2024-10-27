@@ -375,7 +375,7 @@ std::vector<Message> DatabaseManager::getMessages(int chatId)
 
 std::optional<User> DatabaseManager::GetUser(int userId)
 {
-    std::string getUserSQL = "SELECT id, username, created_at, email, profile_picture, bio, status, first_name, last_name, date_of_birth FROM users WHERE id = ?";
+    std::string getUserSQL = "SELECT id, username, created_at, email, profile_picture, bio, status, first_name, last_name, date_of_birth,last_login FROM users WHERE id = ?";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, getUserSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
         spdlog::error("Failed to prepare statement: {}", sqlite3_errmsg(db));
@@ -396,10 +396,12 @@ std::optional<User> DatabaseManager::GetUser(int userId)
         std::string firstName = (sqlite3_column_type(stmt, 7) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
         std::string lastName = (sqlite3_column_type(stmt, 8) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 8));
         std::string dateOfBirth = (sqlite3_column_type(stmt, 9) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
+        std::string lastLogin = (sqlite3_column_type(stmt, 10) == SQLITE_NULL) ? "" : reinterpret_cast<const char*>(sqlite3_column_text(stmt, 10));
+
 
 
         User user(id, username, "", createdAt, std::nullopt, email, profilePicture, bio, firstName, lastName, dateOfBirth);
-
+        user.setLastLogin(lastLogin);
         sqlite3_finalize(stmt);
         return user;
     }

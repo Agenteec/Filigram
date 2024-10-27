@@ -5,6 +5,8 @@ MainWindow::MainWindow() :
     onChat(false),
     onRegister(false),
     onLogin(true),
+    rememberMe(false),
+    onChatInfo(false),
     client(nullptr),
     connectionStatus(Disconnected),
     currentChat(nullptr),
@@ -156,6 +158,7 @@ void MainWindow::render(const sf::Time& elapsedTime)
     //Chats
     listChatsImWindow(onChat);
     chatImWindow(onChat);
+    chatInfoWindow(onChatInfo);
     //Chats
     for (auto& shader:shaders)
         shader.second->draw(refWindow);
@@ -337,7 +340,8 @@ void MainWindow::listChatsImWindow(bool isOpen) {
     ImGui::Begin(cu8("##UserProfile"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
     if (userList[currentUser.id])
     {
-        ImGui::Image((void*)reinterpret_cast<ImTextureID>(userList[currentUser.id]->getProfilePictureTexture()->getNativeHandle()), ImVec2(75, 75));
+        ImGui::Image((void*)reinterpret_cast<ImTextureID>(userList[currentUser.id]->getProfilePictureTexture()->getNativeHandle()), ImVec2(65, 65));
+        ImGui::SameLine();
     }
     ImGui::Text("%s", currentUser.username.c_str());
     
@@ -369,6 +373,7 @@ void MainWindow::listChatsImWindow(bool isOpen) {
 
     ImGui::End();
 }
+
 void MainWindow::chatImWindow(bool isOpen) {
     if (!isOpen || !currentChat) return;
 
@@ -376,16 +381,21 @@ void MainWindow::chatImWindow(bool isOpen) {
     float winPosX = window->getSize().x * 0.25f;
     float totalHeight = window->getSize().y;
 
-    const float chatInfoHeight = 40.0f;
+    const float chatInfoHeight = 45.0f;
     const float tbwHeight = 45.0f;
     float chatHeight = totalHeight - chatInfoHeight - tbwHeight;
 
     ImGui::SetNextWindowSize(ImVec2(winW, chatInfoHeight), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(winPosX, 0), ImGuiCond_Always);
-    ImGui::Begin("##ChatInfo", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-    ImGui::Text(currentChat->getChatName().c_str());
-    ImGui::End();
 
+    if (ImGui::Begin("##ChatInfo", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar)) {
+        ImGui::Text(currentChat->getChatName().c_str());
+        ImGui::SameLine();
+        if (ImGui::Button("Информация")) {
+            onChatInfo = !onChatInfo;
+        }
+    }
+    ImGui::End();
     ImGui::SetNextWindowSize(ImVec2(winW, chatHeight), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(winPosX, chatInfoHeight), ImGuiCond_Always);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
@@ -408,8 +418,21 @@ void MainWindow::chatImWindow(bool isOpen) {
             ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", message.second->getCreatedAt().c_str());
             lastSenderId = sender->getId();
         }
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+            ImGui::OpenPopup("MessageContextMenu");
+        }
 
+        if (ImGui::BeginPopup("MessageContextMenu")) {
+            if (ImGui::MenuItem("Ответить")) {
+                //prepareReply(message.second);
+            }
+            if (ImGui::MenuItem("Переслать")) {
+                //forwardMessage(message.second);
+            }
+            ImGui::EndPopup();
+        }
         ImGui::TextWrapped("%s", message.second->getMessageText().c_str());
+
     }
 
     scrollToBottomChatLevel = ImGui::GetScrollY() / ImGui::GetScrollMaxY();
@@ -447,6 +470,81 @@ void MainWindow::chatImWindow(bool isOpen) {
     }
 
     ImGui::End();
+}
+
+void MainWindow::chatInfoWindow(bool isOpen) {
+    if (!isOpen || !currentChat) return;
+
+    float winW = 400.0f;
+    float winH = 400.0f;
+    ImGui::SetNextWindowSize(ImVec2(winW, winH), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2((window->getSize().x - winW) / 2, (window->getSize().y - winH) / 2), ImGuiCond_Always);
+
+    if (ImGui::Begin(cu8("Информация"), &onChatInfo, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
+        ImGui::Text("%s", currentChat->getChatName().c_str());
+        ImGui::Text("Участников: %d", static_cast<int>(currentChat->getMembers().size()));
+
+        ImGui::Separator();
+
+        for (const auto& [id, member] : currentChat->getMembers()) {
+            auto user = member->user;
+            if (!user) continue;
+
+            ImGui::PushID(id);
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.3f, 0.7f));
+
+            if (ImGui::Selectable("", false, ImGuiSelectableFlags_SpanAllColumns, ImVec2(winW - 20, 60))) {
+                
+            }
+
+            ImGui::PopStyleColor();
+
+            ImGui::SameLine(10.0f);
+            ImGui::Image((void*)reinterpret_cast<ImTextureID>(user->getProfilePictureTexture()->getNativeHandle()), ImVec2(50, 50));
+
+            ImGui::SameLine();
+            ImGui::BeginGroup();
+            ImGui::Text("%s", user->getUsername().c_str());
+            ImGui::Text("Последний вход: %s", user->getLastLogin().value_or("-").c_str());
+            ImGui::EndGroup();
+
+            
+            if (ImGui::BeginPopupContextItem(("UserContextMenu" + std::to_string(id)).c_str())) {
+                if (ImGui::MenuItem("Написать сообщение")) {
+                    openDirectMessage(user->getId());
+                }
+                ImGui::EndPopup();
+            }
+            ImGui::PopID();
+        }
+    }
+    ImGui::End();
+}
+
+void MainWindow::openDirectMessage(int userId)
+{
+    int chatId = -1;
+    for (auto& [_chatId, chat]: chatList)
+    {
+        if (chat->getChatType() == "private")
+        {
+            for (auto& [memberId,member] : chat->getMembers())
+            {
+                if (memberId == userId)
+                {
+                    chatId = _chatId;
+                    break;
+                }
+            }
+        }
+        if (_chatId != -1)break;
+    }
+    if (chatId != -1)
+        currentChat = chatList[chatId];
+    else
+    {
+
+    }
 }
 
 
@@ -499,6 +597,19 @@ void MainWindow::sendPingRequest(const std::string& status)
         requestQueue.push(request);
     }
     cv.notify_one();
+}
+
+void MainWindow::sendNewPrivateChatRequest(int UserId)
+{
+    json request;
+    request["action"] = "new_private_chat";
+    request["user_id"] = UserId;
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+
 }
 
 void MainWindow::sendGetUserChatsRequest() {
@@ -569,6 +680,22 @@ void MainWindow::processServerResponse(const json& response) {
         user->nameColor = getColorFromString(user->getFirstName() + user->getUsername());
         userList[userId] = user;
     }
+    else if (action == "new_private_chat")
+    {
+        if (response["status"] == "success")
+        {
+
+            /*auto chat = std::make_shared<Chat>(response["chat_id"], userList[response[]]);
+            Chat(int id, const std::string & chatName, const std::string & createdAt,
+                std::optional<std::string> lastActivity = std::nullopt,
+                const std::string & chatType = "private")
+            ;*/
+        }
+        else {
+            spdlog::error("Login error: {}", response["message"].get<std::string>());
+        }
+    }
+    
     else if(action == "get_user_chats") {
         if (response["status"] == "success") {
             chatList.clear();
