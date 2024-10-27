@@ -23,18 +23,3 @@ bool ServerClient::receiveResponse(json& response) {
     }
     return false;
 }
-
-void ServerClient::startReceiverThread() {
-    receiverThread = std::thread([this]() {
-        while (running) {
-            json response;
-            if (receiveResponse(response)) {
-                std::lock_guard<std::mutex> lock(queueMutex);
-                responseQueue.push(response);
-                cv.notify_one();
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        }
-        });
-    receiverThread.detach();
-}

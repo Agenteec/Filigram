@@ -6,6 +6,7 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <memory>
 
 #include <argon2.h>
 #include <sqlite3.h>
@@ -34,6 +35,11 @@ public:
             return;
         }
         createTables();
+        if (!GetChat(1))
+        {
+            int id;
+            createChat("Global", id,"group");
+        }
     }
 
     ~DatabaseManager() {
@@ -46,36 +52,31 @@ public:
 
     void executeSQL(const char* sql);
 
-    StatusCode registerUser(const std::string& username, const std::string& password);
+    StatusCode registerUser(const std::string& username, const std::string& password, int& id, const std::string& firstName = "DefaultUsername", const std::string& profilePicture = ":profile_photo_default");
     StatusCode loginUser(const std::string& username, const std::string& password, int& id);
 
     StatusCode createChat(const std::string& chatName, int& chatId, const std::string& chatType = "private");
-    StatusCode addChatMember(int chatId, int userId, const std::string& role = "member", int adderId = 0);
+    StatusCode addChatMember(int chatId, int userId, const std::string& role = "member", int adderId = -1);
     StatusCode removeChatMember(int chatId, int userId);
 
-    StatusCode insertMessage(int chatId, int userId, const std::string& messageText);
+    StatusCode insertMessage(int chatId, int userId, const std::string& messageText, int& messageId);
     StatusCode insertMedia(int messageId, const std::string& mediaType, const std::string& mediaPath);
 
     std::vector<Media> getMediaByMessageId(int messageId);
     std::vector<Message> getMessages(int chatId);
+
     std::optional<User> GetUser(int userId);
     std::optional<Chat> GetChat(int chatId);
-
+    std::vector<ChatMember> getChatMembers(int chatId);
     bool isUserInChat(int chatId, int userId);
 
     StatusCode deleteUser(int userId);
     StatusCode updateUserProfile(int userId, const std::string& fieldName, const std::string& newValue);
     std::vector<Chat> getUserChats(int userId);
 
+    static std::string getCurrentTime();
 private:
     sqlite3* db = nullptr;
-   
 
-    std::string getCurrentTime() {
-        auto now = std::chrono::system_clock::now();
-        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-        std::ostringstream oss;
-        oss << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S");
-        return oss.str();
-    }
+
 };

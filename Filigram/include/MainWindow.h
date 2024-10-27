@@ -26,7 +26,15 @@
 
 
 #define cu8(str) reinterpret_cast<const char*>(u8##str)
+static sf::Color getRandomColor(int rMin, int rMax, int gMin, int gMax, int bMin, int bMax, int aMin = 255, int aMax = 255) {
+    
+    int r = rMin + std::rand() % (rMax - rMin + 1);
+    int g = gMin + std::rand() % (gMax - gMin + 1);
+    int b = bMin + std::rand() % (bMax - bMin + 1);
+    int a = aMin + std::rand() % (aMax - aMin + 1);
 
+    return sf::Color(r, g, b, a);
+}
 static bool initIMgui(sf::RenderWindow& window)
 {
     if (!ImGui::SFML::Init(window))
@@ -44,6 +52,7 @@ class MainWindow
     class CurrentUser
     {
     public:
+        int id;
         std::string password;
         std::string username;
         bool isLoad;
@@ -73,6 +82,8 @@ class MainWindow
     bool started;
 
     bool onChat;
+    bool scrollToBottomChat;
+    float scrollToBottomChatLevel;
     bool onLogin;
     bool onRegister;
 
@@ -80,16 +91,31 @@ class MainWindow
     CurrentUser currentUser;
     
     std::queue<json> requestQueue;
-    std::queue<Message> messageQueue;
 
     std::mutex queueMutex;
     std::condition_variable cv;
 
-    std::vector<Chat> chatList;
-    Chat currentChat;
+    std::map<int, std::shared_ptr<Chat>> chatList;
+    std::map<int, std::shared_ptr<User>> userList;
+    std::map<int, std::shared_ptr<Message>> messageList;
+    std::vector<std::shared_ptr<ChatMember>> chatMemberList;
+    std::map<int, Notification> notificationList;
+    std::map<int, Media> mediaList;
+    std::map<int, Reaction> reactionList;
+    std::unordered_map<int, ImTextureID> avatarTextures;
+    ImTextureID getProfilePictureTexture(int userId) {
+        auto it = avatarTextures.find(userId);
+        if (it != avatarTextures.end()) {
+            return it->second;
+        }
+        else {
+            
+        }
+    }
 
-    std::list<Message> messagesList;
-    std::list<Message> currentChatMessages;
+    std::shared_ptr<Chat> currentChat;
+
+    
 
     std::map<std::string, std::shared_ptr<ShaderManager>> shaders;
 public:
@@ -117,8 +143,7 @@ private:
     void sendRegistrationRequest(const std::string& username, const std::string& password);
     void sendLoginRequest(const std::string& username, const std::string& password);
     void sendPingRequest(const std::string& status = "ping");
+    void sendGetUserChatsRequest();
     void sendMessage(const std::string& message);
     void processServerResponse(const json& response);
-
-    void loadMessagesForChat(int chatId);
 };

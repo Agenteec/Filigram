@@ -62,42 +62,63 @@ public:
         randombytes_buf(nonce.data(), nonce.size());
 
         ciphertext.resize(plaintext.size() + crypto_secretbox_MACBYTES);
-        if (crypto_secretbox_easy(ciphertext.data(), (const unsigned char*)plaintext.c_str(), plaintext.size(), nonce.data(), key.data()) != 0) {
+        int result = crypto_secretbox_easy(ciphertext.data(), reinterpret_cast<const unsigned char*>(plaintext.c_str()), plaintext.size(), nonce.data(), key.data());
+
+        if (result != 0) {
             throw std::runtime_error("Encryption failed");
         }
+
+        spdlog::info("Encryption successful: ciphertext size = {}", ciphertext.size());
     }
 
     static void decrypt(const std::vector<unsigned char>& ciphertext, const std::vector<unsigned char>& nonce, std::string& plaintext, const std::vector<unsigned char>& key) {
-        plaintext.resize(ciphertext.size() - crypto_secretbox_MACBYTES);
-        if (crypto_secretbox_open_easy((unsigned char*)plaintext.data(), ciphertext.data(), ciphertext.size(), nonce.data(), key.data()) != 0) {
-            throw std::runtime_error("Decryption failed");
+        if (nonce.size() != crypto_secretbox_NONCEBYTES) {
+            throw std::runtime_error("Invalid nonce size for decryption");
         }
+        if (key.size() != crypto_secretbox_KEYBYTES) {
+            throw std::runtime_error("Invalid key size for decryption");
+        }
+        if (ciphertext.size() < crypto_secretbox_MACBYTES) {
+            throw std::runtime_error("Ciphertext is too short to contain valid encrypted data");
+        }
+
+        std::vector<unsigned char> decryptedText(ciphertext.size() - crypto_secretbox_MACBYTES);
+        int result = crypto_secretbox_open_easy(decryptedText.data(), ciphertext.data(), ciphertext.size(), nonce.data(), key.data());
+
+        if (result != 0) {
+            throw std::runtime_error("Decryption failed: Data is corrupt or authentication failed");
+        }
+
+        plaintext.assign(decryptedText.begin(), decryptedText.end());
+        spdlog::info("Decryption successful: plaintext size = {}", plaintext.size());
     }
 
     static void save_to_file(const std::string& filename, const std::vector<unsigned char>& nonce, const std::vector<unsigned char>& ciphertext) {
         std::ofstream file(filename, std::ios::binary);
-        file.write((const char*)nonce.data(), nonce.size());
-        file.write((const char*)ciphertext.data(), ciphertext.size());
+        if (!file.is_open()) {
+            throw std::runtime_error("Failed to open file for saving");
+        }
+
+        uint32_t ciphertext_size = static_cast<uint32_t>(ciphertext.size());
+        file.write(reinterpret_cast<const char*>(&ciphertext_size), sizeof(ciphertext_size));
+        file.write(reinterpret_cast<const char*>(nonce.data()), nonce.size());
+        file.write(reinterpret_cast<const char*>(ciphertext.data()), ciphertext.size());
     }
 
     static void load_from_file(const std::string& filename, std::vector<unsigned char>& nonce, std::vector<unsigned char>& ciphertext) {
         std::ifstream file(filename, std::ios::binary);
         if (!file.is_open()) {
-            throw std::runtime_error("Failed to open file");
+            throw std::runtime_error("Failed to open file for loading");
         }
+
+        uint32_t ciphertext_size;
+        file.read(reinterpret_cast<char*>(&ciphertext_size), sizeof(ciphertext_size));
+
         nonce.resize(crypto_secretbox_NONCEBYTES);
-        file.read((char*)nonce.data(), nonce.size());
+        file.read(reinterpret_cast<char*>(nonce.data()), nonce.size());
 
-        std::streampos current_pos = file.tellg();
-
-        file.seekg(0, std::ios::end);
-        std::streampos end_pos = file.tellg();
-
-        std::streamoff size = static_cast<std::streamoff>(end_pos - current_pos);
-        ciphertext.resize(size);
-
-        file.seekg(current_pos);
-        file.read((char*)ciphertext.data(), size);
+        ciphertext.resize(ciphertext_size);
+        file.read(reinterpret_cast<char*>(ciphertext.data()), ciphertext.size());
     }
 
     static void save_credentials(const std::string& filename, const std::string& login, const std::string& password, const std::vector<unsigned char>& key) {
@@ -112,11 +133,15 @@ public:
             throw std::runtime_error("Failed to open file for saving credentials");
         }
 
-        file.write((const char*)nonce_login.data(), nonce_login.size());
-        file.write((const char*)ciphertext_login.data(), ciphertext_login.size());
+        uint32_t login_size = static_cast<uint32_t>(ciphertext_login.size());
+        file.write(reinterpret_cast<const char*>(&login_size), sizeof(login_size));
+        file.write(reinterpret_cast<const char*>(nonce_login.data()), nonce_login.size());
+        file.write(reinterpret_cast<const char*>(ciphertext_login.data()), ciphertext_login.size());
 
-        file.write((const char*)nonce_password.data(), nonce_password.size());
-        file.write((const char*)ciphertext_password.data(), ciphertext_password.size());
+        uint32_t password_size = static_cast<uint32_t>(ciphertext_password.size());
+        file.write(reinterpret_cast<const char*>(&password_size), sizeof(password_size));
+        file.write(reinterpret_cast<const char*>(nonce_password.data()), nonce_password.size());
+        file.write(reinterpret_cast<const char*>(ciphertext_password.data()), ciphertext_password.size());
     }
 
     static void load_credentials(const std::string& filename, std::string& login, std::string& password, const std::vector<unsigned char>& key) {
@@ -125,31 +150,25 @@ public:
             throw std::runtime_error("Failed to open file for loading credentials");
         }
 
-        std::vector<unsigned char> nonce_login(crypto_secretbox_NONCEBYTES);
-        std::vector<unsigned char> ciphertext_login;
-        file.read((char*)nonce_login.data(), nonce_login.size());
+        uint32_t login_size;
+        file.read(reinterpret_cast<char*>(&login_size), sizeof(login_size));
 
-        std::streampos current_pos = file.tellg();
-        file.seekg(0, std::ios::end);
-        std::streampos end_pos = file.tellg();
-        std::streamoff size_login = static_cast<std::streamoff>(end_pos - current_pos - crypto_secretbox_NONCEBYTES);
-        ciphertext_login.resize(size_login);
-        file.seekg(current_pos);
-        file.read((char*)ciphertext_login.data(), size_login);
+        std::vector<unsigned char> nonce_login(crypto_secretbox_NONCEBYTES);
+        file.read(reinterpret_cast<char*>(nonce_login.data()), nonce_login.size());
+
+        std::vector<unsigned char> ciphertext_login(login_size);
+        file.read(reinterpret_cast<char*>(ciphertext_login.data()), login_size);
 
         decrypt(ciphertext_login, nonce_login, login, key);
 
-        std::vector<unsigned char> nonce_password(crypto_secretbox_NONCEBYTES);
-        std::vector<unsigned char> ciphertext_password;
-        file.read((char*)nonce_password.data(), nonce_password.size());
+        uint32_t password_size;
+        file.read(reinterpret_cast<char*>(&password_size), sizeof(password_size));
 
-        current_pos = file.tellg();
-        file.seekg(0, std::ios::end);
-        end_pos = file.tellg();
-        std::streamoff size_password = static_cast<std::streamoff>(end_pos - current_pos);
-        ciphertext_password.resize(size_password);
-        file.seekg(current_pos);
-        file.read((char*)ciphertext_password.data(), size_password);
+        std::vector<unsigned char> nonce_password(crypto_secretbox_NONCEBYTES);
+        file.read(reinterpret_cast<char*>(nonce_password.data()), nonce_password.size());
+
+        std::vector<unsigned char> ciphertext_password(password_size);
+        file.read(reinterpret_cast<char*>(ciphertext_password.data()), password_size);
 
         decrypt(ciphertext_password, nonce_password, password, key);
     }

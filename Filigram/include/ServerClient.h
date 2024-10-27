@@ -14,7 +14,6 @@ public:
     bool connect();
     bool sendRequest(const json& request);
     bool receiveResponse(json& response);
-    void startReceiverThread();
 
     const sf::IpAddress& getServerAddress() const { return serverAddress; }
     unsigned short getServerPort() const { return serverPort; }
@@ -27,5 +26,4 @@ private:
     std::mutex queueMutex;
     std::condition_variable cv;
     std::atomic<bool> running;
-    std::thread receiverThread;
 };

@@ -12,6 +12,7 @@
 #include <spdlog/spdlog.h>
 #include <data/SQLModels.hpp>
 #include <data/DatabaseManager.h>
+#include <set>
 
 using json = nlohmann::json;
 
@@ -29,6 +30,7 @@ private:
     std::unordered_map<int, std::shared_ptr<sf::TcpSocket>> clientSockets;
 
     void handleClient(std::shared_ptr<sf::TcpSocket> client);
+    void broadcastMessageToChat(int chatId, const json& messageJson);
     void broadcastMessage(const std::string& message);
     void startPingThread();
 };

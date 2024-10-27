@@ -135,7 +135,7 @@ StatusCode DatabaseManager::loginUser(const std::string& username, const std::st
     return StatusCode::LOGIN_FAILED;
 }
 
-StatusCode DatabaseManager::registerUser(const std::string& username, const std::string& password) {
+StatusCode DatabaseManager::registerUser(const std::string& username, const std::string& password, int& userId, const std::string& firstName, const std::string& profilePicture) {
     sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 
     std::string checkUserSQL = "SELECT COUNT(*) FROM users WHERE username = ?";
@@ -154,10 +154,12 @@ StatusCode DatabaseManager::registerUser(const std::string& username, const std:
         return StatusCode::USER_ALREADY_EXISTS;
     }
     std::vector<uint8_t> passwordHash = PasswordManager::hashPassword(password);
-    std::string insertUserSQL = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
+    std::string insertUserSQL = "INSERT INTO users (username, password_hash, profile_picture, ) VALUES (?, ?, ?)";
     sqlite3_prepare_v2(db, insertUserSQL.c_str(), -1, &stmt, nullptr);
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_blob(stmt, 2, passwordHash.data(), passwordHash.size(), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, profilePicture.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 4, profilePicture.c_str(), -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         sqlite3_finalize(stmt);
@@ -166,6 +168,7 @@ StatusCode DatabaseManager::registerUser(const std::string& username, const std:
     }
     sqlite3_finalize(stmt);
     sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr);
+    userId = sqlite3_last_insert_rowid(db);
     return StatusCode::SUCCESS;
 }
 
@@ -203,7 +206,7 @@ StatusCode DatabaseManager::createChat(const std::string& chatName, int& chatId,
 }
 
 StatusCode DatabaseManager::addChatMember(int chatId, int userId,const std::string& role,  int adderId) {
-    if (!isUserInChat(chatId, adderId)) {
+    if (adderId!= -1 &&!isUserInChat(chatId, adderId)) {
         spdlog::error("User {} is not a member of chat {}", adderId, chatId);
         return StatusCode::Insufficient_Rights_ERROR;
     }
@@ -264,16 +267,13 @@ StatusCode DatabaseManager::removeChatMember(int chatId, int userId) {
     return StatusCode::SUCCESS;
 }
 
-StatusCode DatabaseManager::insertMessage(int chatId, int userId, const std::string& messageText) {
-    sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
-
-    std::string insertMessageSQL = "INSERT INTO messages (chat_id, user_id, message_text) VALUES (?, ?, ?)";
+StatusCode DatabaseManager::insertMessage(int chatId, int userId, const std::string& messageText, int& messageId) {
+    std::string sql = "INSERT INTO messages (chat_id, user_id, message_text, created_at) VALUES (?, ?, ?, datetime('now'));";
     sqlite3_stmt* stmt;
 
-    if (sqlite3_prepare_v2(db, insertMessageSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-        spdlog::error("Failed to prepare statement: {}", sqlite3_errmsg(db));
-        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-        return StatusCode::_ERROR;
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        spdlog::error("Failed to prepare insert statement: {}", sqlite3_errmsg(db));
+        return StatusCode::INSERT_ERROR;
     }
 
     sqlite3_bind_int(stmt, 1, chatId);
@@ -283,12 +283,11 @@ StatusCode DatabaseManager::insertMessage(int chatId, int userId, const std::str
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         spdlog::error("Failed to insert message: {}", sqlite3_errmsg(db));
         sqlite3_finalize(stmt);
-        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-        return StatusCode::_ERROR;
+        return StatusCode::INSERT_ERROR;
     }
 
+    messageId = sqlite3_last_insert_rowid(db);
     sqlite3_finalize(stmt);
-    sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr);
     return StatusCode::SUCCESS;
 }
 
@@ -452,7 +451,7 @@ std::optional<Chat> DatabaseManager::GetChat(int chatId)
             std::string joinedAt = reinterpret_cast<const char*>(sqlite3_column_text(memberStmt, 1));
             std::string role = reinterpret_cast<const char*>(sqlite3_column_text(memberStmt, 2));
 
-            ChatMember member(chatId, userId, joinedAt, role);
+            auto member = std::make_shared<ChatMember>(chatId, userId, joinedAt, role);
             chat.addMember(member);
         }
 
@@ -462,6 +461,30 @@ std::optional<Chat> DatabaseManager::GetChat(int chatId)
 
     sqlite3_finalize(stmt);
     return std::nullopt;
+}
+
+std::vector<ChatMember> DatabaseManager::getChatMembers(int chatId) {
+    std::vector<ChatMember> members;
+    std::string sql = "SELECT user_id, role, joined_at FROM chat_members WHERE chat_id = ?";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        spdlog::error("Failed to prepare get chat members statement: {}", sqlite3_errmsg(db));
+        return members;
+    }
+
+    sqlite3_bind_int(stmt, 1, chatId);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        int userId = sqlite3_column_int(stmt, 0);
+        std::string role = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        std::string joinedAt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+
+        members.emplace_back(chatId, userId, joinedAt, role);
+    }
+
+    sqlite3_finalize(stmt);
+    return members;
 }
 
 StatusCode DatabaseManager::deleteUser(int userId) {
@@ -527,6 +550,15 @@ std::vector<Chat> DatabaseManager::getUserChats(int userId) {
     sqlite3_finalize(stmt);
 
     return chats;
+}
+
+std::string DatabaseManager::getCurrentTime()
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    std::ostringstream oss;
+    oss << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S");
+    return oss.str();
 }
 
 bool DatabaseManager::isUserInChat(int chatId, int userId) {

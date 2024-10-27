@@ -2,8 +2,106 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <memory>
+#include <unordered_map>
+#include <algorithm>
+#include <SFML/Graphics.hpp>
 
-class User {
+class User;
+class Chat;
+
+class ChatMember : public std::enable_shared_from_this<ChatMember> {
+public:
+    ChatMember(int chatId, int userId, const std::string& joinedAt, const std::string& role = "member")
+        : chatId(chatId), userId(userId), joinedAt(joinedAt), role(role) {}
+
+    int getChatId() const { return chatId; }
+    int getUserId() const { return userId; }
+    const std::string& getJoinedAt() const { return joinedAt; }
+    const std::string& getRole() const { return role; }
+    void setRole(const std::string& newRole) { role = newRole; }
+
+    std::shared_ptr<User> user{ nullptr };
+    std::shared_ptr<Chat> chat{ nullptr };
+
+private:
+    int chatId;
+    int userId;
+    std::string joinedAt;
+    std::string role; // "admin", "member"
+};
+
+class Message : public std::enable_shared_from_this<Message> {
+public:
+    Message(int id, int chatId, int userId, const std::string& messageText, const std::string& createdAt,
+        const std::string& status = "sent", std::optional<int> replyToMessageId = std::nullopt)
+        : id(id), chatId(chatId), userId(userId), messageText(messageText),
+        createdAt(createdAt), status(status), replyToMessageId(replyToMessageId) {}
+
+    int getId() const { return id; }
+    int getChatId() const { return chatId; }
+    int getUserId() const { return userId; }
+    const std::string& getMessageText() const { return messageText; }
+    const std::string& getCreatedAt() const { return createdAt; }
+    const std::string& getStatus() const { return status; }
+    const std::optional<int>& getReplyToMessageId()const  { return replyToMessageId; };
+    std::shared_ptr<User> user;
+    std::shared_ptr<Chat> chat;
+
+private:
+    int id;
+    int chatId;
+    int userId;
+    std::string messageText;
+    std::string createdAt;
+    std::string status; // "sent", "delivered", "read"
+    std::optional<int> replyToMessageId;
+};
+
+class Chat : public std::enable_shared_from_this<Chat> {
+public:
+    Chat(int id, const std::string& chatName, const std::string& createdAt,
+        std::optional<std::string> lastActivity = std::nullopt,
+        const std::string& chatType = "private")
+        : id(id), chatName(chatName), createdAt(createdAt),
+        lastActivity(lastActivity), chatType(chatType) {}
+
+    int getId() const { return id; }
+    const std::string& getChatName() const { return chatName; }
+    const std::string& getCreatedAt() const { return createdAt; }
+    const std::optional<std::string>& getLastActivity() const { return lastActivity; }
+    const std::string& getChatType() const { return chatType; }
+
+    void addMember(std::shared_ptr<ChatMember> member) {
+        members[member->getUserId()] = member;
+    }
+
+    void removeMember(int userId) {
+        members.erase(userId);
+    }
+
+    void addMessage(std::shared_ptr<Message> message) {
+        messages[message->getId()] = message;
+    }
+
+    void removeMessage(int messageId) {
+        messages.erase(messageId);
+    }
+
+    const std::unordered_map<int, std::shared_ptr<ChatMember>>& getMembers() const { return members; }
+    const std::unordered_map<int, std::shared_ptr<Message>>& getMessages() const { return messages; }
+
+private:
+    int id;
+    std::string chatName;
+    std::string createdAt;
+    std::optional<std::string> lastActivity;
+    std::string chatType; // "group", "private"
+    std::unordered_map<int, std::shared_ptr<ChatMember>> members;
+    std::unordered_map<int, std::shared_ptr<Message>> messages;
+};
+
+class User : public std::enable_shared_from_this<User> {
 public:
     User(int id, const std::string& username, const std::string& passwordHash,
         const std::string& createdAt, std::optional<std::string> lastLogin = std::nullopt,
@@ -15,10 +113,6 @@ public:
         profilePicture(profilePicture), bio(bio), status("offline"),
         firstName(firstName), lastName(lastName), dateOfBirth(dateOfBirth) {}
 
-    User() : id(-1) {}
-
-
-    // Getters
     int getId() const { return id; }
     const std::string& getUsername() const { return username; }
     const std::string& getPasswordHash() const { return passwordHash; }
@@ -32,16 +126,38 @@ public:
     const std::string& getLastName() const { return lastName; }
     const std::string& getDateOfBirth() const { return dateOfBirth; }
 
-    // Setters
+    void setUsername(const std::string& newUsername) { username = newUsername; }
+    void setPasswordHash(const std::string& newPasswordHash) { passwordHash = newPasswordHash; }
+    void setLastLogin(const std::optional<std::string>& newLastLogin) { lastLogin = newLastLogin; }
+    void setEmail(const std::string& newEmail) { email = newEmail; }
+    void setProfilePicture(const std::string& newProfilePicture) { profilePicture = newProfilePicture; }
+    void setBio(const std::string& newBio) { bio = newBio; }
     void setStatus(const std::string& newStatus) { status = newStatus; }
-    void changePassword(const std::string& newPasswordHash) { passwordHash = newPasswordHash; }
-    void updateEmail(const std::string& newEmail) { email = newEmail; }
-    void updateProfilePicture(const std::string& newProfilePicture) { profilePicture = newProfilePicture; }
-    void updateBio(const std::string& newBio) { bio = newBio; }
-    void updateFirstName(const std::string& newFirstName) { firstName = newFirstName; }
-    void updateLastName(const std::string& newLastName) { lastName = newLastName; }
-    void updateDateOfBirth(const std::string& newDateOfBirth) { dateOfBirth = newDateOfBirth; }
+    void setFirstName(const std::string& newFirstName) { firstName = newFirstName; }
+    void setLastName(const std::string& newLastName) { lastName = newLastName; }
+    void setDateOfBirth(const std::string& newDateOfBirth) { dateOfBirth = newDateOfBirth; }
+    sf::Color nameColor;
+    std::shared_ptr<sf::Texture> profileTexture;
+    std::shared_ptr<sf::Texture> getProfilePictureTexture() {
+        if (!profileTexture) {
+            profileTexture = std::make_shared<sf::Texture>();
 
+            if (profilePicture.empty() || profilePicture[0] == ':') {
+                
+                if (!profileTexture->loadFromFile("Assets/images/default.png")) {
+                    spdlog::error("Error loading profile photo from file: Assets/images/default.png");
+                    profileTexture = std::make_shared<sf::Texture>();
+                }
+            }
+            else {
+                if (!profileTexture->loadFromFile(profilePicture)) {
+                    spdlog::error("Error loading profile photo from file: {}", profilePicture);
+                    profileTexture = std::make_shared<sf::Texture>();
+                }
+            }
+        }
+        return profileTexture;
+    }
 private:
     int id;
     std::string username;
@@ -50,98 +166,12 @@ private:
     std::optional<std::string> lastLogin;
     std::string email;
     std::string profilePicture;
+
     std::string bio;
     std::string status; // "online", "offline", "do not disturb"
     std::string firstName;
     std::string lastName;
     std::string dateOfBirth;
-};
-
-class ChatMember {
-public:
-    ChatMember(int chatId, int userId, const std::string& joinedAt, const std::string& role = "member")
-        : chatId(chatId), userId(userId), joinedAt(joinedAt), role(role) {}
-
-    int getChatId() const { return chatId; }
-    int getUserId() const { return userId; }
-    const std::string& getJoinedAt() const { return joinedAt; }
-    const std::string& getRole() const { return role; }
-
-    void setRole(const std::string& newRole) { role = newRole; }
-
-private:
-    int chatId;
-    int userId;
-    std::string joinedAt;
-    std::string role; // "admin", "member"
-};
-
-class Chat {
-public:
-    Chat(int id, const std::string& chatName, const std::string& createdAt,
-        std::optional<std::string> lastActivity = std::nullopt,
-        const std::string& chatType = "private",
-        const std::vector<ChatMember>& members = {})
-        : id(id), chatName(chatName), createdAt(createdAt),
-        lastActivity(lastActivity), chatType(chatType), members(members) {}
-
-    Chat() :id(-1){}
-
-    int getId() const { return id; }
-    const std::string& getChatName() const { return chatName; }
-    const std::string& getCreatedAt() const { return createdAt; }
-    const std::optional<std::string>& getLastActivity() const { return lastActivity; }
-    const std::string& getChatType() const { return chatType; }
-
-
-    void addMember(const ChatMember& member) {
-        members.push_back(member);
-    }
-
-    void removeMember(int userId) {
-        members.erase(std::remove_if(members.begin(), members.end(),
-            [userId](const ChatMember& member) { return member.getUserId() == userId; }),
-            members.end());
-    }
-
-    const std::vector<ChatMember>& getMembers() const { return members; }
-
-private:
-    int id;
-    std::string chatName;
-    std::string createdAt;
-    std::optional<std::string> lastActivity;
-    std::string chatType; // "group", "private"
-    std::vector<ChatMember> members; // Список участников
-};
-
-
-class Message {
-public:
-    Message(int id, int chatId, int userId, const std::string& messageText, const std::string& createdAt,
-        const std::string& status = "sent", std::optional<int> replyToMessageId = std::nullopt)
-        : id(id), chatId(chatId), userId(userId), messageText(messageText),
-        createdAt(createdAt), status(status), replyToMessageId(replyToMessageId) {}
-
-    int getId() const { return id; }
-    int getChatId() const { return chatId; }
-    int getUserId() const { return userId; }
-    const std::string& getMessageText() const { return messageText; }
-    const std::string& getCreatedAt() const { return createdAt; }
-    const std::string& getStatus() const { return status; }
-    const std::optional<int>& getReplyToMessageId() const { return replyToMessageId; }
-
-    void setStatus(const std::string& newStatus) { status = newStatus; }
-    void editMessage(const std::string& newText) { messageText = newText; }
-
-private:
-    int id;
-    int chatId;
-    int userId;
-    std::string messageText;
-    std::string createdAt;
-    std::string status; // "sent", "delivered", "read"
-    std::optional<int> replyToMessageId;
 };
 
 class Media {
@@ -153,18 +183,14 @@ public:
 
     int getId() const { return id; }
     int getMessageId() const { return messageId; }
-    const std::string& getMediaType() const { return mediaType; }
-    const std::string& getMediaPath() const { return mediaPath; }
-    const std::string& getCreatedAt() const { return createdAt; }
-    size_t getSize() const { return size; }
-
+    std::shared_ptr<Message> message{nullptr};
 private:
     int id;
     int messageId;
-    std::string mediaType; // "image", "video", "audio", etc.
+    std::string mediaType;
     std::string mediaPath;
     std::string createdAt;
-    size_t size; // Bytes
+    size_t size;
 };
 
 class Notification {
@@ -180,6 +206,7 @@ public:
 
     void markAsRead() { isRead = true; }
 
+    std::shared_ptr<User> user{ nullptr };
 private:
     int id;
     int userId;
@@ -198,7 +225,8 @@ public:
     int getUserId() const { return userId; }
     const std::string& getReactionType() const { return reactionType; }
     const std::string& getCreatedAt() const { return createdAt; }
-
+    std::shared_ptr<User> user{ nullptr };
+    std::shared_ptr<Message> message{ nullptr };
 private:
     int id;
     int messageId;

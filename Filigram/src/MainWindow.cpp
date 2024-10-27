@@ -6,7 +6,9 @@ MainWindow::MainWindow() :
     onRegister(false),
     onLogin(true),
     client(nullptr),
-    connectionStatus(Disconnected)
+    connectionStatus(Disconnected),
+    currentChat(nullptr),
+    scrollToBottomChat(true)
 {
     init();
 }
@@ -32,6 +34,10 @@ void MainWindow::start() {
                     {
                         connectionStatus = Connected;
                         spdlog::info("Connected to server {}:{}", client->getServerAddress().toString(), client->getServerPort());
+                        if (currentUser.isLoad)
+                        {
+                            sendLoginRequest(currentUser.username,currentUser.password);
+                        }
                     }
                     else
                     {
@@ -100,9 +106,8 @@ void MainWindow::init()
     if (sodium_init() < 0)spdlog::error("Sodium init failed");
     key = std::vector<unsigned char>(crypto_secretbox_KEYBYTES);
     for (size_t i = 0; i < crypto_secretbox_KEYBYTES; i++)
-    {
         key[i] = static_cast<unsigned char>(sin(i) * i);
-    }
+
     loadUser();
     initIMgui(*window);
     window->setVerticalSyncEnabled(true);
@@ -189,7 +194,6 @@ void MainWindow::loginImWindow(bool isOpen)
     if (!isOpen)
         return;
 
-    static std::string password;
     static bool passwordRed = false;
     static bool passwordRedChanger = false;
     static bool usernameRed = false;
@@ -219,7 +223,7 @@ void MainWindow::loginImWindow(bool isOpen)
     ImGui::Text(cu8("Пароль:"));
     ImGui::PushItemWidth(-1.0f);
     if (passwordRed)ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.8f, 0.1f, 0.0f, 0.5f));
-    if (ImGui::InputText("##Password", &password, ImGuiInputTextFlags_Password))
+    if (ImGui::InputText("##Password", &currentUser.password, ImGuiInputTextFlags_Password))
     {
         passwordRedChanger = false;
     }
@@ -232,13 +236,13 @@ void MainWindow::loginImWindow(bool isOpen)
     }
     ImGui::SameLine();
     if (ImGui::Button(cu8("Вход"))) {
-        if (currentUser.username.empty() || password.empty()) {
+        if (currentUser.username.empty() || currentUser.password.empty()) {
 
             
         }
         else
         {
-            sendLoginRequest(currentUser.username, password);
+            sendLoginRequest(currentUser.username, currentUser.password);
 
         }
         
@@ -327,51 +331,127 @@ void MainWindow::registerImWindow(bool isOpen)
 void MainWindow::listChatsImWindow(bool isOpen) {
     if (!isOpen) return;
 
-    ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.25f, window->getSize().y), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.25f, 100.0f), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 
-    ImGui::Begin(cu8("Список чатов"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin(cu8("##UserProfile"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
-    for (const auto& chat : chatList) {
-        if (ImGui::Selectable(chat.getChatName().c_str())) {
-            currentChat = chat;
-            onChat = true;
-            loadMessagesForChat(currentChat.getId());
+    ImGui::Text("Имя: %s", currentUser.username.c_str());
+    
+
+    ImGui::End();
+
+    ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.25f, window->getSize().y - 100.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(0, 100.0f), ImGuiCond_Always);
+
+    ImGui::Begin(cu8("##ChatList"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+
+    for (auto& chat : chatList) {
+        bool isSelected = (currentChat && chat.second->getChatName() == currentChat->getChatName());
+
+        if (isSelected) {
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.2f, 0.4f, 0.8f, 0.5f));
         }
+        else {
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.2f, 0.2f, 0.2f, 0.5f));
+        }
+
+        if (ImGui::Selectable(chat.second->getChatName().c_str(), isSelected)) {
+            currentChat = chat.second;
+            onChat = true;
+        }
+
+        ImGui::PopStyleColor();
     }
 
     ImGui::End();
 }
-
 void MainWindow::chatImWindow(bool isOpen) {
-    if (!isOpen || currentChat.getChatName().empty()) return;
+    if (!isOpen || !currentChat) return;
 
-    ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.75f, window->getSize().y), ImGuiCond_Always);
-    ImGui::SetNextWindowPos(ImVec2(window->getSize().x * 0.25f, 0), ImGuiCond_Always);
+    float winW = window->getSize().x * 0.75f;
+    float winPosX = window->getSize().x * 0.25f;
+    float totalHeight = window->getSize().y;
 
-    ImGui::Begin(cu8("Чат"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+    const float chatInfoHeight = 40.0f;
+    const float tbwHeight = 45.0f;
+    float chatHeight = totalHeight - chatInfoHeight - tbwHeight;
 
-    for (const auto& message : currentChatMessages) {
-        ImGui::TextWrapped(message.getMessageText().c_str());
+    ImGui::SetNextWindowSize(ImVec2(winW, chatInfoHeight), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(winPosX, 0), ImGuiCond_Always);
+    ImGui::Begin("##ChatInfo", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+    ImGui::Text(currentChat->getChatName().c_str());
+    ImGui::End();
+
+    ImGui::SetNextWindowSize(ImVec2(winW, chatHeight), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(winPosX, chatInfoHeight), ImGuiCond_Always);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+    ImGui::Begin(cu8("##Chat"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_HorizontalScrollbar);
+
+    int lastSenderId = -1;
+    for (const auto& message : currentChat->getMessages()) {
+        auto sender = message.second->user;
+
+        if (!sender) continue;
+
+        if (lastSenderId != sender->getId()) {
+            ImGui::Image((void*)reinterpret_cast<ImTextureID>(sender->getProfilePictureTexture()->getNativeHandle()), ImVec2(40, 40));
+            ImGui::SameLine();
+            auto& nameColor =  sender->nameColor;
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(nameColor.r/255.f, nameColor.g/255.f, nameColor.b/255.f, nameColor.a/255.f));
+            ImGui::Text("%s", sender->getUsername().c_str());
+            ImGui::PopStyleColor();
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", message.second->getCreatedAt().c_str());
+            lastSenderId = sender->getId();
+        }
+
+        ImGui::TextWrapped("%s", message.second->getMessageText().c_str());
     }
 
+    scrollToBottomChatLevel = ImGui::GetScrollY() / ImGui::GetScrollMaxY();
+    if (scrollToBottomChat) {
+        ImGui::SetScrollHereY(1.0f);
+        scrollToBottomChat = false;
+    }
+    ImGui::End();
+    ImGui::PopStyleColor();
+
+    ImGui::SetNextWindowSize(ImVec2(winW, tbwHeight), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(winPosX, chatInfoHeight + chatHeight), ImGuiCond_Always);
+    ImGui::Begin("##TBW", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+
     static std::string newMessage;
-    ImGui::InputText("Сообщение", &newMessage);
-    if (ImGui::Button("Отправить")) {
+    ImGui::InputText("##MessageTB", &newMessage);
+
+    if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)) {
         if (!newMessage.empty()) {
             sendMessage(newMessage);
             newMessage.clear();
+            scrollToBottomChat = true;
+        }
+        ImGui::SetKeyboardFocusHere(-1);
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button(cu8("Отправить"))) {
+        if (!newMessage.empty()) {
+            sendMessage(newMessage);
+            newMessage.clear();
+            scrollToBottomChat = true;
         }
     }
 
     ImGui::End();
 }
+
 
 void MainWindow::sendMessage(const std::string& message) {
     json request;
     request["action"] = "send_message";
     request["message"] = message;
-    request["chat_id"] = currentChat.getId();
+    request["chat_id"] = currentChat->getId();
 
     {
         std::lock_guard<std::mutex> lock(queueMutex);
@@ -418,23 +498,167 @@ void MainWindow::sendPingRequest(const std::string& status)
     cv.notify_one();
 }
 
+void MainWindow::sendGetUserChatsRequest() {
+    json request;
+    request["action"] = "get_user_chats";
+    request["user_id"] = currentUser.id;
+
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
 void MainWindow::processServerResponse(const json& response) {
     spdlog::info(response.dump());
 
     std::string action = response["action"];
     if (action == "new_message") {
+        int chatId = response["chat_id"];
+        int messageId = response["message_id"];
+        auto chatIt = chatList.find(chatId);
 
-        Message newMessage = Message(
-            response["message_id"],
-            response["chat_id"],
-            response["user_id"],
-            response["message_text"],
-            response["created_at"],
-            response["status"]
-        );
-        messageQueue.push(newMessage);
-        if (newMessage.getChatId() == currentChat.getId()) {
-            currentChatMessages.push_back(newMessage);
+        if (chatIt != chatList.end()) {
+            auto chat = chatIt->second;
+            auto newMessage = std::make_shared<Message>(
+                messageId,
+                chatId,
+                response["sender_id"],
+                response["message_text"],
+                response["timestamp"]
+            );
+
+            newMessage->chat = chat;
+            auto userIt = userList.find(response["sender_id"]);
+            if (userIt != userList.end()) {
+                newMessage->user = userIt->second;
+            }
+
+            chat->addMessage(newMessage);
+            messageList[messageId] = newMessage;
+
+            if (currentChat && currentChat->getId() == chatId && scrollToBottomChatLevel > 0.95f) {
+                scrollToBottomChat = true;
+            }
+        }
+    }
+    else if(action == "get_user_chats") {
+        if (response["status"] == "success") {
+            chatList.clear();
+            userList.clear();
+            messageList.clear();
+            chatMemberList.clear();
+            currentChat = nullptr;
+
+            if (response.contains("users")) {
+                for (const auto& userJson : response["users"]) {
+                    int userId = userJson["id"];
+                    auto user = std::make_shared<User>(
+                        userId,
+                        userJson["username"],
+                        "",
+                        userJson["created_at"],
+                        userJson.value("last_login", ""),
+                        userJson.value("email", ""),
+                        userJson.value("profile_picture", ""),
+                        userJson.value("bio", ""),
+                        userJson.value("first_name", ""),
+                        userJson.value("last_name", ""),
+                        userJson.value("date_of_birth", "")
+                    );
+                    int colorRandomiser = rand() % 3;
+                    switch (colorRandomiser)
+                    {
+                    case 0:
+                        user->nameColor = getRandomColor(0, 128, 0, 128, 128, 255);
+                        break;
+                    case 1:
+                        user->nameColor = getRandomColor(128, 255, 0, 128, 0, 128);
+                        break;
+                    case 2:
+                        user->nameColor = getRandomColor(0, 128, 128, 255, 0, 128);
+                        break;
+                    default:
+                        break;
+                    }
+                    
+                    userList[userId] = user;
+                }
+            }
+
+            for (const auto& chatJson : response["chats"]) {
+                if (!chatJson.contains("id") || !chatJson.contains("name") || !chatJson.contains("created_at")) {
+                    spdlog::warn("Invalid chat data in response: missing 'id', 'name', or 'created_at'");
+                    continue;
+                }
+
+                auto chat = std::make_shared<Chat>(
+                    chatJson["id"],
+                    chatJson["name"],
+                    chatJson["created_at"],
+                    chatJson.value("last_activity", ""),
+                    chatJson.value("chat_type", "private")
+                );
+
+                for (const auto& memberJson : chatJson["members"]) {
+                    if (!memberJson.contains("user_id")) {
+                        spdlog::warn("Invalid member data in response: missing 'user_id'");
+                        continue;
+                    }
+
+                    int userId = memberJson["user_id"];
+                    auto userIt = userList.find(userId);
+                    if (userIt == userList.end()) {
+                        spdlog::warn("User with id {} not found in userList", userId);
+                        continue;
+                    }
+
+                    auto member = std::make_shared<ChatMember>(
+                        chat->getId(),
+                        userId,
+                        memberJson.value("joined_at", ""),
+                        memberJson.value("role", "member")
+                    );
+
+                    member->user = userIt->second;
+                    member->chat = chat;
+                    chat->addMember(member);
+                    chatMemberList.push_back(member);
+                }
+
+                for (const auto& msgJson : chatJson["messages"]) {
+                    if (!msgJson.contains("message_id") || !msgJson.contains("chat_id") || !msgJson.contains("message_text")) {
+                        spdlog::warn("Invalid message data in response");
+                        continue;
+                    }
+
+                    int messageId = msgJson["message_id"];
+                    auto message = std::make_shared<Message>(
+                        messageId,
+                        msgJson["chat_id"],
+                        msgJson["user_id"],
+                        msgJson["message_text"],
+                        msgJson["created_at"],
+                        msgJson.value("status", "sent")
+                    );
+
+                    message->chat = chat;
+                    auto userIt = userList.find(msgJson["user_id"]);
+                    if (userIt != userList.end()) {
+                        message->user = userIt->second;
+                    }
+                    chat->addMessage(message);
+                    messageList[messageId] = message;
+                }
+
+                chatList[chat->getId()] = chat;
+            }
+
+            spdlog::info("User chats, members, and messages loaded successfully.");
+        }
+        else {
+            spdlog::error("Failed to load user chats: {}", response["message"].get<std::string>());
         }
     }
     else if (action == "ping" && response["status"] == "ping")
@@ -451,6 +675,8 @@ void MainWindow::processServerResponse(const json& response) {
             {
                 PasswordManager::save_credentials("credentials.enc", currentUser.username, currentUser.password, key);
             }
+            currentUser.id = response["user_id"];
+            sendGetUserChatsRequest();
         }
         else {
             spdlog::error("Login error: {}", response["message"].get<std::string>());
@@ -466,15 +692,4 @@ void MainWindow::processServerResponse(const json& response) {
         }
     }
     
-}
-
-void MainWindow::loadMessagesForChat(int chatId) {
-    
-    currentChatMessages.clear();
-
-    for (const auto& message : messagesList) {
-        if (message.getChatId() == chatId) {
-            currentChatMessages.push_back(message);
-        }
-    }
 }
