@@ -300,6 +300,23 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                 if (status == DatabaseManager::StatusCode::SUCCESS) {
 
                     dbManager.addChatMember(1, id);
+                    auto user = dbManager.GetUser(id);
+                    if (user) {
+                        json userJson; 
+                        userJson["action"] = "new_chat_member";
+                        userJson["id"] = user->getId();
+                        userJson["username"] = user->getUsername();
+                        userJson["created_at"] = user->getCreatedAt();
+                        userJson["last_login"] = user->getLastLogin().value_or("");
+                        userJson["email"] = user->getEmail();
+                        userJson["profile_picture"] = user->getProfilePicture();
+                        userJson["bio"] = user->getBio();
+                        userJson["first_name"] = user->getFirstName();
+                        userJson["last_name"] = user->getLastName();
+                        userJson["date_of_birth"] = user->getDateOfBirth();
+                        broadcastMessageToChat(1,userJson);
+                    }
+
                     response["status"] = "success";
                     response["message"] = "Registration successful.";
                 }

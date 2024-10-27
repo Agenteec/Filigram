@@ -154,12 +154,12 @@ StatusCode DatabaseManager::registerUser(const std::string& username, const std:
         return StatusCode::USER_ALREADY_EXISTS;
     }
     std::vector<uint8_t> passwordHash = PasswordManager::hashPassword(password);
-    std::string insertUserSQL = "INSERT INTO users (username, password_hash, profile_picture, ) VALUES (?, ?, ?)";
+    std::string insertUserSQL = "INSERT INTO users (username, password_hash, profile_picture, first_name) VALUES (?, ?, ?, ?)";
     sqlite3_prepare_v2(db, insertUserSQL.c_str(), -1, &stmt, nullptr);
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_blob(stmt, 2, passwordHash.data(), passwordHash.size(), SQLITE_STATIC);
     sqlite3_bind_text(stmt, 3, profilePicture.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 4, profilePicture.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 4, firstName.c_str(), -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         sqlite3_finalize(stmt);

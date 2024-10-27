@@ -35,6 +35,16 @@ static sf::Color getRandomColor(int rMin, int rMax, int gMin, int gMax, int bMin
 
     return sf::Color(r, g, b, a);
 }
+static sf::Color getColorFromString(const std::string& str) {
+    std::hash<std::string> hash_fn;
+    size_t hash = hash_fn(str);
+
+    int r = static_cast<int>(hash % 256);
+    int g = static_cast<int>((hash >> 8) % 256);
+    int b = static_cast<int>((hash >> 16) % 256);
+
+    return sf::Color(r, g, b);
+}
 static bool initIMgui(sf::RenderWindow& window)
 {
     if (!ImGui::SFML::Init(window))

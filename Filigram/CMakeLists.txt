@@ -48,7 +48,7 @@ target_link_libraries(Filigram PRIVATE unofficial-sodium::sodium)
 
 
 target_link_libraries(FiligramServer PRIVATE unofficial::sqlite3::sqlite3)
-target_link_libraries(FiligramServer PRIVATE sfml-system sfml-network)
+target_link_libraries(FiligramServer PRIVATE sfml-system sfml-network sfml-graphics)
 target_link_libraries(FiligramServer PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(FiligramServer PRIVATE spdlog::spdlog)
 target_link_libraries(FiligramServer PRIVATE unofficial::argon2::libargon2)

@@ -335,8 +335,11 @@ void MainWindow::listChatsImWindow(bool isOpen) {
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 
     ImGui::Begin(cu8("##UserProfile"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-
-    ImGui::Text("Имя: %s", currentUser.username.c_str());
+    if (userList[currentUser.id])
+    {
+        ImGui::Image((void*)reinterpret_cast<ImTextureID>(userList[currentUser.id]->getProfilePictureTexture()->getNativeHandle()), ImVec2(75, 75));
+    }
+    ImGui::Text("%s", currentUser.username.c_str());
     
 
     ImGui::End();
@@ -543,6 +546,29 @@ void MainWindow::processServerResponse(const json& response) {
             }
         }
     }
+    else if (action == "ping" && response["status"] == "ping")
+    {
+        sendPingRequest("pong");
+    }
+    else if (action == "new_chat_member")
+    {
+        int userId = response["id"];
+        auto user = std::make_shared<User>(
+            userId,
+            response["username"],
+            "",
+            response["created_at"],
+            response.value("last_login", ""),
+            response.value("email", ""),
+            response.value("profile_picture", ""),
+            response.value("bio", ""),
+            response.value("first_name", ""),
+            response.value("last_name", ""),
+            response.value("date_of_birth", "")
+        );
+        user->nameColor = getColorFromString(user->getFirstName() + user->getUsername());
+        userList[userId] = user;
+    }
     else if(action == "get_user_chats") {
         if (response["status"] == "success") {
             chatList.clear();
@@ -567,21 +593,7 @@ void MainWindow::processServerResponse(const json& response) {
                         userJson.value("last_name", ""),
                         userJson.value("date_of_birth", "")
                     );
-                    int colorRandomiser = rand() % 3;
-                    switch (colorRandomiser)
-                    {
-                    case 0:
-                        user->nameColor = getRandomColor(0, 128, 0, 128, 128, 255);
-                        break;
-                    case 1:
-                        user->nameColor = getRandomColor(128, 255, 0, 128, 0, 128);
-                        break;
-                    case 2:
-                        user->nameColor = getRandomColor(0, 128, 128, 255, 0, 128);
-                        break;
-                    default:
-                        break;
-                    }
+                    user->nameColor = getColorFromString(user->getFirstName()+user->getUsername());
                     
                     userList[userId] = user;
                 }
@@ -660,10 +672,6 @@ void MainWindow::processServerResponse(const json& response) {
         else {
             spdlog::error("Failed to load user chats: {}", response["message"].get<std::string>());
         }
-    }
-    else if (action == "ping" && response["status"] == "ping")
-    {
-        sendPingRequest("pong");
     }
     else if (action == "login") {
         if (response["status"] == "success") {
