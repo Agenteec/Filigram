@@ -7,6 +7,7 @@
 #include <thread>
 #include <memory>
 #include <mutex>
+#include <vector>
 #include <condition_variable>
 #include <queue>
 #include <spdlog/spdlog.h>
@@ -15,7 +16,6 @@
 #include <set>
 
 using json = nlohmann::json;
-
 class ChatServer {
 public:
     explicit ChatServer(unsigned short port = 53000);
@@ -30,6 +30,7 @@ private:
     std::unordered_map<int, std::shared_ptr<sf::TcpSocket>> clientSockets;
 
     void handleClient(std::shared_ptr<sf::TcpSocket> client);
+    void broadcastMessage(const json& messageJson, std::vector<int> usersId);
     void broadcastMessageToChat(int chatId, const json& messageJson);
     void broadcastMessage(const std::string& message);
     void startPingThread();
