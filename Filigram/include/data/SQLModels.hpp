@@ -6,9 +6,11 @@
 #include <unordered_map>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
-
+class Media;
 class User;
 class Chat;
+class Message;
+
 
 class ChatMember : public std::enable_shared_from_this<ChatMember> {
 public:
@@ -30,7 +32,6 @@ private:
     std::string joinedAt;
     std::string role; // "admin", "member"
 };
-
 class Message : public std::enable_shared_from_this<Message> {
 public:
     Message(int id, int chatId, int userId, const std::string& messageText, const std::string& createdAt,
@@ -45,8 +46,20 @@ public:
     const std::string& getCreatedAt() const { return createdAt; }
     const std::string& getStatus() const { return status; }
     const std::optional<int>& getReplyToMessageId()const  { return replyToMessageId; };
+
+    void addMessage(std::shared_ptr<Media> media) {
+        _media[media->getId()] = media;
+    }
+
+    void removeMessage(int mediaId) {
+        _media.erase(mediaId);
+    }
+
+    const std::unordered_map<int, std::shared_ptr<Media>>& getMedia() const { return _media; }
+
     std::shared_ptr<User> user;
     std::shared_ptr<Chat> chat;
+    std::shared_ptr<Message> replyToMessage;
 
 private:
     int id;
@@ -56,6 +69,7 @@ private:
     std::string createdAt;
     std::string status; // "sent", "delivered", "read"
     std::optional<int> replyToMessageId;
+    std::unordered_map<int, std::shared_ptr<Media>> _media;
 };
 
 class Chat : public std::enable_shared_from_this<Chat> {
@@ -174,13 +188,13 @@ private:
     std::string dateOfBirth;
 };
 
-class Media {
+class Media : public std::enable_shared_from_this<Media> {
 public:
     Media(int id, int messageId, const std::string& mediaType, const std::string& mediaPath,
         const std::string& createdAt, size_t size = 0)
         : id(id), messageId(messageId), mediaType(mediaType), mediaPath(mediaPath),
         createdAt(createdAt), size(size) {}
-
+    Media() :id(-1) {}
     int getId() const { return id; }
     int getMessageId() const { return messageId; }
     std::shared_ptr<Message> message{nullptr};
@@ -193,7 +207,7 @@ private:
     size_t size;
 };
 
-class Notification {
+class Notification : public std::enable_shared_from_this<Notification> {
 public:
     Notification(int id, int userId, const std::string& message, const std::string& createdAt)
         : id(id), userId(userId), message(message), createdAt(createdAt), isRead(false) {}
@@ -215,7 +229,7 @@ private:
     bool isRead;
 };
 
-class Reaction {
+class Reaction : public std::enable_shared_from_this<Reaction> {
 public:
     Reaction(int id, int messageId, int userId, const std::string& reactionType, const std::string& createdAt)
         : id(id), messageId(messageId), userId(userId), reactionType(reactionType), createdAt(createdAt) {}
