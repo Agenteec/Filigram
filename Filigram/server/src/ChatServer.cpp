@@ -1,4 +1,4 @@
-#include <ChatServer.h>
+﻿#include <ChatServer.h>
 
 
 ChatServer::ChatServer(unsigned short port) : dbManager("data.db") {
@@ -231,6 +231,80 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                     response["messages"] = messageList;
                 }
             }
+            else if (request["action"] == "new_private_chat")
+            {
+                if (!currentUser.has_value()) {
+                    response["status"] = "error";
+                    response["message"] = "User not logged in.";
+                }
+                else
+                {
+                    int chatId;
+                    std::string chatName = "private";
+                    int requestedUserId = request["user_id"];
+                    if (currentUser->getId() == requestedUserId)
+                    {
+                        chatName = reinterpret_cast < const char*>(u8"Заметки");
+                    }
+                    if (dbManager.createChat(chatName, chatId) == DatabaseManager::StatusCode::SUCCESS)
+                    {
+                        response["status"] = "success";
+                        response["chat_id"] = chatId;
+                        response["created_at"] = DatabaseManager::getCurrentTime();
+                        response["chat_name"] = chatName;
+
+                        int requestedUserId = request["user_id"];
+                        dbManager.addChatMember(chatId, requestedUserId);
+                        dbManager.addChatMember(chatId, currentUser->getId());
+                        broadcastMessage(response, { requestedUserId, currentUser->getId() });
+
+
+                        json userJson;
+                        userJson["action"] = "new_chat_member";
+                        userJson["id"] = currentUser->getId();
+                        userJson["username"] = currentUser->getUsername();
+                        userJson["created_at"] = currentUser->getCreatedAt();
+                        userJson["last_login"] = currentUser->getLastLogin().value_or("");
+                        userJson["email"] = currentUser->getEmail();
+                        userJson["profile_picture"] = currentUser->getProfilePicture();
+                        userJson["bio"] = currentUser->getBio();
+                        userJson["first_name"] = currentUser->getFirstName();
+                        userJson["last_name"] = currentUser->getLastName();
+                        userJson["date_of_birth"] = currentUser->getDateOfBirth();
+                        userJson["chat_id"] = chatId;
+                        userJson["role"] = "member";
+                        userJson["joined_at"] = DatabaseManager::getCurrentTime();
+
+                        broadcastMessageToChat(chatId, userJson);
+
+                        auto user = dbManager.GetUser(requestedUserId);
+                        if (user) {
+                            userJson["action"] = "new_chat_member";
+                            userJson["id"] = user->getId();
+                            userJson["username"] = user->getUsername();
+                            userJson["created_at"] = user->getCreatedAt();
+                            userJson["last_login"] = user->getLastLogin().value_or("");
+                            userJson["email"] = user->getEmail();
+                            userJson["profile_picture"] = user->getProfilePicture();
+                            userJson["bio"] = user->getBio();
+                            userJson["first_name"] = user->getFirstName();
+                            userJson["last_name"] = user->getLastName();
+                            userJson["date_of_birth"] = user->getDateOfBirth();
+                            broadcastMessageToChat(chatId, userJson);
+                        }
+                        
+                        
+                        
+                       
+                        continue;
+                    }
+                    else
+                    {
+                        response["status"] = "error";
+                        response["message"] = "Cannot create chat.";
+                    }
+                }
+}
             else if (request["action"] == "get_user_info")
             {
                 const auto& user = dbManager.GetUser(request["user_id"]);
@@ -270,25 +344,35 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                     else
                     {
                         if (!request["username"].empty())
-                            dbManager.updateUserProfile(request["user_id"],"username", request["username"]);
-                        if (!request["user_email"].empty())
-                            dbManager.updateUserProfile(request["user_id"], "email", request["user_email"]);
-                        if (!request["user_profile_picture_data"].empty())
-                            dbManager.updateUserProfile(request["user_id"], "profile_picture", request["user_profile_picture"]);
-                        if (!request["user_bio"].empty())
-                            dbManager.updateUserProfile(request["user_id"], "bio", request["user_bio"]);
-                        if (!request["user_status"].empty())
-                            dbManager.updateUserProfile(request["user_id"], "status", request["user_status"]);
-                        if (!request["user_first_name"].empty())
-                            dbManager.updateUserProfile(request["user_id"], "first_name", request["user_first_name"]);
-                        if (!request["user_last_name"].empty())
-                            dbManager.updateUserProfile(request["user_id"], "last_name", request["user_last_name"]);
-                        if (!request["user_date_of_birth"].empty())
-                            dbManager.updateUserProfile(request["user_id"], "date_of_birth", request["user_date_of_birth"]);
+                            if (dbManager.updateUserProfile(request["user_id"], "username", request["username"]) == DatabaseManager::StatusCode::_ERROR)
+                            {
+                                response["status"] = "error";
+                                response["message"] = "Username error.";
+                            }
+                            else
+                            {
+                                if (!request["user_email"].empty())
+                                    dbManager.updateUserProfile(request["user_id"], "email", request["user_email"]);
+                                if (!request["user_profile_picture_data"].empty())
+                                    dbManager.updateUserProfile(request["user_id"], "profile_picture", request["user_profile_picture"]);
+                                if (!request["user_bio"].empty())
+                                    dbManager.updateUserProfile(request["user_id"], "bio", request["user_bio"]);
+                                if (!request["user_status"].empty())
+                                    dbManager.updateUserProfile(request["user_id"], "status", request["user_status"]);
+                                if (!request["user_first_name"].empty())
+                                    dbManager.updateUserProfile(request["user_id"], "first_name", request["user_first_name"]);
+                                if (!request["user_last_name"].empty())
+                                    dbManager.updateUserProfile(request["user_id"], "last_name", request["user_last_name"]);
+                                if (!request["user_date_of_birth"].empty())
+                                    dbManager.updateUserProfile(request["user_id"], "date_of_birth", request["user_date_of_birth"]);
+                                response["status"] = "success";
+                                response["message"] = "User info updated.";
+                                request["action"] = "update_user";
+                                broadcastMessage(request.dump());
 
-                        response["status"] = "success";
-                        response["message"] = "User info updated.";
-                        
+                                currentUser = dbManager.GetUser(currentUser->getId());
+                            }
+
                     }
             }
             else if (request["action"] == "register") {
@@ -314,6 +398,9 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                         userJson["first_name"] = user->getFirstName();
                         userJson["last_name"] = user->getLastName();
                         userJson["date_of_birth"] = user->getDateOfBirth();
+                        userJson["chat_id"] = 1;
+                        userJson["role"] = "member";
+                        userJson["joined_at"] = DatabaseManager::getCurrentTime();
                         broadcastMessageToChat(1,userJson);
                     }
 
@@ -350,6 +437,29 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
         clientSockets.erase(currentUser->getId());
     }
 }
+
+void ChatServer::broadcastMessage(const json& messageJson, std::vector<int> usersId)
+{
+    for (const auto& [id, socket] : clientSockets)
+    {
+        auto it = std::remove_if(usersId.begin(), usersId.end(), [&](int userId) {
+            if (id == userId)
+            {
+                std::string messageData = messageJson.dump();
+                sf::Packet packet;
+                packet << messageData;
+                socket->send(packet);
+                return true;
+            }
+            return false;
+            });
+
+        
+        usersId.erase(it, usersId.end());
+        if (usersId.empty())break;
+    }
+}
+
 void ChatServer::broadcastMessageToChat(int chatId, const json& messageJson) {
     auto chatMembers = dbManager.getChatMembers(chatId);
 
