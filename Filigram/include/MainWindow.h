@@ -62,10 +62,18 @@ class MainWindow
     class CurrentUser
     {
     public:
+        bool isLoad;
         int id;
         std::string password;
         std::string username;
-        bool isLoad;
+
+        std::string email;
+        std::string profilePicture;
+        std::string bio;
+        std::string status;
+        std::string firstName;
+        std::string lastName;
+        std::string dateOfBirth;
     };
 
     enum ConnectionStatus
@@ -97,9 +105,13 @@ class MainWindow
     float scrollToBottomChatLevel;
     bool onLogin;
     bool onRegister;
+    bool onProfileEditor;
+
+    bool moveToNewChat;
 
     bool rememberMe;
     CurrentUser currentUser;
+    CurrentUser tempUser;
     
     std::queue<json> requestQueue;
 
@@ -114,21 +126,15 @@ class MainWindow
     std::map<int, Media> mediaList;
     std::map<int, Reaction> reactionList;
     std::unordered_map<int, ImTextureID> avatarTextures;
-    ImTextureID getProfilePictureTexture(int userId) {
-        auto it = avatarTextures.find(userId);
-        if (it != avatarTextures.end()) {
-            return it->second;
-        }
-        else {
-            
-        }
-    }
+    
+
 
     std::shared_ptr<Chat> currentChat;
 
     
 
     std::map<std::string, std::shared_ptr<ShaderManager>> shaders;
+    sf::Texture sendMessageTexture;
 public:
     MainWindow();
     ~MainWindow();
@@ -154,6 +160,9 @@ private:
     void chatInfoWindow(bool isOpen);
     void openDirectMessage(int userId);
 
+    void profileEditorWindow(bool isOpen);
+
+    void sendUpdateUserInfoRequest();
     void sendRegistrationRequest(const std::string& username, const std::string& password);
     void sendLoginRequest(const std::string& username, const std::string& password);
     void sendPingRequest(const std::string& status = "ping");
