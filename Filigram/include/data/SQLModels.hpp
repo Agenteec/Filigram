@@ -11,6 +11,24 @@ class User;
 class Chat;
 class Message;
 
+class Media : public std::enable_shared_from_this<Media> {
+public:
+    Media(int id, int messageId, const std::string& mediaType, const std::string& mediaPath,
+        const std::string& createdAt, size_t size = 0)
+        : id(id), messageId(messageId), mediaType(mediaType), mediaPath(mediaPath),
+        createdAt(createdAt), size(size) {}
+    Media() :id(-1) {}
+    int getId() const { return id; }
+    int getMessageId() const { return messageId; }
+    std::shared_ptr<Message> message{ nullptr };
+private:
+    int id;
+    int messageId;
+    std::string mediaType;
+    std::string mediaPath;
+    std::string createdAt;
+    size_t size;
+};
 
 class ChatMember : public std::enable_shared_from_this<ChatMember> {
 public:
@@ -103,7 +121,7 @@ public:
     }
 
     const std::unordered_map<int, std::shared_ptr<ChatMember>>& getMembers() const { return members; }
-    const std::unordered_map<int, std::shared_ptr<Message>>& getMessages() const { return messages; }
+    const std::map<int, std::shared_ptr<Message>>& getMessages() const { return messages; }
 
 private:
     int id;
@@ -112,7 +130,7 @@ private:
     std::optional<std::string> lastActivity;
     std::string chatType; // "group", "private"
     std::unordered_map<int, std::shared_ptr<ChatMember>> members;
-    std::unordered_map<int, std::shared_ptr<Message>> messages;
+    std::map<int, std::shared_ptr<Message>> messages;
 };
 
 class User : public std::enable_shared_from_this<User> {
@@ -188,24 +206,7 @@ private:
     std::string dateOfBirth;
 };
 
-class Media : public std::enable_shared_from_this<Media> {
-public:
-    Media(int id, int messageId, const std::string& mediaType, const std::string& mediaPath,
-        const std::string& createdAt, size_t size = 0)
-        : id(id), messageId(messageId), mediaType(mediaType), mediaPath(mediaPath),
-        createdAt(createdAt), size(size) {}
-    Media() :id(-1) {}
-    int getId() const { return id; }
-    int getMessageId() const { return messageId; }
-    std::shared_ptr<Message> message{nullptr};
-private:
-    int id;
-    int messageId;
-    std::string mediaType;
-    std::string mediaPath;
-    std::string createdAt;
-    size_t size;
-};
+
 
 class Notification : public std::enable_shared_from_this<Notification> {
 public:

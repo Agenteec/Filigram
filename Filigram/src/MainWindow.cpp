@@ -507,7 +507,7 @@ void MainWindow::chatImWindow(bool isOpen) {
 
     ImGui::SameLine();
 
-    if (ImGui::ImageButton((void*)reinterpret_cast<ImTextureID>(sendMessageTexture.getNativeHandle()), ImVec2(tbwHeight, tbwHeight))) {
+    if (ImGui::ImageButton((void*)reinterpret_cast<ImTextureID>(sendMessageTexture.getNativeHandle()), ImVec2(tbwHeight / 2, tbwHeight/2))) {
         if (!newMessage.empty()) {
             sendMessage(newMessage);
             newMessage.clear();
