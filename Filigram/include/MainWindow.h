@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include <thread>
 #include <future>
@@ -22,10 +21,14 @@
 #include <data/PasswordManager.hpp>
 #include <shaders/Shaders.h>
 #include <shaders/ShaderManager.h>
+#include <imgui_freetype.h>
+#include <imgui_internal.h>
+#include "../calc/Calc.h"
 
 
 
 #define cu8(str) reinterpret_cast<const char*>(u8##str)
+static ImFont* emojiFont;
 static sf::Color getRandomColor(int rMin, int rMax, int gMin, int gMax, int bMin, int bMax, int aMin = 255, int aMax = 255) {
     
     int r = rMin + std::rand() % (rMax - rMin + 1);
@@ -51,7 +54,23 @@ static bool initIMgui(sf::RenderWindow& window)
         return false;
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF("Assets/fonts/Roboto-Light.ttf", 20.f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
+    static ImWchar ranges[] = { 0x1, 0xFFFF, 0 };
+    static ImFontConfig cfg;
+    cfg.OversampleH = cfg.OversampleV = 1;
+    cfg.MergeMode = true;
+    cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+    ImFont* robotoFont = io.Fonts->AddFontFromFileTTF("Assets/fonts/Roboto-Regular.ttf", 20.f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
+    if (!robotoFont) {
+        std::cerr << "Ошибка загрузки шрифта Roboto!" << std::endl;
+        return false;
+    }
+
+    ImFont* emojiFont = io.Fonts->AddFontFromFileTTF("Assets/fonts/SEGUIEMJ.TTF", 20.f, &cfg, ranges);
+    if (!emojiFont) {
+        std::cerr << "Ошибка загрузки шрифта NotoColorEmoji!" << std::endl;
+        return false;
+    }
+    //emojiFont = io.Fonts->AddFontFromFileTTF("Assets/fonts/NotoColorEmoji-Regular.ttf", 20.f, nullptr, io.Fonts->GetGlyphRangesDefault());
     ImGui::SFML::UpdateFontTexture();
     ImPlot::CreateContext();
     return true;
@@ -101,11 +120,16 @@ class MainWindow
 
     bool onChat;
     bool onChatInfo;
+    bool onChatInfoFocus;
     bool scrollToBottomChat;
     float scrollToBottomChatLevel;
     bool onLogin;
     bool onRegister;
     bool onProfileEditor;
+    bool onProfileEditorFocus;
+
+    bool onPlotEditor;
+    bool onPlotEditorFocus;
 
     bool moveToNewChat;
 
@@ -161,7 +185,7 @@ private:
     void openDirectMessage(int userId);
 
     void profileEditorWindow(bool isOpen);
-
+    void plotEditorWindow(bool isOpen);
     void sendUpdateUserInfoRequest();
     void sendRegistrationRequest(const std::string& username, const std::string& password);
     void sendLoginRequest(const std::string& username, const std::string& password);

@@ -391,7 +391,7 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                         userJson["id"] = user->getId();
                         userJson["username"] = user->getUsername();
                         userJson["created_at"] = user->getCreatedAt();
-                        userJson["last_login"] = user->getLastLogin().value_or("");
+                        userJson["last_login"] = DatabaseManager::getCurrentTime();
                         userJson["email"] = user->getEmail();
                         userJson["profile_picture"] = user->getProfilePicture();
                         userJson["bio"] = user->getBio();
