@@ -12,9 +12,11 @@ MainWindow::MainWindow() :
     currentChat(nullptr),
     scrollToBottomChat(true),
     moveToNewChat(false),
-    onProfileEditor(false)
+    onProfileEditor(false),
+    onPlotEditor(false)
 {
     init();
+
 }
 
 MainWindow::~MainWindow() {
@@ -107,7 +109,7 @@ void MainWindow::stop() {
 
 void MainWindow::init()
 {
-    sendMessageTexture.loadFromFile("Assets/images/send-letter.png");
+    sendMessageTexture.loadFromFile("Assets/images/send.png");
     if (sodium_init() < 0)spdlog::error("Sodium init failed");
     key = std::vector<unsigned char>(crypto_secretbox_KEYBYTES);
     for (size_t i = 0; i < crypto_secretbox_KEYBYTES; i++)
@@ -163,6 +165,7 @@ void MainWindow::render(const sf::Time& elapsedTime)
     chatImWindow(onChat);
     chatInfoWindow(onChatInfo);
     profileEditorWindow(onProfileEditor);
+    plotEditorWindow(onPlotEditor);
     //Chats
     for (auto& shader:shaders)
         shader.second->draw(refWindow);
@@ -341,7 +344,11 @@ void MainWindow::listChatsImWindow(bool isOpen) {
     ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.25f, 100.0f), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 
-    ImGui::Begin(cu8("##UserProfile"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+    ImGui::Begin(cu8("##UserProfile"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar| ImGuiWindowFlags_NoNavFocus);
+    if (ImGui::IsWindowFocused())
+    {
+        onChatInfoFocus = false;onProfileEditorFocus = false;onPlotEditorFocus = false;
+    }
     auto user = userList[currentUser.id];
     if (user)
     {
@@ -376,8 +383,11 @@ void MainWindow::listChatsImWindow(bool isOpen) {
     ImGui::SetNextWindowSize(ImVec2(window->getSize().x * 0.25f, window->getSize().y - 100.0f), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 100.0f), ImGuiCond_Always);
 
-    ImGui::Begin(cu8("##ChatList"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-
+    ImGui::Begin(cu8("##ChatList"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar| ImGuiWindowFlags_NoNavFocus);
+    if (ImGui::IsWindowFocused())
+    {
+        onChatInfoFocus = false;onProfileEditorFocus = false;onPlotEditorFocus = false;
+    }
     for (auto& [chatId, chat] : chatList) {
         std::string chatName = chat->getChatName();
         if (chat->getChatType() == "private")
@@ -434,19 +444,26 @@ void MainWindow::chatImWindow(bool isOpen) {
             }
         }
     }
-    if (ImGui::Begin("##ChatInfo", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar)) {
+    if (ImGui::Begin("##ChatInfo", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar| ImGuiWindowFlags_NoNavFocus)) {
         ImGui::Text(chatName.c_str());
         ImGui::SameLine();
         if (ImGui::Button("Информация")) {
             onChatInfo = !onChatInfo;
+        }
+        if (ImGui::IsWindowFocused())
+        {
+            onChatInfoFocus = false;onProfileEditorFocus = false;onPlotEditor = false;
         }
     }
     ImGui::End();
     ImGui::SetNextWindowSize(ImVec2(winW, chatHeight), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(winPosX, chatInfoHeight), ImGuiCond_Always);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
-    ImGui::Begin(cu8("##Chat"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_HorizontalScrollbar);
-
+    ImGui::Begin(cu8("##Chat"), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoNavFocus);
+    if (ImGui::IsWindowFocused())
+    {
+        onChatInfoFocus = false;onProfileEditorFocus = false;
+    }
     int lastSenderId = -1;
     for (const auto& message : currentChat->getMessages()) {
         auto sender = message.second->user;
@@ -491,9 +508,14 @@ void MainWindow::chatImWindow(bool isOpen) {
 
     ImGui::SetNextWindowSize(ImVec2(winW, tbwHeight), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(winPosX, chatInfoHeight + chatHeight), ImGuiCond_Always);
-    ImGui::Begin("##TBW", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-
+    ImGui::Begin("##TBW", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoNavFocus);
+    if (ImGui::IsWindowFocused())
+    {
+        onChatInfoFocus = false;onProfileEditorFocus = false; onPlotEditor = false;
+    }
     static std::string newMessage;
+    float inputWidth = winW - ImGui::GetStyle().ItemSpacing.x - ImGui::CalcTextSize("✉").x - ImGui::CalcTextSize("☄").x*2 - 2 * ImGui::GetStyle().FramePadding.x;
+    ImGui::SetNextItemWidth(inputWidth);
     ImGui::InputText("##MessageTB", &newMessage);
 
     if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_Enter)) {
@@ -507,14 +529,28 @@ void MainWindow::chatImWindow(bool isOpen) {
 
     ImGui::SameLine();
 
-    if (ImGui::ImageButton((void*)reinterpret_cast<ImTextureID>(sendMessageTexture.getNativeHandle()), ImVec2(tbwHeight / 2, tbwHeight/2))) {
+    if (ImGui::Button("✉")) {
         if (!newMessage.empty()) {
             sendMessage(newMessage);
             newMessage.clear();
             scrollToBottomChat = true;
         }
     }
+    ImGui::SameLine();
+    if (ImGui::Button("☄")) {
+        ImGui::OpenPopup("attachmentPopup");
+    }
 
+
+    if (ImGui::BeginPopup("attachmentPopup")) {
+        if (ImGui::MenuItem("График")) {
+            onPlotEditor = true;
+        }
+        if (ImGui::MenuItem("...")) {
+
+        }
+        ImGui::EndPopup();
+    }
     ImGui::End();
 }
 
@@ -525,11 +561,15 @@ void MainWindow::chatInfoWindow(bool isOpen) {
     float winH = 400.0f;
     ImGui::SetNextWindowSize(ImVec2(winW, winH), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2((window->getSize().x - winW) / 2, (window->getSize().y - winH) / 2), ImGuiCond_Always);
-
-    if (ImGui::Begin(cu8("Информация"), &onChatInfo, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
+    if (!onChatInfoFocus)
+    {
+        onChatInfoFocus = !onChatInfoFocus;
+        ImGui::SetNextWindowFocus();
+    }
+    
+    if (ImGui::Begin(cu8("Информация"), &onChatInfo, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavFocus)) {
         ImGui::Text("%s", currentChat->getChatName().c_str());
         ImGui::Text("Участников: %d", static_cast<int>(currentChat->getMembers().size()));
-
         ImGui::Separator();
 
         for (const auto& [id, member] : currentChat->getMembers()) {
@@ -554,7 +594,7 @@ void MainWindow::chatInfoWindow(bool isOpen) {
             ImGui::Text("Последний вход: %s", user->getLastLogin().value_or("-").c_str());
             ImGui::EndGroup();
 
-            
+
             if (ImGui::BeginPopupContextItem(("UserContextMenu" + std::to_string(id)).c_str())) {
                 if (ImGui::MenuItem("Написать сообщение")) {
                     openDirectMessage(user->getId());
@@ -609,8 +649,17 @@ void MainWindow::openDirectMessage(int userId)
 void MainWindow::profileEditorWindow(bool isOpen)
 {
     if (!isOpen) return;
+    if (!onProfileEditorFocus)
+    {
+        ImGui::SetNextWindowFocus();
+        onProfileEditorFocus = !onProfileEditorFocus;
+    }
 
-    if (ImGui::Begin(cu8("Редактор профиля"), &onProfileEditor)) {
+    if (ImGui::Begin(cu8("Редактор профиля"), &onProfileEditor, ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoFocusOnAppearing |
+        ImGuiWindowFlags_AlwaysAutoResize
+        )) {
 
         ImGui::InputText(cu8("Имя пользователя"), &tempUser.username);
         ImGui::InputText(cu8("Электронная почта"), &tempUser.email);
@@ -637,6 +686,122 @@ void MainWindow::profileEditorWindow(bool isOpen)
             sendUpdateUserInfoRequest();
         }
 
+        ImGui::End();
+    }
+}
+
+void MainWindow::plotEditorWindow(bool isOpen)
+{
+    if (!isOpen) return;
+    
+    static std::map<std::string, double> coefficients;
+    static char lastCoefficient = 'a';
+    static std::pair<std::vector<double>, std::vector<double>> dots = {};
+    static std::string expression = "sin(x)";
+    static std::string expressionEx = "";
+    static bool expressionChangedEx = false;
+    static bool expressionChanged = true;
+    static double xBegin = -3.141592653579 * 5.;
+    static double xEnd = 3.141592653579 * 5.;
+    static double xStep = 0.1;
+
+
+    if (!onPlotEditorFocus)
+    {
+        onPlotEditorFocus = true;
+        ImGui::SetNextWindowFocus();
+    }
+    if (ImGui::Begin("График", &onPlotEditor, ImGuiWindowFlags_NoCollapse))
+    {
+        auto wSize = ImGui::GetWindowSize();
+        ImGui::BeginGroup();
+        if (ImGui::InputText("Выражение", &expression)) {
+            expressionChanged = true;
+        }
+        ImGui::PushItemWidth(wSize.x*0.2);
+        if (ImGui::InputDouble("Начало", &xBegin, 0.01, 1.0))expressionChanged = true;
+        ImGui::SameLine();
+        if(ImGui::InputDouble("Конец", &xEnd, 0.01, 1.0)) expressionChanged = true;
+        ImGui::SameLine();
+        if (ImGui::InputDouble("Шаг", &xStep, 0.01, 1.0))
+        {
+            if (xStep <= 0.0) {
+                xStep = 0.01;
+            }
+            expressionChanged = true;
+        }
+        ImGui::PopItemWidth();
+
+
+        if (expressionChanged)
+        {
+            try {
+                dots.first.clear();
+                dots.second.clear();
+                double previewXStep = xStep;
+                while ((xEnd - xBegin) / previewXStep > 10000)
+                {
+                    previewXStep += 0.1;
+                }
+                calculate(dots, expression, xBegin, xEnd, previewXStep, coefficients);
+                expressionChanged = false;
+                expressionChangedEx = false;
+            }
+            catch (const mu::Parser::exception_type& e) {
+                expressionEx = e.GetMsg();
+                expressionChangedEx = true;
+            }
+        }
+
+        if (expressionChangedEx)
+        {
+            ImGui::Text("%s", expressionEx.c_str());
+        }
+
+        if (ImPlot::BeginPlot("Предварительный просмотр",ImVec2( wSize.x*0.7,-1))) {
+            ImPlot::PlotLine("f(x)", dots.first.data(), dots.second.data(), dots.first.size());
+            ImPlot::EndPlot();
+        }
+        ImGui::EndGroup();
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+        ImGui::SameLine();
+        if (ImGui::BeginListBox("Коэффициенты", ImVec2(wSize.x * 0.3, -1)))
+        {
+            ImGui::Text("Коэффициенты:");
+            for (auto& [name, value] : coefficients)
+            {
+                ImGui::PushItemWidth(200);
+                if (ImGui::InputDouble(name.c_str(), &value, 0.01, 1.0))
+                {
+                    expressionChanged = true;
+                }
+                ImGui::PopItemWidth();
+            }
+
+            if (ImGui::Button("+", ImVec2(30, 30)))
+            {
+                if (lastCoefficient < 'x')
+                {
+                    coefficients[{lastCoefficient}] = 0;
+                    lastCoefficient++;
+                    expressionChanged = true;
+                }
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("-", ImVec2(30, 30)))
+            {
+                if (!coefficients.empty())
+                {
+                    coefficients.erase(--coefficients.end());
+                    lastCoefficient--;
+                    expressionChanged = true;
+                }
+            }
+
+            ImGui::EndListBox();
+        }
         ImGui::End();
     }
 }
