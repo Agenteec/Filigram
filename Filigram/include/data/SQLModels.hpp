@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
-class Media;
+#include <nlohmann/json.hpp>
 class User;
 class Chat;
 class Message;
@@ -14,19 +14,36 @@ class Message;
 class Media : public std::enable_shared_from_this<Media> {
 public:
     Media(int id, int messageId, const std::string& mediaType, const std::string& mediaPath,
-        const std::string& createdAt, size_t size = 0)
-        : id(id), messageId(messageId), mediaType(mediaType), mediaPath(mediaPath),
+        const std::string& metaPath, const std::string& createdAt, size_t size = 0)
+        : id(id), messageId(messageId), mediaType(mediaType), mediaPath(mediaPath), metaPath(metaPath),
         createdAt(createdAt), size(size) {}
+    Media(int id, int messageId, const std::string& mediaType, const std::string& mediaPath,
+        const std::string& metaPath)
+        : id(id), messageId(messageId), mediaType(mediaType), mediaPath(mediaPath), metaPath(metaPath),
+        createdAt(""), size(0) {}
     Media() :id(-1) {}
     int getId() const { return id; }
     int getMessageId() const { return messageId; }
+    const std::string& getMediaType()const { return mediaType; }
+    const std::string& getMetaPath()const { return metaPath; }
+    const std::string& getMediaPath()const { return mediaPath; }
+    const std::string& getCreatedAt()const { return createdAt; }
+
     std::shared_ptr<Message> message{ nullptr };
+    
+
+    void setId(int id) { this->id = id; }
+
+    nlohmann::json metaData;
+    std::vector<char> data;
 private:
     int id;
     int messageId;
     std::string mediaType;
     std::string mediaPath;
+    std::string metaPath;
     std::string createdAt;
+
     size_t size;
 };
 
@@ -52,7 +69,7 @@ private:
 };
 class Message : public std::enable_shared_from_this<Message> {
 public:
-    Message(int id, int chatId, int userId, const std::string& messageText, const std::string& createdAt,
+    Message(int id = 0, int chatId = 0, int userId = 0, const std::string& messageText = "", const std::string& createdAt = "",
         const std::string& status = "sent", std::optional<int> replyToMessageId = std::nullopt)
         : id(id), chatId(chatId), userId(userId), messageText(messageText),
         createdAt(createdAt), status(status), replyToMessageId(replyToMessageId) {}
@@ -65,11 +82,11 @@ public:
     const std::string& getStatus() const { return status; }
     const std::optional<int>& getReplyToMessageId()const  { return replyToMessageId; };
 
-    void addMessage(std::shared_ptr<Media> media) {
+    void addMedia(std::shared_ptr<Media> media) {
         _media[media->getId()] = media;
     }
 
-    void removeMessage(int mediaId) {
+    void removeMedia(int mediaId) {
         _media.erase(mediaId);
     }
 

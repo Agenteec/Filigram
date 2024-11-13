@@ -1,4 +1,21 @@
 ﻿#include <ChatServer.h>
+std::vector<char> ChatServer::readFile(const std::string& filePath) {
+    std::ifstream file(filePath, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Could not open file: " + filePath);
+    }
+
+    file.seekg(0, std::ios::end);
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<char> buffer(size);
+    if (!file.read(buffer.data(), size)) {
+        throw std::runtime_error("Error reading file: " + filePath);
+    }
+
+    return buffer;
+}
 
 
 ChatServer::ChatServer(unsigned short port) : dbManager("data.db") {
@@ -44,7 +61,7 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
             if (request["action"] == "send_message") {
             int chatId = request["chat_id"];
             std::string messageText = request["message"];
-
+            std::string messageType = request["message_type"];
             
             if (!currentUser || !dbManager.isUserInChat(chatId, currentUser->getId())) {
                 response["status"] = "error";
@@ -53,29 +70,62 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
             else {
                 int messageId;
                 if (dbManager.insertMessage(chatId, currentUser->getId(), messageText, messageId) == DatabaseManager::StatusCode::SUCCESS) {
-                    response["status"] = "success";
-                    response["message"] = "Message sent.";
-                    response["message_id"] = messageId;
-                    Message message(int id, int chatId, int userId, const std::string & messageText, const std::string & createdAt,
-                        const std::string & status = "sent");
                     json messageJson;
                     messageJson["action"] = "new_message";
                     messageJson["chat_id"] = chatId;
+                    messageJson["timestamp"] = DatabaseManager::getCurrentTime();
                     messageJson["sender_id"] = currentUser->getId();
                     messageJson["message_id"] = messageId;
                     messageJson["message_text"] = messageText;
-                    messageJson["timestamp"] = DatabaseManager::getCurrentTime();
-                    broadcastMessageToChat(chatId, messageJson);
+                    if (messageType == "plot") {
+                        json plotData = request["plot_data"];
+                        auto media = generatePlot(plotData, messageId);
+
+                        json mediaJson = json::array();
+                        
+                        json med;
+                        med["media_type"] = "plot";
+                        med["media_path"] = media->getMediaPath();
+                        med["created_at"] =  media->getCreatedAt();
+                        med["meta_path"] = media->getMetaPath();
+                        med["media_id"]  = media->getId();
+                        mediaJson.push_back(med);
+                        messageJson["media"] = mediaJson;
+                        broadcastMessageToChat(chatId, messageJson);
+                    }
+                    else {
+                        broadcastMessageToChat(chatId, messageJson);
+                    }
                 }
                 else {
                     response["status"] = "error";
                     response["message"] = "Failed to save message.";
                 }
             }
-        }
+            }
             else if (request["action"] == "ping") {
                 response["status"] = "pong";
                 response["action"] = "ping";
+            }
+            else if (request["action"] == "get_media_data")
+            {
+                if (!currentUser.has_value()) {
+                    response["status"] = "error";
+                    response["message"] = "User not logged in.";
+                }
+                else
+                {
+                    json mediaIdsJson = request["media_ids"];
+                    auto chats = dbManager.getUserChats(currentUser->getId());//-----------------------------------------------------------------------------------------------
+                    for (int id : request["media_ids"])
+                    {
+                        Media media = dbManager.getMediaById(id);
+                        auto message = dbManager.getMessageById(media.getMessageId());
+                        dbManager.GetChat(message.getChatId());
+
+                    }
+                }
+
             }
             else if (request["action"] == "get_chat_members") {
                 if (!currentUser.has_value()) {
@@ -168,7 +218,20 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                             messageJson["message_text"] = message.getMessageText();
                             messageJson["created_at"] = message.getCreatedAt();
                             messageJson["status"] = message.getStatus();
-
+                            auto media = dbManager.getMediaByMessageId(message.getId());
+                            json mediaJson = json::array();
+                            for (auto& med: media)
+                            {
+                                json medJson;
+                                medJson["media_id"] = med.getId();
+                                medJson["media_type"] = med.getMediaType();
+                                medJson["created_at"] = med.getCreatedAt();
+                                medJson["media_path"] = med.getMediaPath();
+                                medJson["meta_path"] = med.getMetaPath();
+                                medJson["message_id"] = med.getMessageId();
+                                mediaJson.push_back(medJson);
+                            }
+                            messageJson["media"] = mediaJson;
                             auto sender = dbManager.GetUser(message.getUserId());
                             if (sender) {
                                 messageJson["username"] = sender->getUsername();
@@ -462,12 +525,51 @@ void ChatServer::broadcastMessage(const json& messageJson, std::vector<int> user
 
 void ChatServer::broadcastMessageToChat(int chatId, const json& messageJson) {
     auto chatMembers = dbManager.getChatMembers(chatId);
+    spdlog::info(messageJson.dump(4));
+    std::vector<std::vector<char>> mediaDataList;
+    std::vector<std::vector<char>> metaDataList;
 
-   
+    if (messageJson.contains("media")) {
+        for (const auto& mediaItem : messageJson["media"]) {
+            std::string mediaPath = mediaItem["media_path"];
+            std::string metaPath = mediaItem["meta_path"];
+
+            try {
+
+                mediaDataList.push_back(readFile(mediaPath));
+                metaDataList.push_back(readFile(metaPath));
+            }
+            catch (const std::exception& e) {
+                spdlog::error("Error reading media files: {}", e.what());
+                return;
+            }
+        }
+    }
+
+    sf::Packet packet;
 
     std::string messageData = messageJson.dump();
-    sf::Packet packet;
     packet << messageData;
+
+
+    sf::Uint32 mediaCount = static_cast<sf::Uint32>(mediaDataList.size());
+    packet << mediaCount;
+
+
+    for (size_t i = 0; i < mediaDataList.size(); ++i) {
+        const auto& mediaData = mediaDataList[i];
+        const auto& metaData = metaDataList[i];
+        size_t mediaSize = mediaData.size();
+        packet << static_cast<sf::Uint32>(mediaSize);
+        if (mediaSize > 0) {
+            packet.append(mediaData.data(), mediaSize);
+        }
+        size_t metaSize = metaData.size();
+        packet << static_cast<sf::Uint32>(metaSize);
+        if (metaSize > 0) {
+            packet.append(metaData.data(), metaSize);
+        }
+    }
 
     for (const auto& member : chatMembers) {
         int memberId = member.getUserId();
@@ -483,6 +585,8 @@ void ChatServer::broadcastMessageToChat(int chatId, const json& messageJson) {
         }
     }
 }
+
+
 
 void ChatServer::broadcastMessage(const std::string& message) {
     std::lock_guard<std::mutex> lock(queueMutex);
@@ -510,4 +614,59 @@ void ChatServer::startPingThread() {
             broadcastMessage(pingData);
         }
         }).detach();
+}
+
+
+std::shared_ptr<Media> ChatServer::generatePlot(const json& plotData, int messageId)
+{
+    namespace fs = std::filesystem;
+    double xStep = plotData["x_step"];
+    double xBegin = plotData["x_begin"];
+    double xEnd = plotData["x_end"];
+    std::string expression = plotData["expression"];
+    std::pair< std::vector<double>, std::vector<double>> dots;
+    std::map<std::string, double> coefficients;
+    if (plotData.contains("coefficients")) {
+        for (const auto& [key, value] : plotData["coefficients"].items()) {
+            coefficients[key] = value.get<double>();
+        }
+    }
+    calculate(dots, expression, xBegin, xEnd, xStep, coefficients);
+    fs::path dirPath = "media/charts";
+    fs::path filePath = dirPath / ("dots"+std::to_string(messageId)+ std::to_string(std::time(nullptr)) + ".bin");
+    fs::path metaFilePath = dirPath / ("meta" + std::to_string(messageId) + std::to_string(std::time(nullptr)) + ".json");
+
+    if (!fs::exists(dirPath)) {
+        fs::create_directories(dirPath);
+    }
+
+    std::ofstream outFile(filePath.string(), std::ios::binary);
+    if (outFile.is_open()) {
+        size_t size = dots.first.size();
+        outFile.write(reinterpret_cast<const char*>(dots.first.data()), size * sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(dots.second.data()), size * sizeof(double));
+        outFile.close();
+    }
+    else {
+        spdlog::error("Cannot open {} ", filePath.string());
+    }
+
+    nlohmann::json metaJson;
+    metaJson["expression"] = expression;
+    metaJson["x_step"] = plotData["x_step"];
+    metaJson["x_begin"] = plotData["x_begin"];
+    metaJson["x_end"] = plotData["x_end"];
+    metaJson["coefficients"] = plotData["coefficients"];
+    metaJson["points_file_path"] = filePath.string();
+    std::ofstream metaFile(metaFilePath.string());
+    if (metaFile.is_open()) {
+        metaFile << metaJson.dump(4);
+        metaFile.close();
+    }
+    else {
+        spdlog::error("Cannot open {} ", metaFilePath.string());
+    }
+    auto media = std::make_shared<Media>(0, messageId, "plot", filePath.string(), metaFilePath.string(), DatabaseManager::getCurrentTime(), (dots.first.size() * 2 + sizeof(dots.first.size())));
+    dbManager.insertMedia(*media);
+    return media;
 }

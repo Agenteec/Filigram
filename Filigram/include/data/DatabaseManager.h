@@ -60,10 +60,14 @@ public:
     StatusCode removeChatMember(int chatId, int userId);
 
     StatusCode insertMessage(int chatId, int userId, const std::string& messageText, int& messageId);
-    StatusCode insertMedia(int messageId, const std::string& mediaType, const std::string& mediaPath);
+    StatusCode insertMedia(int messageId, const std::string& mediaType, const std::string& mediaPath, const std::string& metaPath, int& mediaId);
+    StatusCode insertMedia(Media& media);
 
     std::vector<Media> getMediaByMessageId(int messageId);
+    Media getMediaById(int mediaId);
     std::vector<Message> getMessages(int chatId);
+
+    Message getMessageById(int messageId);
 
     std::optional<User> GetUser(int userId);
     std::optional<Chat> GetChat(int chatId);

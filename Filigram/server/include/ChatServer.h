@@ -8,16 +8,18 @@
 #include <memory>
 #include <mutex>
 #include <vector>
+#include <filesystem>
 #include <condition_variable>
 #include <queue>
 #include <spdlog/spdlog.h>
 #include <data/SQLModels.hpp>
 #include <data/DatabaseManager.h>
 #include <set>
-
+#include "../calc/Calc.h"
 using json = nlohmann::json;
 class ChatServer {
 public:
+    static std::vector<char> readFile(const std::string& filePath);
     explicit ChatServer(unsigned short port = 53000);
     void run();
 
@@ -34,4 +36,5 @@ private:
     void broadcastMessageToChat(int chatId, const json& messageJson);
     void broadcastMessage(const std::string& message);
     void startPingThread();
+    std::shared_ptr<Media> generatePlot(const json& plotData, int messageId);
 };

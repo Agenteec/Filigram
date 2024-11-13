@@ -62,6 +62,7 @@ void DatabaseManager::createTables() {
             message_id INTEGER,
             media_type TEXT NOT NULL,
             media_path TEXT NOT NULL,
+            meta_path TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             size INTEGER,
             FOREIGN KEY (message_id) REFERENCES messages(id)
@@ -291,10 +292,10 @@ StatusCode DatabaseManager::insertMessage(int chatId, int userId, const std::str
     return StatusCode::SUCCESS;
 }
 
-StatusCode DatabaseManager::insertMedia(int messageId, const std::string& mediaType, const std::string& mediaPath) {
+StatusCode DatabaseManager::insertMedia(int messageId, const std::string& mediaType, const std::string& mediaPath, const std::string& metaPath, int& mediaId) {
     sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 
-    std::string insertMediaSQL = "INSERT INTO media (message_id, media_type, media_path) VALUES (?, ?, ?)";
+    std::string insertMediaSQL = "INSERT INTO media (message_id, media_type, media_path, meta_path) VALUES (?, ?, ?, ?)";
     sqlite3_stmt* stmt;
 
     if (sqlite3_prepare_v2(db, insertMediaSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
@@ -306,6 +307,7 @@ StatusCode DatabaseManager::insertMedia(int messageId, const std::string& mediaT
     sqlite3_bind_int(stmt, 1, messageId);
     sqlite3_bind_text(stmt, 2, mediaType.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 3, mediaPath.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 4, metaPath.c_str(), -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         spdlog::error("Failed to insert media: {}", sqlite3_errmsg(db));
@@ -313,7 +315,36 @@ StatusCode DatabaseManager::insertMedia(int messageId, const std::string& mediaT
         sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
         return StatusCode::_ERROR;
     }
+    mediaId = sqlite3_last_insert_rowid(db);
+    sqlite3_finalize(stmt);
+    sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr);
+    return StatusCode::SUCCESS;
+}
 
+StatusCode DatabaseManager::insertMedia(Media& media) {
+    sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+
+    std::string insertMediaSQL = "INSERT INTO media (message_id, media_type, media_path, meta_path) VALUES (?, ?, ?, ?)";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, insertMediaSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        spdlog::error("Failed to prepare statement: {}", sqlite3_errmsg(db));
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+        return StatusCode::_ERROR;
+    }
+
+    sqlite3_bind_int(stmt, 1, media.getMessageId());
+    sqlite3_bind_text(stmt, 2,media.getMediaType().c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, media.getMediaPath().c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 4, media.getMetaPath().c_str(), -1, SQLITE_STATIC);
+
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        spdlog::error("Failed to insert media: {}", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+        return StatusCode::_ERROR;
+    }
+    media.setId(sqlite3_last_insert_rowid(db));
     sqlite3_finalize(stmt);
     sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr);
     return StatusCode::SUCCESS;
@@ -321,7 +352,7 @@ StatusCode DatabaseManager::insertMedia(int messageId, const std::string& mediaT
 
 std::vector<Media> DatabaseManager::getMediaByMessageId(int messageId) {
     std::vector<Media> mediaList;
-    std::string selectMediaSQL = "SELECT id, message_id, media_type, media_path, created_at FROM media WHERE message_id = ?";
+    std::string selectMediaSQL = "SELECT id, message_id, media_type, media_path,meta_path, created_at FROM media WHERE message_id = ?";
     sqlite3_stmt* stmt;
 
     if (sqlite3_prepare_v2(db, selectMediaSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
@@ -336,13 +367,44 @@ std::vector<Media> DatabaseManager::getMediaByMessageId(int messageId) {
         int msgId = sqlite3_column_int(stmt, 1);
         const char* mediaType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
         const char* mediaPath = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
-        const char* createdAt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        const char* metaPath = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        const char* createdAt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
 
-        mediaList.emplace_back(id, msgId, mediaType ? mediaType : "", mediaPath ? mediaPath : "", createdAt ? createdAt : "");
+        mediaList.emplace_back(id, msgId, mediaType ? mediaType : "", mediaPath ? mediaPath : "", metaPath? metaPath: "", createdAt ? createdAt : "");
     }
 
     sqlite3_finalize(stmt);
     return mediaList;
+}
+
+Media DatabaseManager::getMediaById(int mediaId) {
+    Media media;
+    std::string selectMediaSQL = "SELECT id, message_id, media_type, media_path, meta_path, created_at FROM media WHERE id = ?";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, selectMediaSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        spdlog::error("Failed to prepare statement: {}", sqlite3_errmsg(db));
+        return media;
+    }
+
+    sqlite3_bind_int(stmt, 1, mediaId);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        int msgId = sqlite3_column_int(stmt, 1);
+        const char* mediaType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        const char* mediaPath = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        const char* metaPath = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        const char* createdAt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+
+        media = Media(id, msgId, mediaType ? mediaType : "", mediaPath ? mediaPath : "", metaPath ? metaPath : "", createdAt ? createdAt : "");
+    }
+    else {
+        spdlog::warn("No media found with id: {}", mediaId);
+    }
+
+    sqlite3_finalize(stmt);
+    return media;
 }
 
 std::vector<Message> DatabaseManager::getMessages(int chatId)
@@ -372,7 +434,34 @@ std::vector<Message> DatabaseManager::getMessages(int chatId)
     sqlite3_finalize(stmt);
     return messages;
 }
+Message DatabaseManager::getMessageById(int messageId) {
+    Message message;
+    std::string selectMessageSQL = "SELECT id, chat_id, user_id, message_text, created_at FROM messages WHERE id = ?";
+    sqlite3_stmt* stmt;
 
+    if (sqlite3_prepare_v2(db, selectMessageSQL.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        spdlog::error("Failed to prepare statement: {}", sqlite3_errmsg(db));
+        return message;
+    }
+
+    sqlite3_bind_int(stmt, 1, messageId);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        int chatId = sqlite3_column_int(stmt, 1);
+        int userId = sqlite3_column_int(stmt, 2);
+        const char* messageText = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        const char* createdAt = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+
+        message = Message(id, chatId, userId, messageText ? messageText : "", createdAt ? createdAt : "");
+    }
+    else {
+        spdlog::warn("No message found with id: {}", messageId);
+    }
+
+    sqlite3_finalize(stmt);
+    return message;
+}
 std::optional<User> DatabaseManager::GetUser(int userId)
 {
     std::string getUserSQL = "SELECT id, username, created_at, email, profile_picture, bio, status, first_name, last_name, date_of_birth,last_login FROM users WHERE id = ?";

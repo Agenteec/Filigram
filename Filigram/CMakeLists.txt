@@ -10,8 +10,6 @@ set(VCPKG_BIN_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/bin")
 set(VCPKG_DEBUG_BIN_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/debug/bin") 
 set(VCPKG_DEBUG_LIBRARY_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/debug/lib") 
 
-
-
 include_directories(${VCPKG_INCLUDE_DIR})
 
 find_package(nlohmann_json CONFIG REQUIRED)
@@ -25,8 +23,10 @@ find_package(unofficial-sqlite3 CONFIG REQUIRED)
 find_package(unofficial-argon2 CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
   
-  
 file(GLOB_RECURSE SOURCES "src/*.cpp"  "include/*.h" "include/*.hpp")
+
+add_library(FiligramCalc SHARED "Calc/Calc.cpp" "Calc/Calc.h")
+
 add_executable (Filigram "main.cpp" ${SOURCES})
 file(GLOB_RECURSE SERVER_SOURCES "server/src/*.cpp"  "server/include/*.h" "server/include/*.hpp"
 "include/data/DatabaseManager.h"
@@ -34,9 +34,9 @@ file(GLOB_RECURSE SERVER_SOURCES "server/src/*.cpp"  "server/include/*.h" "serve
 "include/data/SQLModels.hpp")
 add_executable (FiligramServer "server.cpp" ${SERVER_SOURCES})
 
-add_library(FiligramCalc STATIC "Calc/Calc.cpp" "Calc/Calc.h")
+target_link_libraries(FiligramCalc PRIVATE muparser::muparser)
+target_compile_definitions(FiligramCalc PRIVATE FILIGRAMCALC_EXPORTS)
 
-target_link_libraries(Filigram PRIVATE muparser::muparser)
 target_link_libraries(Filigram PRIVATE unofficial::sqlite3::sqlite3)
 target_link_libraries(Filigram PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
 target_link_libraries(Filigram PRIVATE imgui::imgui)
@@ -47,6 +47,7 @@ target_link_libraries(Filigram PRIVATE spdlog::spdlog)
 target_link_libraries(Filigram PRIVATE unofficial::argon2::libargon2)
 target_link_libraries(Filigram PRIVATE unofficial-sodium::sodium)
 target_link_libraries(Filigram PRIVATE FiligramCalc)
+target_link_libraries(Filigram PRIVATE muparser::muparser)
 
 target_link_libraries(FiligramServer PRIVATE unofficial::sqlite3::sqlite3)
 target_link_libraries(FiligramServer PRIVATE sfml-system sfml-network sfml-graphics)
@@ -55,12 +56,11 @@ target_link_libraries(FiligramServer PRIVATE spdlog::spdlog)
 target_link_libraries(FiligramServer PRIVATE unofficial::argon2::libargon2)
 target_link_libraries(FiligramServer PRIVATE unofficial-sodium::sodium)
 target_link_libraries(FiligramServer PRIVATE FiligramCalc)
-
-target_link_libraries(FiligramCalc PRIVATE muparser::muparser)
+target_link_libraries(FiligramServer PRIVATE muparser::muparser)
 
 target_include_directories(Filigram PRIVATE "include")
 target_include_directories(FiligramServer PRIVATE "include" "server/include")
-   
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Filigram PROPERTY CXX_STANDARD 20)
   set_property(TARGET FiligramServer PROPERTY CXX_STANDARD 20)

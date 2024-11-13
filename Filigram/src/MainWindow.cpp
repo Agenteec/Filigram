@@ -1,5 +1,6 @@
 ﻿#include <MainWindow.h>
 
+
 MainWindow::MainWindow() :
     window(new sf::RenderWindow(sf::VideoMode(800, 600), L"Filigram", sf::Style::Default)),
     onChat(false),
@@ -26,7 +27,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::start() {
     clientThread = std::thread([this]() {
-        client = new ServerClient("127.0.0.1", 53000);
+        client = new ServerClient(serverIp, serverPort);
 
         runningNetworking.store(true);
         while (runningNetworking.load()) {
@@ -48,7 +49,7 @@ void MainWindow::start() {
                     else
                     {
                         spdlog::warn("Failed to connect to server: {}:{}", client->getServerAddress().toString(), client->getServerPort());
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
                         
                         
                     }
@@ -82,7 +83,7 @@ void MainWindow::start() {
         while (!runningNetworking.load())
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         while (runningNetworking.load()) {
-            json response;
+            sf::Packet response;
             if (client->receiveResponse(response)) {
                 processServerResponse(response);
             }
@@ -109,6 +110,33 @@ void MainWindow::stop() {
 
 void MainWindow::init()
 {
+    const std::string configFilePath = "cConfig.json";
+    json config;
+
+    std::ifstream configFile(configFilePath);
+    if (!configFile.is_open()) {
+       
+        config = {
+            {"host", "localhost"},
+            {"port", 53000},
+            {"timeout", 1000}
+        };
+
+        std::ofstream outFile(configFilePath);
+        outFile << config.dump(4);
+        outFile.close();
+        spdlog::info("Configuration file created with default values.");
+    }
+    else {
+        configFile >> config;
+        configFile.close();
+    }
+    if (config.contains("host")){serverIp = config["host"].get<std::string>();}
+    if (config.contains("port")){serverPort = config["port"].get<unsigned short>();}
+    if (config.contains("timeout")){timeout = config["timeout"].get<int>();}
+
+
+
     sendMessageTexture.loadFromFile("Assets/images/send.png");
     if (sodium_init() < 0)spdlog::error("Sodium init failed");
     key = std::vector<unsigned char>(crypto_secretbox_KEYBYTES);
@@ -469,7 +497,18 @@ void MainWindow::chatImWindow(bool isOpen) {
         auto sender = message.second->user;
 
         if (!sender) continue;
-
+        for (auto& [mediaId, media] : message.second->getMedia()) {
+            if (media->getMediaType() == "plot") {
+                
+                double* xData = reinterpret_cast< double*>( media->data.data());
+                double* yData = reinterpret_cast< double*>( media->data.data()+ (media->data.size()/2));
+                std::string name = "##Plot" + std::to_string(mediaId);
+                if (ImPlot::BeginPlot(name.c_str())) {
+                    ImPlot::PlotLine(media->metaData["expression"].get<std::string>().c_str(), xData, yData, media->data.size() / 2 / sizeof(double));
+                    ImPlot::EndPlot();
+                }
+            }
+        }
         if (lastSenderId != sender->getId()) {
             ImGui::Image((void*)reinterpret_cast<ImTextureID>(sender->getProfilePictureTexture()->getNativeHandle()), ImVec2(40, 40));
             ImGui::SameLine();
@@ -513,7 +552,7 @@ void MainWindow::chatImWindow(bool isOpen) {
     {
         onChatInfoFocus = false;onProfileEditorFocus = false; onPlotEditor = false;
     }
-    static std::string newMessage;
+    
     float inputWidth = winW - ImGui::GetStyle().ItemSpacing.x - ImGui::CalcTextSize("✉").x - ImGui::CalcTextSize("☄").x*2 - 2 * ImGui::GetStyle().FramePadding.x;
     ImGui::SetNextItemWidth(inputWidth);
     ImGui::InputText("##MessageTB", &newMessage);
@@ -758,14 +797,16 @@ void MainWindow::plotEditorWindow(bool isOpen)
             ImGui::Text("%s", expressionEx.c_str());
         }
 
-        if (ImPlot::BeginPlot("Предварительный просмотр",ImVec2( wSize.x*0.7,-1))) {
+        if (ImPlot::BeginPlot("Предварительный просмотр",ImVec2( wSize.x*0.7f,-1))) {
             ImPlot::PlotLine("f(x)", dots.first.data(), dots.second.data(), dots.first.size());
             ImPlot::EndPlot();
         }
         ImGui::EndGroup();
-        ImVec2 pos = ImGui::GetCursorScreenPos();
+
         ImGui::SameLine();
-        if (ImGui::BeginListBox("Коэффициенты", ImVec2(wSize.x * 0.3, -1)))
+
+        ImGui::BeginGroup();
+        if (ImGui::BeginListBox("Коэффициенты", ImVec2(wSize.x * 0.3f, wSize.y*0.7f)))
         {
             ImGui::Text("Коэффициенты:");
             for (auto& [name, value] : coefficients)
@@ -802,6 +843,29 @@ void MainWindow::plotEditorWindow(bool isOpen)
 
             ImGui::EndListBox();
         }
+        if (ImGui::Button("Сброс"))
+        {
+            expression = "sin(x)";
+            coefficients.clear();
+            lastCoefficient = 'a';
+            expressionEx = "";
+            expressionChangedEx = false;
+            expressionChanged = true;
+            xBegin = -3.141592653579 * 5.;
+            xEnd = 3.141592653579 * 5.;
+            xStep = 0.1;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Отправить"))
+        {
+            if (!expressionChangedEx && !expression.empty())
+            {
+                onPlotEditor = false;
+                sendMessage(newMessage, PlotData(xStep, xBegin, xEnd, coefficients, expression));
+                newMessage.clear();
+            }
+        }
+        ImGui::EndGroup();
         ImGui::End();
     }
 }
@@ -811,7 +875,31 @@ void MainWindow::sendMessage(const std::string& message) {
     request["action"] = "send_message";
     request["message"] = message;
     request["chat_id"] = currentChat->getId();
+    request["message_type"] = "default";
 
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
+void MainWindow::sendMessage(const std::string& message, const PlotData& plotData)
+{
+    json request;
+    request["action"] = "send_message";
+    request["message"] = message;
+    request["chat_id"] = currentChat->getId();
+    request["message_type"] = "plot";
+    json data;
+    data["x_step"] = plotData.xStep;
+    data["x_begin"] = plotData.xBegin;
+    data["x_end"] = plotData.xEnd;
+    data["expression"] = plotData.expression;
+    json jCoefficients;
+    for (const auto& [name, value] : plotData.coefficients)jCoefficients[name] = value;
+    data["coefficients"] = jCoefficients;
+    request["plot_data"] = data;
     {
         std::lock_guard<std::mutex> lock(queueMutex);
         requestQueue.push(request);
@@ -906,7 +994,124 @@ void MainWindow::sendGetUserChatsRequest() {
     cv.notify_one();
 }
 
-void MainWindow::processServerResponse(const json& response) {
+void MainWindow::sendGetMediaDataRequest()
+{
+    //Нужно будет сделать защиту от несанкционированного доступа
+
+    json mediaIdsJson = json::array();
+    for (auto id : mediaLoadIdVec)mediaIdsJson.push_back(id);
+    mediaLoadIdVec.clear();
+    json request;
+    request["action"] = "get_media_data";
+    request["media_ids"] = mediaIdsJson;
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
+void MainWindow::GetMessageMedia(sf::Packet& packet, std::shared_ptr<Message> newMessage, const json& response)
+{
+    sf::Uint32 mediaCount;
+    packet >> mediaCount;
+
+    for (size_t i = 0; i < mediaCount; i++) {
+        sf::Uint32 mediaSize;
+        packet >> mediaSize;
+
+        std::vector<char> mediaData(mediaSize);
+        const char* data = reinterpret_cast<const char*>(packet.getData());
+        size_t readPosition = packet.getReadPosition();
+
+        if (mediaSize > 0) {
+            for (size_t j = 0; j < mediaSize; j++) {
+                mediaData[j] = data[readPosition + j];
+            }
+            while (packet.getReadPosition() < readPosition + mediaSize)
+            {
+                sf::Uint8 temp;
+                packet >> temp;
+            }
+
+        }
+
+        sf::Uint32 metaSize;
+        packet >> metaSize;
+
+        std::vector<char> metaData(metaSize);
+        if (metaSize > 0) {
+            data = reinterpret_cast<const char*>(packet.getData());
+            readPosition = packet.getReadPosition();
+
+            for (size_t j = 0; j < metaSize; j++) {
+                metaData[j] = data[readPosition + j];
+            }
+            while (packet.getReadPosition() < readPosition + metaSize)
+            {
+                sf::Uint8 temp;
+                packet >> temp;
+            }
+        }
+
+        json mediaItem = response["media"][i];
+        spdlog::info(response.dump());
+
+        spdlog::info(mediaItem.dump());
+        auto media = std::make_shared<Media>(
+            mediaItem["media_id"],
+            newMessage->getId(),
+            mediaItem["media_type"],
+            mediaItem["media_path"],
+            mediaItem["meta_path"],
+            mediaItem["created_at"]
+        );
+
+        std::string mediaFilePath = mediaItem["media_path"];
+        std::ofstream outFile(mediaFilePath, std::ios::binary);
+        if (outFile.is_open()) {
+            outFile.write(mediaData.data(), mediaData.size());
+            outFile.close();
+            spdlog::info("Saved media to {}", mediaFilePath);
+        }
+        else {
+            spdlog::error("Cannot open file for writing: {}", mediaFilePath);
+        }
+
+        std::string metaFilePath = mediaItem["meta_path"];
+        json metaJson;
+        metaJson = json::parse(std::string(metaData.begin(), metaData.end()));
+
+        std::ofstream metaOutFile(metaFilePath);
+        if (metaOutFile.is_open()) {
+            metaOutFile << metaJson.dump(4);
+            metaOutFile.close();
+            spdlog::info("Saved metadata to {}", metaFilePath);
+        }
+        else {
+            spdlog::error("Cannot open metadata file for writing: {}", metaFilePath);
+        }
+        media->metaData = metaJson;
+        media->data = mediaData;
+
+        newMessage->addMedia(media);
+    }
+}
+
+void MainWindow::processServerResponse(sf::Packet& packet) {
+    std::string messageResponse;
+    packet >> messageResponse;
+    json response;
+
+    try
+    {
+        response = json::parse(messageResponse);
+    }
+    catch (const std::exception& ex)
+    {
+        spdlog::error("Cannot parse json {}", ex.what());
+        return;
+    }
     spdlog::info(response.dump());
 
     std::string action = response["action"];
@@ -930,6 +1135,8 @@ void MainWindow::processServerResponse(const json& response) {
             if (userIt != userList.end()) {
                 newMessage->user = userIt->second;
             }
+
+            GetMessageMedia(packet, newMessage, response);
 
             chat->addMessage(newMessage);
             messageList[messageId] = newMessage;
@@ -1096,19 +1303,50 @@ void MainWindow::processServerResponse(const json& response) {
                         msgJson["created_at"],
                         msgJson.value("status", "sent")
                     );
+                    if (msgJson.contains("media")) {
+                        for (const auto& medJson : msgJson["media"]) {
+                            int mediaId = medJson["media_id"];
+                            std::string mediaType = medJson["media_type"];
+                            std::string createdAt = medJson["created_at"];
+                            std::string mediaPath = medJson["media_path"];
+                            std::string metaPath = medJson["meta_path"];
+                            
+                            int messageId = medJson["message_id"];
+                            namespace fs = std::filesystem;
+                            if (fs::exists(mediaPath) && fs::exists(metaPath)) {
+                                auto mediaItem = std::make_shared<Media>(
+                                    mediaId, messageId, mediaType, mediaPath, metaPath, createdAt
+                                );
+                                mediaItem->data = readFile(mediaPath);
+                                auto meta = readFile(metaPath);
 
+                                mediaItem->metaData = json::parse(meta.begin(), meta.end());
+                                message->addMedia(mediaItem);
+                            }
+                            else
+                            {
+                                mediaLoadIdVec.push_back(mediaId);
+                            }
+
+
+                        }
+                    }
                     message->chat = chat;
                     auto userIt = userList.find(msgJson["user_id"]);
                     if (userIt != userList.end()) {
                         message->user = userIt->second;
                     }
+
                     chat->addMessage(message);
                     messageList[messageId] = message;
                 }
 
                 chatList[chat->getId()] = chat;
             }
-
+            if (!mediaLoadIdVec.empty())
+            {
+                sendGetMediaDataRequest();
+            }
             spdlog::info("User chats, members, and messages loaded successfully.");
         }
         else {

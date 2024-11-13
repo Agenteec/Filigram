@@ -7,7 +7,6 @@
 #include <condition_variable>
 #include <list>
 #include <functional>
-#include <muParser.h>
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
@@ -24,6 +23,7 @@
 #include <imgui_freetype.h>
 #include <imgui_internal.h>
 #include "../calc/Calc.h"
+#include <data/PlotData.hpp>
 
 
 
@@ -48,6 +48,24 @@ static sf::Color getColorFromString(const std::string& str) {
 
     return sf::Color(r, g, b);
 }
+static std::vector<char> readFile(const std::string& filePath) {
+    std::ifstream file(filePath, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Could not open file: " + filePath);
+    }
+
+    file.seekg(0, std::ios::end);
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<char> buffer(size);
+    if (!file.read(buffer.data(), size)) {
+        throw std::runtime_error("Error reading file: " + filePath);
+    }
+
+    return buffer;
+}
+
 static bool initIMgui(sf::RenderWindow& window)
 {
     if (!ImGui::SFML::Init(window))
@@ -101,6 +119,10 @@ class MainWindow
         Disconnected,
         Connecting
     };
+
+    sf::IpAddress serverIp = "127.0.0.1";
+    unsigned short serverPort = 53000;
+    int timeout = 1000;
 
     std::atomic<bool> runningNetworking;
     std::atomic<int> connectionStatus;
@@ -159,6 +181,10 @@ class MainWindow
 
     std::map<std::string, std::shared_ptr<ShaderManager>> shaders;
     sf::Texture sendMessageTexture;
+
+    std::string newMessage;
+
+    std::vector<int> mediaLoadIdVec;
 public:
     MainWindow();
     ~MainWindow();
@@ -192,6 +218,9 @@ private:
     void sendPingRequest(const std::string& status = "ping");
     void sendNewPrivateChatRequest(int UserId);
     void sendGetUserChatsRequest();
+    void sendGetMediaDataRequest();
+    void GetMessageMedia(sf::Packet& packet, std::shared_ptr<Message> newMessage, const json& response);
     void sendMessage(const std::string& message);
-    void processServerResponse(const json& response);
+    void sendMessage(const std::string& message, const PlotData& plotData);
+    void processServerResponse(sf::Packet& packet);
 };
