@@ -91,11 +91,8 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                         med["media_id"]  = media->getId();
                         mediaJson.push_back(med);
                         messageJson["media"] = mediaJson;
-                        broadcastMessageToChat(chatId, messageJson);
                     }
-                    else {
-                        broadcastMessageToChat(chatId, messageJson);
-                    }
+                    broadcastMessageToChat(chatId, messageJson);
                 }
                 else {
                     response["status"] = "error";
@@ -117,13 +114,39 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                 {
                     json mediaIdsJson = request["media_ids"];
                     auto chats = dbManager.getUserChats(currentUser->getId());//-----------------------------------------------------------------------------------------------
+                    json mediaJson = json::array();
                     for (int id : request["media_ids"])
                     {
                         Media media = dbManager.getMediaById(id);
                         auto message = dbManager.getMessageById(media.getMessageId());
-                        dbManager.GetChat(message.getChatId());
+                        bool isMember = false;
+                        for (const auto chat: chats)
+                        {
+                            
+                            if (chat.getId() == message.getChatId())
+                            {
+                                isMember = true;
+                                break;
+                            }
+                        }
+                        if (isMember)
+                        {
+                            
 
+                            json med;
+                            med["media_type"] = "plot";
+                            med["media_path"] = media.getMediaPath();
+                            med["created_at"] = media.getCreatedAt();
+                            med["meta_path"] = media.getMetaPath();
+                            med["media_id"] = media.getId();
+                            med["message_id"] = media.getMessageId();
+                            mediaJson.push_back(med);
+                           
+                        }
                     }
+                    response["media"] = mediaJson;
+                    response["status"] = "success";
+                    response["message"] = "Media sent successfully.";
                 }
 
             }
@@ -490,10 +513,8 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
             response["status"] = "error";
             response["message"] = "Invalid JSON format.";
         }
-        sf::Packet responsePacket;
-        responsePacket << response.dump();
-        client->send(responsePacket);
-        
+
+        sendResponse(client.get(),response);
     }
     if (currentUser!=std::nullopt)
     {
@@ -526,6 +547,41 @@ void ChatServer::broadcastMessage(const json& messageJson, std::vector<int> user
 void ChatServer::broadcastMessageToChat(int chatId, const json& messageJson) {
     auto chatMembers = dbManager.getChatMembers(chatId);
     spdlog::info(messageJson.dump(4));
+
+
+    sf::Packet packet;
+
+    std::string messageData = messageJson.dump();
+    packet << messageData;
+
+    pushMediaToPacket(packet, messageJson);
+
+
+    for (const auto& member : chatMembers) {
+        int memberId = member.getUserId();
+
+        if (clientSockets.find(memberId) != clientSockets.end()) {
+            auto client = clientSockets[memberId];
+            if (client->send(packet) != sf::Socket::Done) {
+                spdlog::error("Failed to send message to user {} in chat {}", memberId, chatId);
+            }
+            else {
+                spdlog::info("Message sent to user {} in chat {}", memberId, chatId);
+            }
+        }
+    }
+}
+
+void ChatServer::sendResponse(sf::TcpSocket* client, const json& response)
+{
+    sf::Packet responsePacket;
+    responsePacket << response.dump();
+    pushMediaToPacket(responsePacket, response);
+    client->send(responsePacket);
+}
+
+void ChatServer::pushMediaToPacket(sf::Packet& packet, const json& messageJson)
+{
     std::vector<std::vector<char>> mediaDataList;
     std::vector<std::vector<char>> metaDataList;
 
@@ -546,12 +602,6 @@ void ChatServer::broadcastMessageToChat(int chatId, const json& messageJson) {
         }
     }
 
-    sf::Packet packet;
-
-    std::string messageData = messageJson.dump();
-    packet << messageData;
-
-
     sf::Uint32 mediaCount = static_cast<sf::Uint32>(mediaDataList.size());
     packet << mediaCount;
 
@@ -570,23 +620,7 @@ void ChatServer::broadcastMessageToChat(int chatId, const json& messageJson) {
             packet.append(metaData.data(), metaSize);
         }
     }
-
-    for (const auto& member : chatMembers) {
-        int memberId = member.getUserId();
-
-        if (clientSockets.find(memberId) != clientSockets.end()) {
-            auto client = clientSockets[memberId];
-            if (client->send(packet) != sf::Socket::Done) {
-                spdlog::error("Failed to send message to user {} in chat {}", memberId, chatId);
-            }
-            else {
-                spdlog::info("Message sent to user {} in chat {}", memberId, chatId);
-            }
-        }
-    }
 }
-
-
 
 void ChatServer::broadcastMessage(const std::string& message) {
     std::lock_guard<std::mutex> lock(queueMutex);

@@ -71,6 +71,7 @@ static bool initIMgui(sf::RenderWindow& window)
     if (!ImGui::SFML::Init(window))
         return false;
     ImGuiIO& io = ImGui::GetIO();
+    io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
     io.Fonts->Clear();
     static ImWchar ranges[] = { 0x1, 0xFFFF, 0 };
     static ImFontConfig cfg;
@@ -169,11 +170,14 @@ class MainWindow
     std::map<int, std::shared_ptr<Message>> messageList;
     std::vector<std::shared_ptr<ChatMember>> chatMemberList;
     std::map<int, Notification> notificationList;
-    std::map<int, Media> mediaList;
+    std::map<int, std::shared_ptr<Media>> mediaList;
     std::map<int, Reaction> reactionList;
     std::unordered_map<int, ImTextureID> avatarTextures;
     
 
+    std::future<std::vector<std::string>> imageFilePathFuture;
+    bool isImageFileSelected = false;
+    std::vector<std::string> selectedImageFilePath;
 
     std::shared_ptr<Chat> currentChat;
 
@@ -219,7 +223,7 @@ private:
     void sendNewPrivateChatRequest(int UserId);
     void sendGetUserChatsRequest();
     void sendGetMediaDataRequest();
-    void GetMessageMedia(sf::Packet& packet, std::shared_ptr<Message> newMessage, const json& response);
+    void GetMessageMedia(sf::Packet& packet, const json& response, std::shared_ptr<Message> newMessage = nullptr);
     void sendMessage(const std::string& message);
     void sendMessage(const std::string& message, const PlotData& plotData);
     void processServerResponse(sf::Packet& packet);

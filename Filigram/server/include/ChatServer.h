@@ -32,9 +32,11 @@ private:
     std::unordered_map<int, std::shared_ptr<sf::TcpSocket>> clientSockets;
 
     void handleClient(std::shared_ptr<sf::TcpSocket> client);
+    void broadcastMessage(const std::string& message);
     void broadcastMessage(const json& messageJson, std::vector<int> usersId);
     void broadcastMessageToChat(int chatId, const json& messageJson);
-    void broadcastMessage(const std::string& message);
+    void sendResponse(sf::TcpSocket* client, const json& response);
+    void pushMediaToPacket(sf::Packet& packet, const json& messageJson);
     void startPingThread();
     std::shared_ptr<Media> generatePlot(const json& plotData, int messageId);
 };

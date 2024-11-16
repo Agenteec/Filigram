@@ -1,4 +1,5 @@
 ﻿#include <MainWindow.h>
+#include <fileDialog.h>
 
 
 MainWindow::MainWindow() :
@@ -497,18 +498,7 @@ void MainWindow::chatImWindow(bool isOpen) {
         auto sender = message.second->user;
 
         if (!sender) continue;
-        for (auto& [mediaId, media] : message.second->getMedia()) {
-            if (media->getMediaType() == "plot") {
-                
-                double* xData = reinterpret_cast< double*>( media->data.data());
-                double* yData = reinterpret_cast< double*>( media->data.data()+ (media->data.size()/2));
-                std::string name = "##Plot" + std::to_string(mediaId);
-                if (ImPlot::BeginPlot(name.c_str())) {
-                    ImPlot::PlotLine(media->metaData["expression"].get<std::string>().c_str(), xData, yData, media->data.size() / 2 / sizeof(double));
-                    ImPlot::EndPlot();
-                }
-            }
-        }
+
         if (lastSenderId != sender->getId()) {
             ImGui::Image((void*)reinterpret_cast<ImTextureID>(sender->getProfilePictureTexture()->getNativeHandle()), ImVec2(40, 40));
             ImGui::SameLine();
@@ -534,6 +524,42 @@ void MainWindow::chatImWindow(bool isOpen) {
             ImGui::EndPopup();
         }
         ImGui::TextWrapped("%s", message.second->getMessageText().c_str());
+        for (auto& [mediaId, media] : message.second->getMedia()) {
+            if (media->getMediaType() == "plot") {
+
+                double* xData = reinterpret_cast<double*>(media->data.data());
+                double* yData = reinterpret_cast<double*>(media->data.data() + (media->data.size() / 2));
+                std::string name = "##Plot" + std::to_string(mediaId);
+                if (ImPlot::BeginPlot(name.c_str())) {
+                    ImPlot::PlotLine((!media->metaData.empty() ? media->metaData["expression"].get<std::string>().c_str(): "##"), xData, yData, media->data.size() / 2 / sizeof(double));
+                    ImPlot::EndPlot();
+                }
+                std::string info = "Информация ##" + media->getMediaPath();
+                if (!media->metaData.empty() && ImGui::CollapsingHeader(info.c_str())) {
+                    ImGui::BeginGroup();
+                    ImGui::Text("f(x) = %s", media->metaData["expression"].get<std::string>().c_str());
+                    ImGui::Text("x принадлежит [%f; %f]", media->metaData["x_begin"].get<double>(), media->metaData["x_end"].get<double>());
+                    ImGui::Text("Шаг по x: %f", media->metaData["x_step"].get<double>());
+                    if (media->metaData["coefficients"].is_object()) {
+                        for (const auto& [name, value] : media->metaData["coefficients"].items()) {
+                            double coeffValue = value.get<double>();
+                            ImGui::Text("%s: %f", name.c_str(), coeffValue);
+                        }
+                    }
+                    else {
+                        ImGui::Text("Коэффициенты отсутствуют.");
+                    }
+                    ImGui::EndGroup();
+                    ImGui::Separator();
+                }
+            }
+            if (media->getMediaType() == "image")
+            {
+                sf::Uint8* xData = reinterpret_cast<sf::Uint8*>(media->data.data());
+                ImGui::Image((void*)media->data.data(), ImVec2(100, 150));
+                //--------------
+            }
+        }
 
     }
 
@@ -585,12 +611,38 @@ void MainWindow::chatImWindow(bool isOpen) {
         if (ImGui::MenuItem("График")) {
             onPlotEditor = true;
         }
+        if (ImGui::MenuItem("Изображение"))
+        {
+            if (imageFilePathFuture.valid() == false) {
+                imageFilePathFuture = std::async(std::launch::async, SelectImageFileAsync);
+            }
+
+        }
         if (ImGui::MenuItem("...")) {
 
         }
         ImGui::EndPopup();
     }
     ImGui::End();
+
+    if(imageFilePathFuture.valid()) {
+        if (imageFilePathFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            
+            selectedImageFilePath = imageFilePathFuture.get();
+            isImageFileSelected = true;
+            imageFilePathFuture = std::future<std::vector<std::string>>();
+        }
+    }
+
+    if (isImageFileSelected) {
+
+        for (const std::string& var : selectedImageFilePath) {
+            
+             spdlog::info(var);
+        }
+        //loadImage(selectedFilePath);
+        isImageFileSelected = false;
+    }
 }
 
 void MainWindow::chatInfoWindow(bool isOpen) {
@@ -996,8 +1048,6 @@ void MainWindow::sendGetUserChatsRequest() {
 
 void MainWindow::sendGetMediaDataRequest()
 {
-    //Нужно будет сделать защиту от несанкционированного доступа
-
     json mediaIdsJson = json::array();
     for (auto id : mediaLoadIdVec)mediaIdsJson.push_back(id);
     mediaLoadIdVec.clear();
@@ -1011,7 +1061,7 @@ void MainWindow::sendGetMediaDataRequest()
     cv.notify_one();
 }
 
-void MainWindow::GetMessageMedia(sf::Packet& packet, std::shared_ptr<Message> newMessage, const json& response)
+void MainWindow::GetMessageMedia(sf::Packet& packet, const json& response, std::shared_ptr<Message> newMessage)
 {
     sf::Uint32 mediaCount;
     packet >> mediaCount;
@@ -1058,15 +1108,19 @@ void MainWindow::GetMessageMedia(sf::Packet& packet, std::shared_ptr<Message> ne
         spdlog::info(response.dump());
 
         spdlog::info(mediaItem.dump());
-        auto media = std::make_shared<Media>(
+        auto media = mediaList[mediaItem["media_id"]];
+        if(!media)
+        {
+            media = std::make_shared<Media>(
             mediaItem["media_id"],
-            newMessage->getId(),
+            !newMessage ? mediaItem["message_id"].get<int>() : newMessage->getId(),
             mediaItem["media_type"],
             mediaItem["media_path"],
             mediaItem["meta_path"],
             mediaItem["created_at"]
         );
-
+        mediaList[media->getId()] = media;
+        }
         std::string mediaFilePath = mediaItem["media_path"];
         std::ofstream outFile(mediaFilePath, std::ios::binary);
         if (outFile.is_open()) {
@@ -1093,8 +1147,8 @@ void MainWindow::GetMessageMedia(sf::Packet& packet, std::shared_ptr<Message> ne
         }
         media->metaData = metaJson;
         media->data = mediaData;
-
-        newMessage->addMedia(media);
+        if (newMessage)
+            newMessage->addMedia(media);
     }
 }
 
@@ -1136,7 +1190,7 @@ void MainWindow::processServerResponse(sf::Packet& packet) {
                 newMessage->user = userIt->second;
             }
 
-            GetMessageMedia(packet, newMessage, response);
+            GetMessageMedia(packet, response, newMessage);
 
             chat->addMessage(newMessage);
             messageList[messageId] = newMessage;
@@ -1216,6 +1270,15 @@ void MainWindow::processServerResponse(sf::Packet& packet) {
                 userList[userId]->setLastName(response["user_last_name"]);
             if (!response["user_date_of_birth"].empty())
                 userList[userId]->setDateOfBirth( response["user_date_of_birth"]);
+        }
+    }
+    else if (action == "get_media_data")
+    {
+        if (response["status"] == "success") {
+            GetMessageMedia(packet, response);
+        }
+        else {
+            spdlog::error("Getting media error: {}", response["message"].get<std::string>());
         }
     }
     else if(action == "get_user_chats") {
@@ -1312,16 +1375,15 @@ void MainWindow::processServerResponse(sf::Packet& packet) {
                             std::string metaPath = medJson["meta_path"];
                             
                             int messageId = medJson["message_id"];
-                            namespace fs = std::filesystem;
-                            if (fs::exists(mediaPath) && fs::exists(metaPath)) {
-                                auto mediaItem = std::make_shared<Media>(
-                                    mediaId, messageId, mediaType, mediaPath, metaPath, createdAt
-                                );
+                            auto mediaItem = std::make_shared<Media>(mediaId, messageId, mediaType, mediaPath, metaPath, createdAt);
+                            mediaList[mediaItem->getId()] = mediaItem;
+                            message->addMedia(mediaItem);
+                            if (std::filesystem::exists(mediaPath) && std::filesystem::exists(metaPath)) {
+                                
                                 mediaItem->data = readFile(mediaPath);
                                 auto meta = readFile(metaPath);
 
                                 mediaItem->metaData = json::parse(meta.begin(), meta.end());
-                                message->addMedia(mediaItem);
                             }
                             else
                             {
