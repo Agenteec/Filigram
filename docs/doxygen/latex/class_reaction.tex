@@ -1,0 +1,151 @@
+\doxysection{Reaction Class Reference}
+\hypertarget{class_reaction}{}\label{class_reaction}\index{Reaction@{Reaction}}
+
+
+{\ttfamily \#include $<$SQLModels.\+hpp$>$}
+
+
+
+Inheritance diagram for Reaction\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=199pt]{class_reaction__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Reaction\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=199pt]{class_reaction__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_reaction_aa71f8ee3119a192aaa5a621a7737e005}{Reaction}} (int \mbox{\hyperlink{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5}{id}}, int \mbox{\hyperlink{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}{message\+Id}}, int \mbox{\hyperlink{class_reaction_a1c9f923af092e8a608283728f525d457}{user\+Id}}, const std\+::string \&\mbox{\hyperlink{class_reaction_ae087e0b8f5e63f959a768305a635427a}{reaction\+Type}}, const std\+::string \&\mbox{\hyperlink{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}{created\+At}})
+\item 
+int \mbox{\hyperlink{class_reaction_a7d60b3dc060de50c70d1b72c07d7f4c9}{get\+Id}} () const
+\item 
+int \mbox{\hyperlink{class_reaction_a3371d1c35e00963f404f02c57054bd0d}{get\+Message\+Id}} () const
+\item 
+int \mbox{\hyperlink{class_reaction_a622388b156a334cf8d1078174db84fb7}{get\+User\+Id}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_reaction_a6701df82a6a7cbd132cfdacfc2c37b65}{get\+Reaction\+Type}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_reaction_afa9d048ba6319d602f7f5d303f03e72a}{get\+Created\+At}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_user}{User}} $>$ \mbox{\hyperlink{class_reaction_a1de277a464b856881c8553f9443cf2be}{user}} \{ nullptr \}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_message}{Message}} $>$ \mbox{\hyperlink{class_reaction_a6994237e10d7e36336a5b0e1d9c36078}{message}} \{ nullptr \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5}{id}}
+\item 
+int \mbox{\hyperlink{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}{message\+Id}}
+\item 
+int \mbox{\hyperlink{class_reaction_a1c9f923af092e8a608283728f525d457}{user\+Id}}
+\item 
+std\+::string \mbox{\hyperlink{class_reaction_ae087e0b8f5e63f959a768305a635427a}{reaction\+Type}}
+\item 
+std\+::string \mbox{\hyperlink{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}{created\+At}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_reaction_aa71f8ee3119a192aaa5a621a7737e005}\index{Reaction@{Reaction}!Reaction@{Reaction}}
+\index{Reaction@{Reaction}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{Reaction()}{Reaction()}}
+{\footnotesize\ttfamily \label{class_reaction_aa71f8ee3119a192aaa5a621a7737e005} 
+Reaction\+::\+Reaction (\begin{DoxyParamCaption}\item[{int}]{id}{, }\item[{int}]{message\+Id}{, }\item[{int}]{user\+Id}{, }\item[{const std\+::string \&}]{reaction\+Type}{, }\item[{const std\+::string \&}]{created\+At}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_reaction_afa9d048ba6319d602f7f5d303f03e72a}\index{Reaction@{Reaction}!getCreatedAt@{getCreatedAt}}
+\index{getCreatedAt@{getCreatedAt}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{getCreatedAt()}{getCreatedAt()}}
+{\footnotesize\ttfamily \label{class_reaction_afa9d048ba6319d602f7f5d303f03e72a} 
+const std\+::string \& Reaction\+::get\+Created\+At (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_reaction_a7d60b3dc060de50c70d1b72c07d7f4c9}\index{Reaction@{Reaction}!getId@{getId}}
+\index{getId@{getId}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{getId()}{getId()}}
+{\footnotesize\ttfamily \label{class_reaction_a7d60b3dc060de50c70d1b72c07d7f4c9} 
+int Reaction\+::get\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_reaction_a3371d1c35e00963f404f02c57054bd0d}\index{Reaction@{Reaction}!getMessageId@{getMessageId}}
+\index{getMessageId@{getMessageId}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{getMessageId()}{getMessageId()}}
+{\footnotesize\ttfamily \label{class_reaction_a3371d1c35e00963f404f02c57054bd0d} 
+int Reaction\+::get\+Message\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_reaction_a6701df82a6a7cbd132cfdacfc2c37b65}\index{Reaction@{Reaction}!getReactionType@{getReactionType}}
+\index{getReactionType@{getReactionType}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{getReactionType()}{getReactionType()}}
+{\footnotesize\ttfamily \label{class_reaction_a6701df82a6a7cbd132cfdacfc2c37b65} 
+const std\+::string \& Reaction\+::get\+Reaction\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_reaction_a622388b156a334cf8d1078174db84fb7}\index{Reaction@{Reaction}!getUserId@{getUserId}}
+\index{getUserId@{getUserId}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{getUserId()}{getUserId()}}
+{\footnotesize\ttfamily \label{class_reaction_a622388b156a334cf8d1078174db84fb7} 
+int Reaction\+::get\+User\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}\index{Reaction@{Reaction}!createdAt@{createdAt}}
+\index{createdAt@{createdAt}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{createdAt}{createdAt}}
+{\footnotesize\ttfamily \label{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9} 
+std\+::string Reaction\+::created\+At\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5}\index{Reaction@{Reaction}!id@{id}}
+\index{id@{id}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily \label{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5} 
+int Reaction\+::id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_reaction_a6994237e10d7e36336a5b0e1d9c36078}\index{Reaction@{Reaction}!message@{message}}
+\index{message@{message}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{message}{message}}
+{\footnotesize\ttfamily \label{class_reaction_a6994237e10d7e36336a5b0e1d9c36078} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_message}{Message}}$>$ Reaction\+::message \{ nullptr \}}
+
+\Hypertarget{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}\index{Reaction@{Reaction}!messageId@{messageId}}
+\index{messageId@{messageId}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{messageId}{messageId}}
+{\footnotesize\ttfamily \label{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d} 
+int Reaction\+::message\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_reaction_ae087e0b8f5e63f959a768305a635427a}\index{Reaction@{Reaction}!reactionType@{reactionType}}
+\index{reactionType@{reactionType}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{reactionType}{reactionType}}
+{\footnotesize\ttfamily \label{class_reaction_ae087e0b8f5e63f959a768305a635427a} 
+std\+::string Reaction\+::reaction\+Type\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_reaction_a1de277a464b856881c8553f9443cf2be}\index{Reaction@{Reaction}!user@{user}}
+\index{user@{user}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{user}{user}}
+{\footnotesize\ttfamily \label{class_reaction_a1de277a464b856881c8553f9443cf2be} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_user}{User}}$>$ Reaction\+::user \{ nullptr \}}
+
+\Hypertarget{class_reaction_a1c9f923af092e8a608283728f525d457}\index{Reaction@{Reaction}!userId@{userId}}
+\index{userId@{userId}!Reaction@{Reaction}}
+\doxysubsubsection{\texorpdfstring{userId}{userId}}
+{\footnotesize\ttfamily \label{class_reaction_a1c9f923af092e8a608283728f525d457} 
+int Reaction\+::user\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Filigram/include/data/\mbox{\hyperlink{_s_q_l_models_8hpp}{SQLModels.\+hpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,143 @@
+\doxysection{Chat\+Member Class Reference}
+\hypertarget{class_chat_member}{}\label{class_chat_member}\index{ChatMember@{ChatMember}}
+
+
+{\ttfamily \#include $<$SQLModels.\+hpp$>$}
+
+
+
+Inheritance diagram for Chat\+Member\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=216pt]{class_chat_member__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Chat\+Member\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=216pt]{class_chat_member__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_chat_member_a63f4e34eda0b102eb2a42bf483348a64}{Chat\+Member}} (int \mbox{\hyperlink{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}{chat\+Id}}, int \mbox{\hyperlink{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}{user\+Id}}, const std\+::string \&\mbox{\hyperlink{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}{joined\+At}}, const std\+::string \&\mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}}="{}member"{})
+\item 
+int \mbox{\hyperlink{class_chat_member_a366147ccaea38ed83375e995c620cbbb}{get\+Chat\+Id}} () const
+\item 
+int \mbox{\hyperlink{class_chat_member_a4211d03b762f6038b3a6994fab8c06cd}{get\+User\+Id}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_chat_member_a18ae7374686323e95e133bb3846fc0bf}{get\+Joined\+At}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_chat_member_a1017f0698d545a302b56bafcf23c9ee7}{get\+Role}} () const
+\item 
+void \mbox{\hyperlink{class_chat_member_a5104191d231260c328ec175f946ffeed}{set\+Role}} (const std\+::string \&new\+Role)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_user}{User}} $>$ \mbox{\hyperlink{class_chat_member_ab77b25553c0b4cdccbab1ea6fe270ac5}{user}} \{ nullptr \}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chat}{Chat}} $>$ \mbox{\hyperlink{class_chat_member_a6aef3aad286d5ee7c5774160edafdbaa}{chat}} \{ nullptr \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}{chat\+Id}}
+\item 
+int \mbox{\hyperlink{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}{user\+Id}}
+\item 
+std\+::string \mbox{\hyperlink{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}{joined\+At}}
+\item 
+std\+::string \mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_chat_member_a63f4e34eda0b102eb2a42bf483348a64}\index{ChatMember@{ChatMember}!ChatMember@{ChatMember}}
+\index{ChatMember@{ChatMember}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{ChatMember()}{ChatMember()}}
+{\footnotesize\ttfamily \label{class_chat_member_a63f4e34eda0b102eb2a42bf483348a64} 
+Chat\+Member\+::\+Chat\+Member (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{, }\item[{int}]{user\+Id}{, }\item[{const std\+::string \&}]{joined\+At}{, }\item[{const std\+::string \&}]{role}{ = {\ttfamily "{}member"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_chat_member_a366147ccaea38ed83375e995c620cbbb}\index{ChatMember@{ChatMember}!getChatId@{getChatId}}
+\index{getChatId@{getChatId}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{getChatId()}{getChatId()}}
+{\footnotesize\ttfamily \label{class_chat_member_a366147ccaea38ed83375e995c620cbbb} 
+int Chat\+Member\+::get\+Chat\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_member_a18ae7374686323e95e133bb3846fc0bf}\index{ChatMember@{ChatMember}!getJoinedAt@{getJoinedAt}}
+\index{getJoinedAt@{getJoinedAt}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{getJoinedAt()}{getJoinedAt()}}
+{\footnotesize\ttfamily \label{class_chat_member_a18ae7374686323e95e133bb3846fc0bf} 
+const std\+::string \& Chat\+Member\+::get\+Joined\+At (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_member_a1017f0698d545a302b56bafcf23c9ee7}\index{ChatMember@{ChatMember}!getRole@{getRole}}
+\index{getRole@{getRole}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{getRole()}{getRole()}}
+{\footnotesize\ttfamily \label{class_chat_member_a1017f0698d545a302b56bafcf23c9ee7} 
+const std\+::string \& Chat\+Member\+::get\+Role (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_member_a4211d03b762f6038b3a6994fab8c06cd}\index{ChatMember@{ChatMember}!getUserId@{getUserId}}
+\index{getUserId@{getUserId}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{getUserId()}{getUserId()}}
+{\footnotesize\ttfamily \label{class_chat_member_a4211d03b762f6038b3a6994fab8c06cd} 
+int Chat\+Member\+::get\+User\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_member_a5104191d231260c328ec175f946ffeed}\index{ChatMember@{ChatMember}!setRole@{setRole}}
+\index{setRole@{setRole}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{setRole()}{setRole()}}
+{\footnotesize\ttfamily \label{class_chat_member_a5104191d231260c328ec175f946ffeed} 
+void Chat\+Member\+::set\+Role (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{new\+Role}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_chat_member_a6aef3aad286d5ee7c5774160edafdbaa}\index{ChatMember@{ChatMember}!chat@{chat}}
+\index{chat@{chat}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{chat}{chat}}
+{\footnotesize\ttfamily \label{class_chat_member_a6aef3aad286d5ee7c5774160edafdbaa} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_chat}{Chat}}$>$ Chat\+Member\+::chat \{ nullptr \}}
+
+\Hypertarget{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}\index{ChatMember@{ChatMember}!chatId@{chatId}}
+\index{chatId@{chatId}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{chatId}{chatId}}
+{\footnotesize\ttfamily \label{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5} 
+int Chat\+Member\+::chat\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}\index{ChatMember@{ChatMember}!joinedAt@{joinedAt}}
+\index{joinedAt@{joinedAt}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{joinedAt}{joinedAt}}
+{\footnotesize\ttfamily \label{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113} 
+std\+::string Chat\+Member\+::joined\+At\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}\index{ChatMember@{ChatMember}!role@{role}}
+\index{role@{role}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{role}{role}}
+{\footnotesize\ttfamily \label{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390} 
+std\+::string Chat\+Member\+::role\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_member_ab77b25553c0b4cdccbab1ea6fe270ac5}\index{ChatMember@{ChatMember}!user@{user}}
+\index{user@{user}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{user}{user}}
+{\footnotesize\ttfamily \label{class_chat_member_ab77b25553c0b4cdccbab1ea6fe270ac5} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_user}{User}}$>$ Chat\+Member\+::user \{ nullptr \}}
+
+\Hypertarget{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}\index{ChatMember@{ChatMember}!userId@{userId}}
+\index{userId@{userId}!ChatMember@{ChatMember}}
+\doxysubsubsection{\texorpdfstring{userId}{userId}}
+{\footnotesize\ttfamily \label{class_chat_member_a36f4c18b65b4a4382684f62c0c385119} 
+int Chat\+Member\+::user\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Filigram/include/data/\mbox{\hyperlink{_s_q_l_models_8hpp}{SQLModels.\+hpp}}\end{DoxyCompactItemize}

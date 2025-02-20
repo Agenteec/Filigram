@@ -1,0 +1,48 @@
+\doxysection{Chat\+Server.\+h}
+\hypertarget{_chat_server_8h_source}{}\label{_chat_server_8h_source}\index{Filigram/server/include/ChatServer.h@{Filigram/server/include/ChatServer.h}}
+\mbox{\hyperlink{_chat_server_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <SFML/Network.hpp>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <nlohmann/json.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <thread>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <filesystem>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <condition\_variable>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <spdlog/spdlog.h>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <\mbox{\hyperlink{_s_q_l_models_8hpp}{data/SQLModels.hpp}}>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <\mbox{\hyperlink{_database_manager_8h}{data/DatabaseManager.h}}>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}../calc/Calc.h"{}}}
+\DoxyCodeLine{00019\ \textcolor{keyword}{using\ }\mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}}\ =\ nlohmann::json;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_chat_server_adfcd1fa7331608f5bc1f4ab5aef3c438}{ChatServer}}\ \{}
+\DoxyCodeLine{00025\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<char>\ \mbox{\hyperlink{class_chat_server_aab0cb3bbce324e329ae237a16b23d19a}{readFile}}(\textcolor{keyword}{const}\ std::string\&\ filePath);}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{class_chat_server_adfcd1fa7331608f5bc1f4ab5aef3c438}{ChatServer}}(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ port\ =\ 53000);}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_a223e448620bdeb0cfdc51f658dbac4de}{run}}();}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00031\ \ \ \ \ sf::TcpListener\ \mbox{\hyperlink{class_chat_server_a747ba87512a16b2aefe8c6f663f273fc}{listener}};}
+\DoxyCodeLine{00032\ \ \ \ \ \mbox{\hyperlink{class_database_manager}{DatabaseManager}}\ \mbox{\hyperlink{class_chat_server_afd49703ec6803e20f7a6b801b1fb3718}{dbManager}};}
+\DoxyCodeLine{00033\ \ \ \ \ std::queue<std::string>\ \mbox{\hyperlink{class_chat_server_ad60da32ac25a633c97910bca88a8f7e0}{messageQueue}};}
+\DoxyCodeLine{00034\ \ \ \ \ std::mutex\ \mbox{\hyperlink{class_chat_server_a894c53e36dd7f160c5354b4c2de02051}{queueMutex}};}
+\DoxyCodeLine{00035\ \ \ \ \ std::condition\_variable\ \mbox{\hyperlink{class_chat_server_aed356d88e104c721723791bc7d71df48}{cv}};}
+\DoxyCodeLine{00036\ \ \ \ \ std::unordered\_map<int,\ std::shared\_ptr<sf::TcpSocket>>\ \mbox{\hyperlink{class_chat_server_a5bed63ae278d5b68460395196e77bb4a}{clientSockets}};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_abdda428ea49ed09a5353352a021c7793}{handleClient}}(std::shared\_ptr<sf::TcpSocket>\ client);}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_a34083dfabe100b917ebcae853789d4e0}{broadcastMessage}}(\textcolor{keyword}{const}\ std::string\&\ message);}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_a34083dfabe100b917ebcae853789d4e0}{broadcastMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}}\&\ messageJson,\ std::vector<int>\ usersId);}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_aa69678cd13bc345653e7b083de60248a}{broadcastMessageToChat}}(\textcolor{keywordtype}{int}\ chatId,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}}\&\ messageJson);}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_a353c644667da6d1b8ebc33d1b58dd15c}{sendResponse}}(sf::TcpSocket*\ client,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}}\&\ response);}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_aaebad68e54cfeade0adf09e8a37aa1a4}{pushMediaToPacket}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}}\&\ messageJson);}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_server_a1c4cf6a7e2cba04640c894143fef8277}{startPingThread}}();}
+\DoxyCodeLine{00045\ \ \ \ \ std::shared\_ptr<Media>\ \mbox{\hyperlink{class_chat_server_acc6ec8f242c19c92bf2392037dc567e7}{generatePlot}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}}\&\ plotData,\ \textcolor{keywordtype}{int}\ messageId);}
+\DoxyCodeLine{00046\ \};}
+
+\end{DoxyCode}

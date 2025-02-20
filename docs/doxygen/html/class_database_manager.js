@@ -1,0 +1,38 @@
+var class_database_manager =
+[
+    [ "StatusCode", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399b", [
+      [ "SUCCESS", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399bad0749aaba8b833466dfcbb0428e4f89c", null ],
+      [ "USER_ALREADY_EXISTS", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399baf5c81979cff85c3a2c900fe4261baa13", null ],
+      [ "INSERT_ERROR", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399ba7e7bca2bccaf500498324e016c04ad12", null ],
+      [ "LOGIN_FAILED", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399ba442abaa57882f3196101a0885b9a5493", null ],
+      [ "USER_NOT_FOUND", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399bae93b8c2f8d82fe495a45678d7c5761e4", null ],
+      [ "_ERROR", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399ba059744e09a6756c2bcd4757f25d007d6", null ],
+      [ "Insufficient_Rights_ERROR", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399baf6002bfcb23d09e3ba64d0d2c11a970e", null ],
+      [ "COUNT", "class_database_manager.html#a002e0f2d0e74ca1d7886f4f84201399ba4905ac9d6a22bdfc1ae096094ce6248d", null ]
+    ] ],
+    [ "DatabaseManager", "class_database_manager.html#ad1d6dec39200221f1958f4d20dcf62aa", null ],
+    [ "~DatabaseManager", "class_database_manager.html#ae9b3a5da1e04fbb00faf8a034da1d063", null ],
+    [ "addChatMember", "class_database_manager.html#aaafef4468ebc19ffbc54bcea6d6e0a65", null ],
+    [ "createChat", "class_database_manager.html#ab2f82ad1b30271ecd916430f8526decf", null ],
+    [ "createTables", "class_database_manager.html#a306bc0bd8cc532b7344d6c4e9373abb3", null ],
+    [ "deleteUser", "class_database_manager.html#a49f1049c62119f0444118b48f4f65dd0", null ],
+    [ "executeSQL", "class_database_manager.html#a8707702182918a933bb2c335accd2a74", null ],
+    [ "GetChat", "class_database_manager.html#af59d5ab0a9e660879bdcf6d470351033", null ],
+    [ "getChatMembers", "class_database_manager.html#a5a40e09b37d37e234d5241764fe3c887", null ],
+    [ "getCurrentTime", "class_database_manager.html#a66227120d4e9b3405f927c920b2d2f0e", null ],
+    [ "getMediaById", "class_database_manager.html#a2afe05ad0f06405b38b2bd7183f6b1d4", null ],
+    [ "getMediaByMessageId", "class_database_manager.html#ab6a065a943b39dcd4db774c930fc0f17", null ],
+    [ "getMessageById", "class_database_manager.html#a05dc0c6728bc0eb8b99209f08425a031", null ],
+    [ "getMessages", "class_database_manager.html#a13ff3ff287033aa578d2385afd6e2b23", null ],
+    [ "GetUser", "class_database_manager.html#a32862608ca8a71286967b8de17f27b62", null ],
+    [ "getUserChats", "class_database_manager.html#ab90118986ccf36b0ee6ca4932aafcf3b", null ],
+    [ "insertMedia", "class_database_manager.html#a2a7ca7a5ce3e4dd47c1b613fdcb2d3f4", null ],
+    [ "insertMedia", "class_database_manager.html#a47c3e77ae83407952d9f30876b847436", null ],
+    [ "insertMessage", "class_database_manager.html#aeefa67d243c30723537f8b62f2cb25cc", null ],
+    [ "isUserInChat", "class_database_manager.html#aba53d39b50b6f22a7102b69d411f9e28", null ],
+    [ "loginUser", "class_database_manager.html#aa8779a853ad44dd40fb052a984c4f59a", null ],
+    [ "registerUser", "class_database_manager.html#aa9de5cb5f13b0031014b75bd8bac3f48", null ],
+    [ "removeChatMember", "class_database_manager.html#a3e693240511c6ba17f169bafe0ff6997", null ],
+    [ "updateUserProfile", "class_database_manager.html#a260d0561acf5b99596a3044f2b3aa0e9", null ],
+    [ "db", "class_database_manager.html#a5341532377ae75614a5e9ccf81e18355", null ]
+];

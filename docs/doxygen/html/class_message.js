@@ -1,0 +1,25 @@
+var class_message =
+[
+    [ "Message", "class_message.html#a9335c7c01d2eb6be64d0d3c436c53db2", null ],
+    [ "addMedia", "class_message.html#ae207b4ead5d6fcb2aa51ba9d619ca150", null ],
+    [ "getChatId", "class_message.html#a0e03634d99565efd8b88a7392795b274", null ],
+    [ "getCreatedAt", "class_message.html#a7d1b23959f8424eb7be8f786859ed9d0", null ],
+    [ "getId", "class_message.html#a1ce5c3d2cf26d92ce93c6828f97e9ff3", null ],
+    [ "getMedia", "class_message.html#a6a6f0a3e8352f0b0af3106a87b097d2e", null ],
+    [ "getMessageText", "class_message.html#ab6d7eaf8b2ae05f4eac5da33649dad32", null ],
+    [ "getReplyToMessageId", "class_message.html#a404d6d1812482996ad406abd5ff39c2b", null ],
+    [ "getStatus", "class_message.html#a746b5db3ed3e5777f0886b4a71ae8e0c", null ],
+    [ "getUserId", "class_message.html#a31a70944ee562244a6703557f131be9c", null ],
+    [ "removeMedia", "class_message.html#a65469ca99ed8ff02d28bd4fce9a0630b", null ],
+    [ "_media", "class_message.html#a4721b2fa78891e054cebf189a0b771e5", null ],
+    [ "chat", "class_message.html#a062925c63b806612ff0b9ba45a3d1771", null ],
+    [ "chatId", "class_message.html#a00a97ccee4fd3dc4a012f851a23553fe", null ],
+    [ "createdAt", "class_message.html#a4291de2926b07397ba52efaf842a281d", null ],
+    [ "id", "class_message.html#ab1d21c0ed16844f0d643acf6e85cdae3", null ],
+    [ "messageText", "class_message.html#a1194dfc13709f825f855905ffb0d79b5", null ],
+    [ "replyToMessage", "class_message.html#aeb97c3b9855a356e9cd3201b20e6ff4e", null ],
+    [ "replyToMessageId", "class_message.html#accbd846c50057f69d560863ef71ca54c", null ],
+    [ "status", "class_message.html#a7995fbdb42cb7c5d463cdea5bde1876b", null ],
+    [ "user", "class_message.html#a5d90078c6394356473409006827cf9a7", null ],
+    [ "userId", "class_message.html#a35188c147d1d80ae754a9aa4c77b3a76", null ]
+];

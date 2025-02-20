@@ -1,0 +1,274 @@
+\doxysection{SQLModels.\+hpp}
+\hypertarget{_s_q_l_models_8hpp_source}{}\label{_s_q_l_models_8hpp_source}\index{Filigram/include/data/SQLModels.hpp@{Filigram/include/data/SQLModels.hpp}}
+\mbox{\hyperlink{_s_q_l_models_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <nlohmann/json.hpp>}}
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_user}{User}};}
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_chat}{Chat}};}
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_message}{Message}};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_media_ad7192cad77728f4b2993f53c51ac64aa}{Media}}\ :\ \textcolor{keyword}{public}\ std::enable\_shared\_from\_this<Media>\ \{}
+\DoxyCodeLine{00015\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ \ \ \ \ \mbox{\hyperlink{class_media_ad7192cad77728f4b2993f53c51ac64aa}{Media}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}},}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_ad593aea48b506fb87a52cd4b63f7a008}{createdAt}},\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_media_a5a5650c14eab0924706a76ffd2f50fcf}{size}}\ =\ 0)}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_media_a4073cb4590dd0d25093756c54af410ce}{id}}(\mbox{\hyperlink{class_media_a4073cb4590dd0d25093756c54af410ce}{id}}),\ \mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}}(\mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}}),\ \mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}}(\mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}}),\ \mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}}(\mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}}),\ \mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}}(\mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}}),}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_media_ad593aea48b506fb87a52cd4b63f7a008}{createdAt}}(\mbox{\hyperlink{class_media_ad593aea48b506fb87a52cd4b63f7a008}{createdAt}}),\ \mbox{\hyperlink{class_media_a5a5650c14eab0924706a76ffd2f50fcf}{size}}(\mbox{\hyperlink{class_media_a5a5650c14eab0924706a76ffd2f50fcf}{size}})\ \{\}}
+\DoxyCodeLine{00020\ \ \ \ \ \mbox{\hyperlink{class_media_a68ac18d51dcbc6885ff0eebb161ee1bd}{Media}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}},}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}})}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_media_a4073cb4590dd0d25093756c54af410ce}{id}}(\mbox{\hyperlink{class_media_a4073cb4590dd0d25093756c54af410ce}{id}}),\ \mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}}(\mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}}),\ \mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}}(\mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}}),\ \mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}}(\mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}}),\ \mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}}(\mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}}),}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_media_ad593aea48b506fb87a52cd4b63f7a008}{createdAt}}(\textcolor{stringliteral}{"{}"{}}),\ \mbox{\hyperlink{class_media_a5a5650c14eab0924706a76ffd2f50fcf}{size}}(0)\ \{\}}
+\DoxyCodeLine{00024\ \ \ \ \ \mbox{\hyperlink{class_media_a6e2ee1b8da6d724fb40a00ff4101d2df}{Media}}()\ :\mbox{\hyperlink{class_media_a4073cb4590dd0d25093756c54af410ce}{id}}(-\/1)\ \{\}}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_media_ab0386acf23c307d3e55031daccf2214f}{getId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_media_a4073cb4590dd0d25093756c54af410ce}{id}};\ \}}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_media_a6f6bb3a5790ccd70e3947adcec547d8e}{getMessageId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}};\ \}}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_acdb3a16bf9040c6de382a79ad073d1f0}{getMediaType}}()\textcolor{keyword}{const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}};\ \}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a5eb3f4bbc125927bfcff14f1f4a015da}{getMetaPath}}()\textcolor{keyword}{const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}};\ \}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_a339cab898858107e1e8ef0b42c5ed939}{getMediaPath}}()\textcolor{keyword}{const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}};\ \}}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_media_aba487dc7b71bec263332f286fd22ac27}{getCreatedAt}}()\textcolor{keyword}{const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_media_ad593aea48b506fb87a52cd4b63f7a008}{createdAt}};\ \}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ std::shared\_ptr<Message>\ \mbox{\hyperlink{class_media_a1a3321ef5f1b172d0de4ccf76a18fc64}{message}}\{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00033\ \ \ \ \ }
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_media_a778d308f686e612f5e5519b0a3edd82c}{setId}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id})\ \{\ this-\/>\textcolor{keywordtype}{id}\ =\ id;\ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ nlohmann::json\ \mbox{\hyperlink{class_media_a8d7115e92fa5164f50a97d15dad4c6b8}{metaData}};}
+\DoxyCodeLine{00038\ \ \ \ \ std::vector<char>\ \mbox{\hyperlink{class_media_ad1b8fb52de2b9b8281ab684763d6e693}{data}};}
+\DoxyCodeLine{00039\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_media_a4073cb4590dd0d25093756c54af410ce}{id}};}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_media_a967ed56f103d7993faa3d314e8288b13}{messageId}};}
+\DoxyCodeLine{00042\ \ \ \ \ std::string\ \mbox{\hyperlink{class_media_a8cf19514de4b2ee4d5ec526a2798b92f}{mediaType}};}
+\DoxyCodeLine{00043\ \ \ \ \ std::string\ \mbox{\hyperlink{class_media_a2378294b6ec3c7b5c038be8aba1594ec}{mediaPath}};}
+\DoxyCodeLine{00044\ \ \ \ \ std::string\ \mbox{\hyperlink{class_media_a9abafecf920f6f97ab6af8a1d41d0271}{metaPath}};}
+\DoxyCodeLine{00045\ \ \ \ \ std::string\ \mbox{\hyperlink{class_media_ad593aea48b506fb87a52cd4b63f7a008}{createdAt}};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_media_a5a5650c14eab0924706a76ffd2f50fcf}{size}};}
+\DoxyCodeLine{00048\ \};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_chat_member_a63f4e34eda0b102eb2a42bf483348a64}{ChatMember}}\ :\ \textcolor{keyword}{public}\ std::enable\_shared\_from\_this<ChatMember>\ \{}
+\DoxyCodeLine{00051\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00052\ \ \ \ \ \mbox{\hyperlink{class_chat_member_a63f4e34eda0b102eb2a42bf483348a64}{ChatMember}}(\textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}{chatId}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}{userId}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}{joinedAt}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}}\ =\ \textcolor{stringliteral}{"{}member"{}})}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}{chatId}}(\mbox{\hyperlink{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}{chatId}}),\ \mbox{\hyperlink{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}{userId}}(\mbox{\hyperlink{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}{userId}}),\ \mbox{\hyperlink{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}{joinedAt}}(\mbox{\hyperlink{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}{joinedAt}}),\ \mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}}(\mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}})\ \{\}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_member_a366147ccaea38ed83375e995c620cbbb}{getChatId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}{chatId}};\ \}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_member_a4211d03b762f6038b3a6994fab8c06cd}{getUserId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}{userId}};\ \}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_member_a18ae7374686323e95e133bb3846fc0bf}{getJoinedAt}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}{joinedAt}};\ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_member_a1017f0698d545a302b56bafcf23c9ee7}{getRole}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}};\ \}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_member_a5104191d231260c328ec175f946ffeed}{setRole}}(\textcolor{keyword}{const}\ std::string\&\ newRole)\ \{\ \mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}}\ =\ newRole;\ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ std::shared\_ptr<User>\ \mbox{\hyperlink{class_chat_member_ab77b25553c0b4cdccbab1ea6fe270ac5}{user}}\{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00062\ \ \ \ \ std::shared\_ptr<Chat>\ \mbox{\hyperlink{class_chat_member_a6aef3aad286d5ee7c5774160edafdbaa}{chat}}\{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_member_a5c6aa5ffc1af23d0ee60ef5e4b43bbd5}{chatId}};}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_member_a36f4c18b65b4a4382684f62c0c385119}{userId}};}
+\DoxyCodeLine{00067\ \ \ \ \ std::string\ \mbox{\hyperlink{class_chat_member_a4f562ee7246e48b3a9b6681b784c1113}{joinedAt}};}
+\DoxyCodeLine{00068\ \ \ \ \ std::string\ \mbox{\hyperlink{class_chat_member_a4159c65f4b5c89bbd316d8a35e33b390}{role}};\ \textcolor{comment}{//\ "{}admin"{},\ "{}member"{}}}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_message_a9335c7c01d2eb6be64d0d3c436c53db2}{Message}}\ :\ \textcolor{keyword}{public}\ std::enable\_shared\_from\_this<Message>\ \{}
+\DoxyCodeLine{00071\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00072\ \ \ \ \ \mbox{\hyperlink{class_message_a9335c7c01d2eb6be64d0d3c436c53db2}{Message}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id}\ =\ 0,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_a00a97ccee4fd3dc4a012f851a23553fe}{chatId}}\ =\ 0,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_a35188c147d1d80ae754a9aa4c77b3a76}{userId}}\ =\ 0,\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_message_a1194dfc13709f825f855905ffb0d79b5}{messageText}}\ =\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_message_a4291de2926b07397ba52efaf842a281d}{createdAt}}\ =\ \textcolor{stringliteral}{"{}"{}},}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}{status}}\ =\ \textcolor{stringliteral}{"{}sent"{}},\ std::optional<int>\ \mbox{\hyperlink{class_message_accbd846c50057f69d560863ef71ca54c}{replyToMessageId}}\ =\ std::nullopt)}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_message_ab1d21c0ed16844f0d643acf6e85cdae3}{id}}(\mbox{\hyperlink{class_message_ab1d21c0ed16844f0d643acf6e85cdae3}{id}}),\ \mbox{\hyperlink{class_message_a00a97ccee4fd3dc4a012f851a23553fe}{chatId}}(\mbox{\hyperlink{class_message_a00a97ccee4fd3dc4a012f851a23553fe}{chatId}}),\ \mbox{\hyperlink{class_message_a35188c147d1d80ae754a9aa4c77b3a76}{userId}}(\mbox{\hyperlink{class_message_a35188c147d1d80ae754a9aa4c77b3a76}{userId}}),\ \mbox{\hyperlink{class_message_a1194dfc13709f825f855905ffb0d79b5}{messageText}}(\mbox{\hyperlink{class_message_a1194dfc13709f825f855905ffb0d79b5}{messageText}}),}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_message_a4291de2926b07397ba52efaf842a281d}{createdAt}}(\mbox{\hyperlink{class_message_a4291de2926b07397ba52efaf842a281d}{createdAt}}),\ \mbox{\hyperlink{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}{status}}(\mbox{\hyperlink{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}{status}}),\ \mbox{\hyperlink{class_message_accbd846c50057f69d560863ef71ca54c}{replyToMessageId}}(\mbox{\hyperlink{class_message_accbd846c50057f69d560863ef71ca54c}{replyToMessageId}})\ \{\}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_a1ce5c3d2cf26d92ce93c6828f97e9ff3}{getId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_ab1d21c0ed16844f0d643acf6e85cdae3}{id}};\ \}}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_a0e03634d99565efd8b88a7392795b274}{getChatId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_a00a97ccee4fd3dc4a012f851a23553fe}{chatId}};\ \}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_a31a70944ee562244a6703557f131be9c}{getUserId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_a35188c147d1d80ae754a9aa4c77b3a76}{userId}};\ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_message_ab6d7eaf8b2ae05f4eac5da33649dad32}{getMessageText}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_a1194dfc13709f825f855905ffb0d79b5}{messageText}};\ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_message_a7d1b23959f8424eb7be8f786859ed9d0}{getCreatedAt}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_a4291de2926b07397ba52efaf842a281d}{createdAt}};\ \}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_message_a746b5db3ed3e5777f0886b4a71ae8e0c}{getStatus}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}{status}};\ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{const}\ std::optional<int>\&\ \mbox{\hyperlink{class_message_a404d6d1812482996ad406abd5ff39c2b}{getReplyToMessageId}}()\textcolor{keyword}{const\ \ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_accbd846c50057f69d560863ef71ca54c}{replyToMessageId}};\ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_message_ae207b4ead5d6fcb2aa51ba9d619ca150}{addMedia}}(std::shared\_ptr<Media>\ media)\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_message_a4721b2fa78891e054cebf189a0b771e5}{\_media}}[media-\/>getId()]\ =\ media;}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_message_a65469ca99ed8ff02d28bd4fce9a0630b}{removeMedia}}(\textcolor{keywordtype}{int}\ mediaId)\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_message_a4721b2fa78891e054cebf189a0b771e5}{\_media}}.erase(mediaId);}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keyword}{const}\ std::unordered\_map<int,\ std::shared\_ptr<Media>>\&\ \mbox{\hyperlink{class_message_a6a6f0a3e8352f0b0af3106a87b097d2e}{getMedia}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_message_a4721b2fa78891e054cebf189a0b771e5}{\_media}};\ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ std::shared\_ptr<User>\ \mbox{\hyperlink{class_message_a5d90078c6394356473409006827cf9a7}{user}};}
+\DoxyCodeLine{00096\ \ \ \ \ std::shared\_ptr<Chat>\ \mbox{\hyperlink{class_message_a062925c63b806612ff0b9ba45a3d1771}{chat}};}
+\DoxyCodeLine{00097\ \ \ \ \ std::shared\_ptr<Message>\ \mbox{\hyperlink{class_message_aeb97c3b9855a356e9cd3201b20e6ff4e}{replyToMessage}};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_ab1d21c0ed16844f0d643acf6e85cdae3}{id}};}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_a00a97ccee4fd3dc4a012f851a23553fe}{chatId}};}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_message_a35188c147d1d80ae754a9aa4c77b3a76}{userId}};}
+\DoxyCodeLine{00103\ \ \ \ \ std::string\ \mbox{\hyperlink{class_message_a1194dfc13709f825f855905ffb0d79b5}{messageText}};}
+\DoxyCodeLine{00104\ \ \ \ \ std::string\ \mbox{\hyperlink{class_message_a4291de2926b07397ba52efaf842a281d}{createdAt}};}
+\DoxyCodeLine{00105\ \ \ \ \ std::string\ \mbox{\hyperlink{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}{status}};\ \textcolor{comment}{//\ "{}sent"{},\ "{}delivered"{},\ "{}read"{}}}
+\DoxyCodeLine{00106\ \ \ \ \ std::optional<int>\ \mbox{\hyperlink{class_message_accbd846c50057f69d560863ef71ca54c}{replyToMessageId}};}
+\DoxyCodeLine{00107\ \ \ \ \ std::unordered\_map<int,\ std::shared\_ptr<Media>>\ \mbox{\hyperlink{class_message_a4721b2fa78891e054cebf189a0b771e5}{\_media}};}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_chat_ae6c718aa10fa23efced43cd0063bef91}{Chat}}\ :\ \textcolor{keyword}{public}\ std::enable\_shared\_from\_this<Chat>\ \{}
+\DoxyCodeLine{00111\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00112\ \ \ \ \ \mbox{\hyperlink{class_chat_ae6c718aa10fa23efced43cd0063bef91}{Chat}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}{chatName}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_add05b2851afdf2b87d2d93272012bdec}{createdAt}},}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ std::optional<std::string>\ \mbox{\hyperlink{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}{lastActivity}}\ =\ std::nullopt,}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}{chatType}}\ =\ \textcolor{stringliteral}{"{}private"{}})}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_chat_a6c76b16f73a0c714c670a57a1dadf365}{id}}(\mbox{\hyperlink{class_chat_a6c76b16f73a0c714c670a57a1dadf365}{id}}),\ \mbox{\hyperlink{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}{chatName}}(\mbox{\hyperlink{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}{chatName}}),\ \mbox{\hyperlink{class_chat_add05b2851afdf2b87d2d93272012bdec}{createdAt}}(\mbox{\hyperlink{class_chat_add05b2851afdf2b87d2d93272012bdec}{createdAt}}),}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}{lastActivity}}(\mbox{\hyperlink{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}{lastActivity}}),\ \mbox{\hyperlink{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}{chatType}}(\mbox{\hyperlink{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}{chatType}})\ \{\}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_a3be9178aa185c3f22a02810906722005}{getId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_a6c76b16f73a0c714c670a57a1dadf365}{id}};\ \}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_a26ff77f9b91c125dee3cccd5691085f3}{getChatName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}{chatName}};\ \}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_a3e609292b92d94eb86eaede8feb674c9}{getCreatedAt}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_add05b2851afdf2b87d2d93272012bdec}{createdAt}};\ \}}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{const}\ std::optional<std::string>\&\ \mbox{\hyperlink{class_chat_a81a2786391d601c697153c0728f05aa1}{getLastActivity}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}{lastActivity}};\ \}}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_chat_a3dbea941afc0e69fcd8f2b2b41eff3d0}{getChatType}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}{chatType}};\ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_a8a1ef810c37b8770a81fd85ddaf93505}{addMember}}(std::shared\_ptr<ChatMember>\ member)\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_chat_a5b073b33a20e7a99552973023c45bebd}{members}}[member-\/>getUserId()]\ =\ member;}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_ab1fc889da29d21eba0739ab738b9134c}{removeMember}}(\textcolor{keywordtype}{int}\ userId)\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_chat_a5b073b33a20e7a99552973023c45bebd}{members}}.erase(userId);}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_abca6cb7ddb742bb4f689d8a17baab05b}{addMessage}}(std::shared\_ptr<Message>\ message)\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_chat_abda80ba2ca4f368d020d5337f3a5de73}{messages}}[message-\/>getId()]\ =\ message;}
+\DoxyCodeLine{00134\ \ \ \ \ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_chat_a39fc6fda564fc726808f600480219340}{removeMessage}}(\textcolor{keywordtype}{int}\ messageId)\ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_chat_abda80ba2ca4f368d020d5337f3a5de73}{messages}}.erase(messageId);}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keyword}{const}\ std::unordered\_map<int,\ std::shared\_ptr<ChatMember>>\&\ \mbox{\hyperlink{class_chat_a5c9be31de2b1f8d7ba3dac8b65d13316}{getMembers}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_a5b073b33a20e7a99552973023c45bebd}{members}};\ \}}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keyword}{const}\ std::map<int,\ std::shared\_ptr<Message>>\&\ \mbox{\hyperlink{class_chat_adc95eb96288034304179b47d8427de6a}{getMessages}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_chat_abda80ba2ca4f368d020d5337f3a5de73}{messages}};\ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_chat_a6c76b16f73a0c714c670a57a1dadf365}{id}};}
+\DoxyCodeLine{00145\ \ \ \ \ std::string\ \mbox{\hyperlink{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}{chatName}};}
+\DoxyCodeLine{00146\ \ \ \ \ std::string\ \mbox{\hyperlink{class_chat_add05b2851afdf2b87d2d93272012bdec}{createdAt}};}
+\DoxyCodeLine{00147\ \ \ \ \ std::optional<std::string>\ \mbox{\hyperlink{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}{lastActivity}};}
+\DoxyCodeLine{00148\ \ \ \ \ std::string\ \mbox{\hyperlink{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}{chatType}};\ \textcolor{comment}{//\ "{}group"{},\ "{}private"{}}}
+\DoxyCodeLine{00149\ \ \ \ \ std::unordered\_map<int,\ std::shared\_ptr<ChatMember>>\ \mbox{\hyperlink{class_chat_a5b073b33a20e7a99552973023c45bebd}{members}};}
+\DoxyCodeLine{00150\ \ \ \ \ std::map<int,\ std::shared\_ptr<Message>>\ \mbox{\hyperlink{class_chat_abda80ba2ca4f368d020d5337f3a5de73}{messages}};}
+\DoxyCodeLine{00151\ \};}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_user_a69e87f5956a43aebf90b95b089586960}{User}}\ :\ \textcolor{keyword}{public}\ std::enable\_shared\_from\_this<User>\ \{}
+\DoxyCodeLine{00154\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00155\ \ \ \ \ \mbox{\hyperlink{class_user_a69e87f5956a43aebf90b95b089586960}{User}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_aacbb807e514280f69e00bec7d71f3aee}{username}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a205822870bfb1813fcb86f13242b5e97}{passwordHash}},}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a38cce562e9973fcd40bdb6e3cb0c933e}{createdAt}},\ std::optional<std::string>\ \mbox{\hyperlink{class_user_a2c8323a57ba51df9830a7a4477d852e2}{lastLogin}}\ =\ std::nullopt,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_ac35b7c63228119cb91acdbd7ed32b8cb}{email}}\ =\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}}\ =\ \textcolor{stringliteral}{"{}"{}},}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a1180de61c5ba1b35129e4ea5a91b0403}{bio}}\ =\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_aa845739b31aaf9d2e7bdedf829447191}{firstName}}\ =\ \textcolor{stringliteral}{"{}"{}},}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a10abe0efedb0a600a7be16593a448b12}{lastName}}\ =\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a56b5401c5cf9579cb76633208bdec531}{dateOfBirth}}\ =\ \textcolor{stringliteral}{"{}"{}})}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_user_aa7e6e39b43020bbe9c3a196b3689b0f7}{id}}(\mbox{\hyperlink{class_user_aa7e6e39b43020bbe9c3a196b3689b0f7}{id}}),\ \mbox{\hyperlink{class_user_aacbb807e514280f69e00bec7d71f3aee}{username}}(\mbox{\hyperlink{class_user_aacbb807e514280f69e00bec7d71f3aee}{username}}),\ \mbox{\hyperlink{class_user_a205822870bfb1813fcb86f13242b5e97}{passwordHash}}(\mbox{\hyperlink{class_user_a205822870bfb1813fcb86f13242b5e97}{passwordHash}}),}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_user_a38cce562e9973fcd40bdb6e3cb0c933e}{createdAt}}(\mbox{\hyperlink{class_user_a38cce562e9973fcd40bdb6e3cb0c933e}{createdAt}}),\ \mbox{\hyperlink{class_user_a2c8323a57ba51df9830a7a4477d852e2}{lastLogin}}(\mbox{\hyperlink{class_user_a2c8323a57ba51df9830a7a4477d852e2}{lastLogin}}),\ \mbox{\hyperlink{class_user_ac35b7c63228119cb91acdbd7ed32b8cb}{email}}(\mbox{\hyperlink{class_user_ac35b7c63228119cb91acdbd7ed32b8cb}{email}}),}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}}(\mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}}),\ \mbox{\hyperlink{class_user_a1180de61c5ba1b35129e4ea5a91b0403}{bio}}(\mbox{\hyperlink{class_user_a1180de61c5ba1b35129e4ea5a91b0403}{bio}}),\ \mbox{\hyperlink{class_user_a2153cf3464c6b37616c8920609a41a2d}{status}}(\textcolor{stringliteral}{"{}offline"{}}),}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_user_aa845739b31aaf9d2e7bdedf829447191}{firstName}}(\mbox{\hyperlink{class_user_aa845739b31aaf9d2e7bdedf829447191}{firstName}}),\ \mbox{\hyperlink{class_user_a10abe0efedb0a600a7be16593a448b12}{lastName}}(\mbox{\hyperlink{class_user_a10abe0efedb0a600a7be16593a448b12}{lastName}}),\ \mbox{\hyperlink{class_user_a56b5401c5cf9579cb76633208bdec531}{dateOfBirth}}(\mbox{\hyperlink{class_user_a56b5401c5cf9579cb76633208bdec531}{dateOfBirth}})\ \{\}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_user_a010077fcd52d32fd3b4e1171f748a86a}{getId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_aa7e6e39b43020bbe9c3a196b3689b0f7}{id}};\ \}}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a0bdca63ed72fc8ffcee690a0119c2104}{getUsername}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_aacbb807e514280f69e00bec7d71f3aee}{username}};\ \}}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_af6151c2deb77f73d2700056f6c588b06}{getPasswordHash}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a205822870bfb1813fcb86f13242b5e97}{passwordHash}};\ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_ad5dd1754dc217815c11d6fd2bc212261}{getCreatedAt}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a38cce562e9973fcd40bdb6e3cb0c933e}{createdAt}};\ \}}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keyword}{const}\ std::optional<std::string>\&\ \mbox{\hyperlink{class_user_a7dacd98a9c02c5897d6d6248788f762d}{getLastLogin}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a2c8323a57ba51df9830a7a4477d852e2}{lastLogin}};\ \}}
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a230e84b6c76c0e8483ce3c0b36292297}{getEmail}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_ac35b7c63228119cb91acdbd7ed32b8cb}{email}};\ \}}
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_aa30e6e45eb6a8fd25a9113e344e55be6}{getProfilePicture}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}};\ \}}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a0b15a9aef3f31eac193c95675f6591c5}{getBio}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a1180de61c5ba1b35129e4ea5a91b0403}{bio}};\ \}}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a45c66664d7b54320d3cca9e097264685}{getStatus}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a2153cf3464c6b37616c8920609a41a2d}{status}};\ \}}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_abda272631359f6d4d01752c545dd6591}{getFirstName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_aa845739b31aaf9d2e7bdedf829447191}{firstName}};\ \}}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a0c20ee42a937103daf74d604cd543654}{getLastName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a10abe0efedb0a600a7be16593a448b12}{lastName}};\ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_user_a75f7290966d5f1ae1be7e3bc0b2bcbe7}{getDateOfBirth}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a56b5401c5cf9579cb76633208bdec531}{dateOfBirth}};\ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a1dfa65bcba3e701f1a43e7221d90e253}{setUsername}}(\textcolor{keyword}{const}\ std::string\&\ newUsername)\ \{\ \mbox{\hyperlink{class_user_aacbb807e514280f69e00bec7d71f3aee}{username}}\ =\ newUsername;\ \}}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_ac49f58a14637a4a06000e017d189e490}{setPasswordHash}}(\textcolor{keyword}{const}\ std::string\&\ newPasswordHash)\ \{\ \mbox{\hyperlink{class_user_a205822870bfb1813fcb86f13242b5e97}{passwordHash}}\ =\ newPasswordHash;\ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a8a2b351955b3f2b26294fd74f1204188}{setLastLogin}}(\textcolor{keyword}{const}\ std::optional<std::string>\&\ newLastLogin)\ \{\ \mbox{\hyperlink{class_user_a2c8323a57ba51df9830a7a4477d852e2}{lastLogin}}\ =\ newLastLogin;\ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a84896b2f45096ec7cb74da2fa8bdf586}{setEmail}}(\textcolor{keyword}{const}\ std::string\&\ newEmail)\ \{\ \mbox{\hyperlink{class_user_ac35b7c63228119cb91acdbd7ed32b8cb}{email}}\ =\ newEmail;\ \}}
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a9a05fe7e10d9b0e20f294cf536984f34}{setProfilePicture}}(\textcolor{keyword}{const}\ std::string\&\ newProfilePicture)\ \{\ \mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}}\ =\ newProfilePicture;\ \}}
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a9ccaab9ff65882b2813872a899b2f274}{setBio}}(\textcolor{keyword}{const}\ std::string\&\ newBio)\ \{\ \mbox{\hyperlink{class_user_a1180de61c5ba1b35129e4ea5a91b0403}{bio}}\ =\ newBio;\ \}}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a2e6b9ffa743ea55d3a3addfadceb6d0c}{setStatus}}(\textcolor{keyword}{const}\ std::string\&\ newStatus)\ \{\ \mbox{\hyperlink{class_user_a2153cf3464c6b37616c8920609a41a2d}{status}}\ =\ newStatus;\ \}}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_abc3bec313ec6059d0b74d7d4d775fee8}{setFirstName}}(\textcolor{keyword}{const}\ std::string\&\ newFirstName)\ \{\ \mbox{\hyperlink{class_user_aa845739b31aaf9d2e7bdedf829447191}{firstName}}\ =\ newFirstName;\ \}}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a386ab37a136b3c30033bc9d917707500}{setLastName}}(\textcolor{keyword}{const}\ std::string\&\ newLastName)\ \{\ \mbox{\hyperlink{class_user_a10abe0efedb0a600a7be16593a448b12}{lastName}}\ =\ newLastName;\ \}}
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_user_a1062b3264718c090616d021192a438d8}{setDateOfBirth}}(\textcolor{keyword}{const}\ std::string\&\ newDateOfBirth)\ \{\ \mbox{\hyperlink{class_user_a56b5401c5cf9579cb76633208bdec531}{dateOfBirth}}\ =\ newDateOfBirth;\ \}}
+\DoxyCodeLine{00188\ \ \ \ \ sf::Color\ \mbox{\hyperlink{class_user_a514088899a5562002d8112a99e38883b}{nameColor}};}
+\DoxyCodeLine{00189\ \ \ \ \ std::shared\_ptr<sf::Texture>\ \mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}};}
+\DoxyCodeLine{00190\ \ \ \ \ std::shared\_ptr<sf::Texture>\ \mbox{\hyperlink{class_user_af3fb74ea2911009ced9e75c648b1ae2b}{getProfilePictureTexture}}()\ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}})\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}}\ =\ std::make\_shared<sf::Texture>();}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}}.empty()\ ||\ \mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}}[0]\ ==\ \textcolor{charliteral}{':'})\ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}}-\/>loadFromFile(\textcolor{stringliteral}{"{}Assets/images/default.png"{}}))\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spdlog::error(\textcolor{stringliteral}{"{}Error\ loading\ profile\ photo\ from\ file:\ Assets/images/default.png"{}});}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}}\ =\ std::make\_shared<sf::Texture>();}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}}-\/>loadFromFile(\mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}}))\ \{}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spdlog::error(\textcolor{stringliteral}{"{}Error\ loading\ profile\ photo\ from\ file:\ \{\}"{}},\ \mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}});}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}}\ =\ std::make\_shared<sf::Texture>();}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_user_a9a1e5c97c64bd2b719f9318d35b063b4}{profileTexture}};}
+\DoxyCodeLine{00209\ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_user_aa7e6e39b43020bbe9c3a196b3689b0f7}{id}};}
+\DoxyCodeLine{00212\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_aacbb807e514280f69e00bec7d71f3aee}{username}};}
+\DoxyCodeLine{00213\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_a205822870bfb1813fcb86f13242b5e97}{passwordHash}};}
+\DoxyCodeLine{00214\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_a38cce562e9973fcd40bdb6e3cb0c933e}{createdAt}};}
+\DoxyCodeLine{00215\ \ \ \ \ std::optional<std::string>\ \mbox{\hyperlink{class_user_a2c8323a57ba51df9830a7a4477d852e2}{lastLogin}};}
+\DoxyCodeLine{00216\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_ac35b7c63228119cb91acdbd7ed32b8cb}{email}};}
+\DoxyCodeLine{00217\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_aed4cc1948915bfd2c1ada545164e4910}{profilePicture}};}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_a1180de61c5ba1b35129e4ea5a91b0403}{bio}};}
+\DoxyCodeLine{00220\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_a2153cf3464c6b37616c8920609a41a2d}{status}};\ \textcolor{comment}{//\ "{}online"{},\ "{}offline"{},\ "{}do\ not\ disturb"{}}}
+\DoxyCodeLine{00221\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_aa845739b31aaf9d2e7bdedf829447191}{firstName}};}
+\DoxyCodeLine{00222\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_a10abe0efedb0a600a7be16593a448b12}{lastName}};}
+\DoxyCodeLine{00223\ \ \ \ \ std::string\ \mbox{\hyperlink{class_user_a56b5401c5cf9579cb76633208bdec531}{dateOfBirth}};}
+\DoxyCodeLine{00224\ \};}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_notification_aa02174e4d58ede27152b0a6b2826cbfe}{Notification}}\ :\ \textcolor{keyword}{public}\ std::enable\_shared\_from\_this<Notification>\ \{}
+\DoxyCodeLine{00229\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00230\ \ \ \ \ \mbox{\hyperlink{class_notification_aa02174e4d58ede27152b0a6b2826cbfe}{Notification}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_notification_a26a65b54b7be385076691356ccb967b6}{userId}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_notification_a48fa0c3616df8a88245b346f276e5121}{message}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_notification_aabc505b99891d566c09c1ca4e4db0833}{createdAt}})}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda}{id}}(\mbox{\hyperlink{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda}{id}}),\ \mbox{\hyperlink{class_notification_a26a65b54b7be385076691356ccb967b6}{userId}}(\mbox{\hyperlink{class_notification_a26a65b54b7be385076691356ccb967b6}{userId}}),\ \mbox{\hyperlink{class_notification_a48fa0c3616df8a88245b346f276e5121}{message}}(\mbox{\hyperlink{class_notification_a48fa0c3616df8a88245b346f276e5121}{message}}),\ \mbox{\hyperlink{class_notification_aabc505b99891d566c09c1ca4e4db0833}{createdAt}}(\mbox{\hyperlink{class_notification_aabc505b99891d566c09c1ca4e4db0833}{createdAt}}),\ \mbox{\hyperlink{class_notification_a6b9dfa3eb1669c4ea3ef1d2b6e92e79f}{isRead}}(false)\ \{\}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_notification_a1b8b01e18bcf0d5fc3ba556c84cef5a7}{getId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda}{id}};\ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_notification_adf9787faf2a8e9df2a8f695e136070fd}{getUserId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_notification_a26a65b54b7be385076691356ccb967b6}{userId}};\ \}}
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_notification_a393833971c6cc6f7bd9df017b37b3266}{getMessage}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_notification_a48fa0c3616df8a88245b346f276e5121}{message}};\ \}}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_notification_ad68f411563b8d90da8ed4880e3d12332}{getCreatedAt}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_notification_aabc505b99891d566c09c1ca4e4db0833}{createdAt}};\ \}}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_notification_a35194bbd844d650efe177d29a9798467}{isReadStatus}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_notification_a6b9dfa3eb1669c4ea3ef1d2b6e92e79f}{isRead}};\ \}}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_notification_a4831f11b0ae0f1c4f9fa29f70403f999}{markAsRead}}()\ \{\ \mbox{\hyperlink{class_notification_a6b9dfa3eb1669c4ea3ef1d2b6e92e79f}{isRead}}\ =\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ \ \ std::shared\_ptr<User>\ \mbox{\hyperlink{class_notification_a5df01c0d37af8a656d167c992e044b75}{user}}\{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00242\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00243\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda}{id}};}
+\DoxyCodeLine{00244\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_notification_a26a65b54b7be385076691356ccb967b6}{userId}};}
+\DoxyCodeLine{00245\ \ \ \ \ std::string\ \mbox{\hyperlink{class_notification_a48fa0c3616df8a88245b346f276e5121}{message}};}
+\DoxyCodeLine{00246\ \ \ \ \ std::string\ \mbox{\hyperlink{class_notification_aabc505b99891d566c09c1ca4e4db0833}{createdAt}};}
+\DoxyCodeLine{00247\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_notification_a6b9dfa3eb1669c4ea3ef1d2b6e92e79f}{isRead}};}
+\DoxyCodeLine{00248\ \};}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_reaction_aa71f8ee3119a192aaa5a621a7737e005}{Reaction}}\ :\ \textcolor{keyword}{public}\ std::enable\_shared\_from\_this<Reaction>\ \{}
+\DoxyCodeLine{00251\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00252\ \ \ \ \ \mbox{\hyperlink{class_reaction_aa71f8ee3119a192aaa5a621a7737e005}{Reaction}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}{messageId}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_a1c9f923af092e8a608283728f525d457}{userId}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_reaction_ae087e0b8f5e63f959a768305a635427a}{reactionType}},\ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}{createdAt}})}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5}{id}}(\mbox{\hyperlink{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5}{id}}),\ \mbox{\hyperlink{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}{messageId}}(\mbox{\hyperlink{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}{messageId}}),\ \mbox{\hyperlink{class_reaction_a1c9f923af092e8a608283728f525d457}{userId}}(\mbox{\hyperlink{class_reaction_a1c9f923af092e8a608283728f525d457}{userId}}),\ \mbox{\hyperlink{class_reaction_ae087e0b8f5e63f959a768305a635427a}{reactionType}}(\mbox{\hyperlink{class_reaction_ae087e0b8f5e63f959a768305a635427a}{reactionType}}),\ \mbox{\hyperlink{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}{createdAt}}(\mbox{\hyperlink{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}{createdAt}})\ \{\}}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_a7d60b3dc060de50c70d1b72c07d7f4c9}{getId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5}{id}};\ \}}
+\DoxyCodeLine{00256\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_a3371d1c35e00963f404f02c57054bd0d}{getMessageId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}{messageId}};\ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_a622388b156a334cf8d1078174db84fb7}{getUserId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_reaction_a1c9f923af092e8a608283728f525d457}{userId}};\ \}}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_reaction_a6701df82a6a7cbd132cfdacfc2c37b65}{getReactionType}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_reaction_ae087e0b8f5e63f959a768305a635427a}{reactionType}};\ \}}
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{class_reaction_afa9d048ba6319d602f7f5d303f03e72a}{getCreatedAt}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}{createdAt}};\ \}}
+\DoxyCodeLine{00260\ \ \ \ \ std::shared\_ptr<User>\ \mbox{\hyperlink{class_reaction_a1de277a464b856881c8553f9443cf2be}{user}}\{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00261\ \ \ \ \ std::shared\_ptr<Message>\ \mbox{\hyperlink{class_reaction_a6994237e10d7e36336a5b0e1d9c36078}{message}}\{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00262\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_aa59362df99a39fb6a25b7ef93aa4d2e5}{id}};}
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_a29cfb695b908b81295f3cdb5f7d21e9d}{messageId}};}
+\DoxyCodeLine{00265\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_reaction_a1c9f923af092e8a608283728f525d457}{userId}};}
+\DoxyCodeLine{00266\ \ \ \ \ std::string\ \mbox{\hyperlink{class_reaction_ae087e0b8f5e63f959a768305a635427a}{reactionType}};\ \textcolor{comment}{//\ "{}like"{},\ "{}love"{},\ "{}laugh"{}}}
+\DoxyCodeLine{00267\ \ \ \ \ std::string\ \mbox{\hyperlink{class_reaction_a518477469cf5ec19f5a569bfd1f2cab9}{createdAt}};}
+\DoxyCodeLine{00268\ \};}
+
+\end{DoxyCode}

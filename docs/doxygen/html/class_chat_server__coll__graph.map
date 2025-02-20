@@ -1,0 +1,5 @@
+<map id="ChatServer" name="ChatServer">
+<area shape="rect" id="Node000001" title="Класс для ретрансляции и обработки данных от клиентов Работает на стеке TCP/IP с форматом данных JSON..." alt="" coords="25,96,113,123"/>
+<area shape="rect" id="Node000002" href="$class_database_manager.html" title=" " alt="" coords="5,5,133,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,48,72,95,66,95,66,48"/>
+</map>

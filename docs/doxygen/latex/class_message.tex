@@ -1,0 +1,223 @@
+\doxysection{Message Class Reference}
+\hypertarget{class_message}{}\label{class_message}\index{Message@{Message}}
+
+
+{\ttfamily \#include $<$SQLModels.\+hpp$>$}
+
+
+
+Inheritance diagram for Message\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=200pt]{class_message__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Message\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=200pt]{class_message__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_message_a9335c7c01d2eb6be64d0d3c436c53db2}{Message}} (int \mbox{\hyperlink{class_message_ab1d21c0ed16844f0d643acf6e85cdae3}{id}}=0, int \mbox{\hyperlink{class_message_a00a97ccee4fd3dc4a012f851a23553fe}{chat\+Id}}=0, int \mbox{\hyperlink{class_message_a35188c147d1d80ae754a9aa4c77b3a76}{user\+Id}}=0, const std\+::string \&\mbox{\hyperlink{class_message_a1194dfc13709f825f855905ffb0d79b5}{message\+Text}}="{}"{}, const std\+::string \&\mbox{\hyperlink{class_message_a4291de2926b07397ba52efaf842a281d}{created\+At}}="{}"{}, const std\+::string \&\mbox{\hyperlink{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}{status}}="{}sent"{}, std\+::optional$<$ int $>$ \mbox{\hyperlink{class_message_accbd846c50057f69d560863ef71ca54c}{reply\+To\+Message\+Id}}=std\+::nullopt)
+\item 
+int \mbox{\hyperlink{class_message_a1ce5c3d2cf26d92ce93c6828f97e9ff3}{get\+Id}} () const
+\item 
+int \mbox{\hyperlink{class_message_a0e03634d99565efd8b88a7392795b274}{get\+Chat\+Id}} () const
+\item 
+int \mbox{\hyperlink{class_message_a31a70944ee562244a6703557f131be9c}{get\+User\+Id}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_message_ab6d7eaf8b2ae05f4eac5da33649dad32}{get\+Message\+Text}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_message_a7d1b23959f8424eb7be8f786859ed9d0}{get\+Created\+At}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_message_a746b5db3ed3e5777f0886b4a71ae8e0c}{get\+Status}} () const
+\item 
+const std\+::optional$<$ int $>$ \& \mbox{\hyperlink{class_message_a404d6d1812482996ad406abd5ff39c2b}{get\+Reply\+To\+Message\+Id}} () const
+\item 
+void \mbox{\hyperlink{class_message_ae207b4ead5d6fcb2aa51ba9d619ca150}{add\+Media}} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_media}{Media}} $>$ media)
+\item 
+void \mbox{\hyperlink{class_message_a65469ca99ed8ff02d28bd4fce9a0630b}{remove\+Media}} (int media\+Id)
+\item 
+const std\+::unordered\+\_\+map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_media}{Media}} $>$ $>$ \& \mbox{\hyperlink{class_message_a6a6f0a3e8352f0b0af3106a87b097d2e}{get\+Media}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_user}{User}} $>$ \mbox{\hyperlink{class_message_a5d90078c6394356473409006827cf9a7}{user}}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chat}{Chat}} $>$ \mbox{\hyperlink{class_message_a062925c63b806612ff0b9ba45a3d1771}{chat}}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_message}{Message}} $>$ \mbox{\hyperlink{class_message_aeb97c3b9855a356e9cd3201b20e6ff4e}{reply\+To\+Message}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{class_message_ab1d21c0ed16844f0d643acf6e85cdae3}{id}}
+\item 
+int \mbox{\hyperlink{class_message_a00a97ccee4fd3dc4a012f851a23553fe}{chat\+Id}}
+\item 
+int \mbox{\hyperlink{class_message_a35188c147d1d80ae754a9aa4c77b3a76}{user\+Id}}
+\item 
+std\+::string \mbox{\hyperlink{class_message_a1194dfc13709f825f855905ffb0d79b5}{message\+Text}}
+\item 
+std\+::string \mbox{\hyperlink{class_message_a4291de2926b07397ba52efaf842a281d}{created\+At}}
+\item 
+std\+::string \mbox{\hyperlink{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}{status}}
+\item 
+std\+::optional$<$ int $>$ \mbox{\hyperlink{class_message_accbd846c50057f69d560863ef71ca54c}{reply\+To\+Message\+Id}}
+\item 
+std\+::unordered\+\_\+map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_media}{Media}} $>$ $>$ \mbox{\hyperlink{class_message_a4721b2fa78891e054cebf189a0b771e5}{\+\_\+media}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_message_a9335c7c01d2eb6be64d0d3c436c53db2}\index{Message@{Message}!Message@{Message}}
+\index{Message@{Message}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{Message()}{Message()}}
+{\footnotesize\ttfamily \label{class_message_a9335c7c01d2eb6be64d0d3c436c53db2} 
+Message\+::\+Message (\begin{DoxyParamCaption}\item[{int}]{id}{ = {\ttfamily 0}, }\item[{int}]{chat\+Id}{ = {\ttfamily 0}, }\item[{int}]{user\+Id}{ = {\ttfamily 0}, }\item[{const std\+::string \&}]{message\+Text}{ = {\ttfamily "{}"{}}, }\item[{const std\+::string \&}]{created\+At}{ = {\ttfamily "{}"{}}, }\item[{const std\+::string \&}]{status}{ = {\ttfamily "{}sent"{}}, }\item[{std\+::optional$<$ int $>$}]{reply\+To\+Message\+Id}{ = {\ttfamily std\+:\+:nullopt}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_message_ae207b4ead5d6fcb2aa51ba9d619ca150}\index{Message@{Message}!addMedia@{addMedia}}
+\index{addMedia@{addMedia}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{addMedia()}{addMedia()}}
+{\footnotesize\ttfamily \label{class_message_ae207b4ead5d6fcb2aa51ba9d619ca150} 
+void Message\+::add\+Media (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_media}{Media}} $>$}]{media}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a0e03634d99565efd8b88a7392795b274}\index{Message@{Message}!getChatId@{getChatId}}
+\index{getChatId@{getChatId}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getChatId()}{getChatId()}}
+{\footnotesize\ttfamily \label{class_message_a0e03634d99565efd8b88a7392795b274} 
+int Message\+::get\+Chat\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a7d1b23959f8424eb7be8f786859ed9d0}\index{Message@{Message}!getCreatedAt@{getCreatedAt}}
+\index{getCreatedAt@{getCreatedAt}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getCreatedAt()}{getCreatedAt()}}
+{\footnotesize\ttfamily \label{class_message_a7d1b23959f8424eb7be8f786859ed9d0} 
+const std\+::string \& Message\+::get\+Created\+At (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a1ce5c3d2cf26d92ce93c6828f97e9ff3}\index{Message@{Message}!getId@{getId}}
+\index{getId@{getId}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getId()}{getId()}}
+{\footnotesize\ttfamily \label{class_message_a1ce5c3d2cf26d92ce93c6828f97e9ff3} 
+int Message\+::get\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a6a6f0a3e8352f0b0af3106a87b097d2e}\index{Message@{Message}!getMedia@{getMedia}}
+\index{getMedia@{getMedia}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getMedia()}{getMedia()}}
+{\footnotesize\ttfamily \label{class_message_a6a6f0a3e8352f0b0af3106a87b097d2e} 
+const std\+::unordered\+\_\+map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_media}{Media}} $>$ $>$ \& Message\+::get\+Media (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_ab6d7eaf8b2ae05f4eac5da33649dad32}\index{Message@{Message}!getMessageText@{getMessageText}}
+\index{getMessageText@{getMessageText}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getMessageText()}{getMessageText()}}
+{\footnotesize\ttfamily \label{class_message_ab6d7eaf8b2ae05f4eac5da33649dad32} 
+const std\+::string \& Message\+::get\+Message\+Text (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a404d6d1812482996ad406abd5ff39c2b}\index{Message@{Message}!getReplyToMessageId@{getReplyToMessageId}}
+\index{getReplyToMessageId@{getReplyToMessageId}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getReplyToMessageId()}{getReplyToMessageId()}}
+{\footnotesize\ttfamily \label{class_message_a404d6d1812482996ad406abd5ff39c2b} 
+const std\+::optional$<$ int $>$ \& Message\+::get\+Reply\+To\+Message\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a746b5db3ed3e5777f0886b4a71ae8e0c}\index{Message@{Message}!getStatus@{getStatus}}
+\index{getStatus@{getStatus}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getStatus()}{getStatus()}}
+{\footnotesize\ttfamily \label{class_message_a746b5db3ed3e5777f0886b4a71ae8e0c} 
+const std\+::string \& Message\+::get\+Status (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a31a70944ee562244a6703557f131be9c}\index{Message@{Message}!getUserId@{getUserId}}
+\index{getUserId@{getUserId}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{getUserId()}{getUserId()}}
+{\footnotesize\ttfamily \label{class_message_a31a70944ee562244a6703557f131be9c} 
+int Message\+::get\+User\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_message_a65469ca99ed8ff02d28bd4fce9a0630b}\index{Message@{Message}!removeMedia@{removeMedia}}
+\index{removeMedia@{removeMedia}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{removeMedia()}{removeMedia()}}
+{\footnotesize\ttfamily \label{class_message_a65469ca99ed8ff02d28bd4fce9a0630b} 
+void Message\+::remove\+Media (\begin{DoxyParamCaption}\item[{int}]{media\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_message_a4721b2fa78891e054cebf189a0b771e5}\index{Message@{Message}!\_media@{\_media}}
+\index{\_media@{\_media}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{\_media}{\_media}}
+{\footnotesize\ttfamily \label{class_message_a4721b2fa78891e054cebf189a0b771e5} 
+std\+::unordered\+\_\+map$<$int, std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_media}{Media}}$>$ $>$ Message\+::\+\_\+media\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_message_a062925c63b806612ff0b9ba45a3d1771}\index{Message@{Message}!chat@{chat}}
+\index{chat@{chat}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{chat}{chat}}
+{\footnotesize\ttfamily \label{class_message_a062925c63b806612ff0b9ba45a3d1771} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_chat}{Chat}}$>$ Message\+::chat}
+
+\Hypertarget{class_message_a00a97ccee4fd3dc4a012f851a23553fe}\index{Message@{Message}!chatId@{chatId}}
+\index{chatId@{chatId}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{chatId}{chatId}}
+{\footnotesize\ttfamily \label{class_message_a00a97ccee4fd3dc4a012f851a23553fe} 
+int Message\+::chat\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_message_a4291de2926b07397ba52efaf842a281d}\index{Message@{Message}!createdAt@{createdAt}}
+\index{createdAt@{createdAt}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{createdAt}{createdAt}}
+{\footnotesize\ttfamily \label{class_message_a4291de2926b07397ba52efaf842a281d} 
+std\+::string Message\+::created\+At\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_message_ab1d21c0ed16844f0d643acf6e85cdae3}\index{Message@{Message}!id@{id}}
+\index{id@{id}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily \label{class_message_ab1d21c0ed16844f0d643acf6e85cdae3} 
+int Message\+::id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_message_a1194dfc13709f825f855905ffb0d79b5}\index{Message@{Message}!messageText@{messageText}}
+\index{messageText@{messageText}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{messageText}{messageText}}
+{\footnotesize\ttfamily \label{class_message_a1194dfc13709f825f855905ffb0d79b5} 
+std\+::string Message\+::message\+Text\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_message_aeb97c3b9855a356e9cd3201b20e6ff4e}\index{Message@{Message}!replyToMessage@{replyToMessage}}
+\index{replyToMessage@{replyToMessage}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{replyToMessage}{replyToMessage}}
+{\footnotesize\ttfamily \label{class_message_aeb97c3b9855a356e9cd3201b20e6ff4e} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_message}{Message}}$>$ Message\+::reply\+To\+Message}
+
+\Hypertarget{class_message_accbd846c50057f69d560863ef71ca54c}\index{Message@{Message}!replyToMessageId@{replyToMessageId}}
+\index{replyToMessageId@{replyToMessageId}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{replyToMessageId}{replyToMessageId}}
+{\footnotesize\ttfamily \label{class_message_accbd846c50057f69d560863ef71ca54c} 
+std\+::optional$<$int$>$ Message\+::reply\+To\+Message\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_message_a7995fbdb42cb7c5d463cdea5bde1876b}\index{Message@{Message}!status@{status}}
+\index{status@{status}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{status}{status}}
+{\footnotesize\ttfamily \label{class_message_a7995fbdb42cb7c5d463cdea5bde1876b} 
+std\+::string Message\+::status\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_message_a5d90078c6394356473409006827cf9a7}\index{Message@{Message}!user@{user}}
+\index{user@{user}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{user}{user}}
+{\footnotesize\ttfamily \label{class_message_a5d90078c6394356473409006827cf9a7} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_user}{User}}$>$ Message\+::user}
+
+\Hypertarget{class_message_a35188c147d1d80ae754a9aa4c77b3a76}\index{Message@{Message}!userId@{userId}}
+\index{userId@{userId}!Message@{Message}}
+\doxysubsubsection{\texorpdfstring{userId}{userId}}
+{\footnotesize\ttfamily \label{class_message_a35188c147d1d80ae754a9aa4c77b3a76} 
+int Message\+::user\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Filigram/include/data/\mbox{\hyperlink{_s_q_l_models_8hpp}{SQLModels.\+hpp}}\end{DoxyCompactItemize}

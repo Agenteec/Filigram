@@ -956,6 +956,7 @@ void MainWindow::sendMessage(const std::string& message, const PlotData& plotDat
         std::lock_guard<std::mutex> lock(queueMutex);
         requestQueue.push(request);
     }
+    spdlog::info(request.dump(4));
     cv.notify_one();
 }
 

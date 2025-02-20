@@ -1,0 +1,44 @@
+DOXYFILE_ENCODING      = UTF-8
+
+# The PROJECT_NAME tag is a single word (or a sequence of words surrounded by
+# double-quotes, unless you are using Doxywizard) that should identify the
+# project for which the documentation is generated. This name is used in the
+# title of most generated pages and in a few other places.
+# The default value is: My Project.
+
+PROJECT_NAME           = "Filigram"
+
+# Укажите версию проекта
+PROJECT_VERSION        = "1.0"
+
+# Укажите, где находятся исходные файлы
+INPUT                  = ./Filigram/src/data ./Filigram/include/data ./Filigram ./Filigram/server/include ./Filigram/server/src
+
+# Укажите, где будут сохраняться выходные файлы
+OUTPUT_DIRECTORY       = docs/doxygen
+
+# Включите генерацию UML-диаграмм
+GENERATE_UML          = YES
+
+# Включите генерацию графиков
+HAVE_DOT               = YES
+
+# Укажите, что вы хотите генерировать графики
+GENERATE_GRAPHVIZ        = YES
+
+# Укажите, что вы хотите генерировать диаграммы классов
+GENERATE_CLASS_DIAGRAMS = YES
+
+# Укажите, что вы хотите генерировать диаграммы взаимодействия
+GENERATE_CALL_GRAPH    = YES
+GENERATE_CALL_GRAPH    = YES
+
+# Укажите, что вы хотите генерировать диаграммы зависимостей
+GENERATE_DEPENDENCY_GRAPH = YES
+
+# Укажите, что вы хотите включить документацию для классов
+EXTRACT_ALL            = YES
+
+# Укажите, что вы хотите включить документацию для всех классов
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES

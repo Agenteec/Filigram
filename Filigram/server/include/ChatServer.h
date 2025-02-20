@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <SFML/Network.hpp>
 #include <nlohmann/json.hpp>
 #include <iostream>
@@ -17,6 +17,10 @@
 #include <set>
 #include "../calc/Calc.h"
 using json = nlohmann::json;
+/**
+ * @brief Класс для ретрансляции и обработки данных от клиентов
+ * Работает на стеке TCP/IP с форматом данных JSON а также с использованием бинарной передачи данных
+ */
 class ChatServer {
 public:
     static std::vector<char> readFile(const std::string& filePath);

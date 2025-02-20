@@ -1,0 +1,92 @@
+\doxysection{Database\+Manager.\+h}
+\hypertarget{_database_manager_8h_source}{}\label{_database_manager_8h_source}\index{Filigram/include/data/DatabaseManager.h@{Filigram/include/data/DatabaseManager.h}}
+\mbox{\hyperlink{_database_manager_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <iomanip>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <argon2.h>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <sqlite3.h>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <spdlog/spdlog.h>}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <\mbox{\hyperlink{_s_q_l_models_8hpp}{data/SQLModels.hpp}}>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <\mbox{\hyperlink{_password_manager_8hpp}{data/PasswordManager.hpp}}>}}
+\DoxyCodeLine{00017\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_database_manager_ad1d6dec39200221f1958f4d20dcf62aa}{DatabaseManager}}\ \{}
+\DoxyCodeLine{00018\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{StatusCode}}\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bad0749aaba8b833466dfcbb0428e4f89c}{SUCCESS}},}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf5c81979cff85c3a2c900fe4261baa13}{USER\_ALREADY\_EXISTS}},}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba7e7bca2bccaf500498324e016c04ad12}{INSERT\_ERROR}},}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba442abaa57882f3196101a0885b9a5493}{LOGIN\_FAILED}},}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bae93b8c2f8d82fe495a45678d7c5761e4}{USER\_NOT\_FOUND}},}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba059744e09a6756c2bcd4757f25d007d6}{\_ERROR}},}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf6002bfcb23d09e3ba64d0d2c11a970e}{Insufficient\_Rights\_ERROR}},}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba4905ac9d6a22bdfc1ae096094ce6248d}{COUNT}}}
+\DoxyCodeLine{00028\ \ \ \ \ \};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \mbox{\hyperlink{class_database_manager_ad1d6dec39200221f1958f4d20dcf62aa}{DatabaseManager}}(\textcolor{keyword}{const}\ std::string\&\ dbName\ =\ \textcolor{stringliteral}{"{}data.db"{}})\ \{}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sqlite3\_open(dbName.c\_str(),\ \&\mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}})\ !=\ SQLITE\_OK)\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ spdlog::error(\textcolor{stringliteral}{"{}Error\ opening\ database:\ \{\}"{}},\ sqlite3\_errmsg(\mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}}));}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ sqlite3\_close(\mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}});}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_a306bc0bd8cc532b7344d6c4e9373abb3}{createTables}}();}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{class_database_manager_af59d5ab0a9e660879bdcf6d470351033}{GetChat}}(1))}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ id;}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_database_manager_ab2f82ad1b30271ecd916430f8526decf}{createChat}}(\textcolor{stringliteral}{"{}Global"{}},\ \textcolor{keywordtype}{id},\textcolor{stringliteral}{"{}group"{}});}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00043\ \ \ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{class_database_manager_ae9b3a5da1e04fbb00faf8a034da1d063}{\string~DatabaseManager}}()\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}})\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ sqlite3\_close(\mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}});}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_database_manager_a306bc0bd8cc532b7344d6c4e9373abb3}{createTables}}();}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_database_manager_a8707702182918a933bb2c335accd2a74}{executeSQL}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ sql);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_aa9de5cb5f13b0031014b75bd8bac3f48}{registerUser}}(\textcolor{keyword}{const}\ std::string\&\ username,\ \textcolor{keyword}{const}\ std::string\&\ password,\ \textcolor{keywordtype}{int}\&\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ std::string\&\ firstName\ =\ \textcolor{stringliteral}{"{}DefaultUsername"{}},\ \textcolor{keyword}{const}\ std::string\&\ profilePicture\ =\ \textcolor{stringliteral}{"{}:profile\_photo\_default"{}});}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_aa8779a853ad44dd40fb052a984c4f59a}{loginUser}}(\textcolor{keyword}{const}\ std::string\&\ username,\ \textcolor{keyword}{const}\ std::string\&\ password,\ \textcolor{keywordtype}{int}\&\ \textcolor{keywordtype}{id});}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_ab2f82ad1b30271ecd916430f8526decf}{createChat}}(\textcolor{keyword}{const}\ std::string\&\ chatName,\ \textcolor{keywordtype}{int}\&\ chatId,\ \textcolor{keyword}{const}\ std::string\&\ chatType\ =\ \textcolor{stringliteral}{"{}private"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_aaafef4468ebc19ffbc54bcea6d6e0a65}{addChatMember}}(\textcolor{keywordtype}{int}\ chatId,\ \textcolor{keywordtype}{int}\ userId,\ \textcolor{keyword}{const}\ std::string\&\ role\ =\ \textcolor{stringliteral}{"{}member"{}},\ \textcolor{keywordtype}{int}\ adderId\ =\ -\/1);}
+\DoxyCodeLine{00060\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_a3e693240511c6ba17f169bafe0ff6997}{removeChatMember}}(\textcolor{keywordtype}{int}\ chatId,\ \textcolor{keywordtype}{int}\ userId);}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_aeefa67d243c30723537f8b62f2cb25cc}{insertMessage}}(\textcolor{keywordtype}{int}\ chatId,\ \textcolor{keywordtype}{int}\ userId,\ \textcolor{keyword}{const}\ std::string\&\ messageText,\ \textcolor{keywordtype}{int}\&\ messageId);}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_a2a7ca7a5ce3e4dd47c1b613fdcb2d3f4}{insertMedia}}(\textcolor{keywordtype}{int}\ messageId,\ \textcolor{keyword}{const}\ std::string\&\ mediaType,\ \textcolor{keyword}{const}\ std::string\&\ mediaPath,\ \textcolor{keyword}{const}\ std::string\&\ metaPath,\ \textcolor{keywordtype}{int}\&\ mediaId);}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_a2a7ca7a5ce3e4dd47c1b613fdcb2d3f4}{insertMedia}}(\mbox{\hyperlink{class_media}{Media}}\&\ media);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ std::vector<Media>\ \mbox{\hyperlink{class_database_manager_ab6a065a943b39dcd4db774c930fc0f17}{getMediaByMessageId}}(\textcolor{keywordtype}{int}\ messageId);}
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{class_media}{Media}}\ \mbox{\hyperlink{class_database_manager_a2afe05ad0f06405b38b2bd7183f6b1d4}{getMediaById}}(\textcolor{keywordtype}{int}\ mediaId);}
+\DoxyCodeLine{00068\ \ \ \ \ std::vector<Message>\ \mbox{\hyperlink{class_database_manager_a13ff3ff287033aa578d2385afd6e2b23}{getMessages}}(\textcolor{keywordtype}{int}\ chatId);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{class_message}{Message}}\ \mbox{\hyperlink{class_database_manager_a05dc0c6728bc0eb8b99209f08425a031}{getMessageById}}(\textcolor{keywordtype}{int}\ messageId);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ std::optional<User>\ \mbox{\hyperlink{class_database_manager_a32862608ca8a71286967b8de17f27b62}{GetUser}}(\textcolor{keywordtype}{int}\ userId);}
+\DoxyCodeLine{00073\ \ \ \ \ std::optional<Chat>\ \mbox{\hyperlink{class_database_manager_af59d5ab0a9e660879bdcf6d470351033}{GetChat}}(\textcolor{keywordtype}{int}\ chatId);}
+\DoxyCodeLine{00074\ \ \ \ \ std::vector<ChatMember>\ \mbox{\hyperlink{class_database_manager_a5a40e09b37d37e234d5241764fe3c887}{getChatMembers}}(\textcolor{keywordtype}{int}\ chatId);}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_database_manager_aba53d39b50b6f22a7102b69d411f9e28}{isUserInChat}}(\textcolor{keywordtype}{int}\ chatId,\ \textcolor{keywordtype}{int}\ userId);}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_a49f1049c62119f0444118b48f4f65dd0}{deleteUser}}(\textcolor{keywordtype}{int}\ userId);}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{_database_manager_8cpp_aadba8784039290e2a5d5847553392496}{StatusCode}}\ \mbox{\hyperlink{class_database_manager_a260d0561acf5b99596a3044f2b3aa0e9}{updateUserProfile}}(\textcolor{keywordtype}{int}\ userId,\ \textcolor{keyword}{const}\ std::string\&\ fieldName,\ \textcolor{keyword}{const}\ std::string\&\ newValue);}
+\DoxyCodeLine{00079\ \ \ \ \ std::vector<Chat>\ \mbox{\hyperlink{class_database_manager_ab90118986ccf36b0ee6ca4932aafcf3b}{getUserChats}}(\textcolor{keywordtype}{int}\ userId);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{class_database_manager_a66227120d4e9b3405f927c920b2d2f0e}{getCurrentTime}}();}
+\DoxyCodeLine{00082\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00083\ \ \ \ \ sqlite3*\ \mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,151 @@
+\doxysection{Notification Class Reference}
+\hypertarget{class_notification}{}\label{class_notification}\index{Notification@{Notification}}
+
+
+{\ttfamily \#include $<$SQLModels.\+hpp$>$}
+
+
+
+Inheritance diagram for Notification\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=209pt]{class_notification__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Notification\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=209pt]{class_notification__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_notification_aa02174e4d58ede27152b0a6b2826cbfe}{Notification}} (int \mbox{\hyperlink{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda}{id}}, int \mbox{\hyperlink{class_notification_a26a65b54b7be385076691356ccb967b6}{user\+Id}}, const std\+::string \&\mbox{\hyperlink{class_notification_a48fa0c3616df8a88245b346f276e5121}{message}}, const std\+::string \&\mbox{\hyperlink{class_notification_aabc505b99891d566c09c1ca4e4db0833}{created\+At}})
+\item 
+int \mbox{\hyperlink{class_notification_a1b8b01e18bcf0d5fc3ba556c84cef5a7}{get\+Id}} () const
+\item 
+int \mbox{\hyperlink{class_notification_adf9787faf2a8e9df2a8f695e136070fd}{get\+User\+Id}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_notification_a393833971c6cc6f7bd9df017b37b3266}{get\+Message}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_notification_ad68f411563b8d90da8ed4880e3d12332}{get\+Created\+At}} () const
+\item 
+bool \mbox{\hyperlink{class_notification_a35194bbd844d650efe177d29a9798467}{is\+Read\+Status}} () const
+\item 
+void \mbox{\hyperlink{class_notification_a4831f11b0ae0f1c4f9fa29f70403f999}{mark\+As\+Read}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_user}{User}} $>$ \mbox{\hyperlink{class_notification_a5df01c0d37af8a656d167c992e044b75}{user}} \{ nullptr \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda}{id}}
+\item 
+int \mbox{\hyperlink{class_notification_a26a65b54b7be385076691356ccb967b6}{user\+Id}}
+\item 
+std\+::string \mbox{\hyperlink{class_notification_a48fa0c3616df8a88245b346f276e5121}{message}}
+\item 
+std\+::string \mbox{\hyperlink{class_notification_aabc505b99891d566c09c1ca4e4db0833}{created\+At}}
+\item 
+bool \mbox{\hyperlink{class_notification_a6b9dfa3eb1669c4ea3ef1d2b6e92e79f}{is\+Read}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_notification_aa02174e4d58ede27152b0a6b2826cbfe}\index{Notification@{Notification}!Notification@{Notification}}
+\index{Notification@{Notification}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{Notification()}{Notification()}}
+{\footnotesize\ttfamily \label{class_notification_aa02174e4d58ede27152b0a6b2826cbfe} 
+Notification\+::\+Notification (\begin{DoxyParamCaption}\item[{int}]{id}{, }\item[{int}]{user\+Id}{, }\item[{const std\+::string \&}]{message}{, }\item[{const std\+::string \&}]{created\+At}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_notification_ad68f411563b8d90da8ed4880e3d12332}\index{Notification@{Notification}!getCreatedAt@{getCreatedAt}}
+\index{getCreatedAt@{getCreatedAt}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{getCreatedAt()}{getCreatedAt()}}
+{\footnotesize\ttfamily \label{class_notification_ad68f411563b8d90da8ed4880e3d12332} 
+const std\+::string \& Notification\+::get\+Created\+At (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_notification_a1b8b01e18bcf0d5fc3ba556c84cef5a7}\index{Notification@{Notification}!getId@{getId}}
+\index{getId@{getId}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{getId()}{getId()}}
+{\footnotesize\ttfamily \label{class_notification_a1b8b01e18bcf0d5fc3ba556c84cef5a7} 
+int Notification\+::get\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_notification_a393833971c6cc6f7bd9df017b37b3266}\index{Notification@{Notification}!getMessage@{getMessage}}
+\index{getMessage@{getMessage}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{getMessage()}{getMessage()}}
+{\footnotesize\ttfamily \label{class_notification_a393833971c6cc6f7bd9df017b37b3266} 
+const std\+::string \& Notification\+::get\+Message (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_notification_adf9787faf2a8e9df2a8f695e136070fd}\index{Notification@{Notification}!getUserId@{getUserId}}
+\index{getUserId@{getUserId}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{getUserId()}{getUserId()}}
+{\footnotesize\ttfamily \label{class_notification_adf9787faf2a8e9df2a8f695e136070fd} 
+int Notification\+::get\+User\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_notification_a35194bbd844d650efe177d29a9798467}\index{Notification@{Notification}!isReadStatus@{isReadStatus}}
+\index{isReadStatus@{isReadStatus}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{isReadStatus()}{isReadStatus()}}
+{\footnotesize\ttfamily \label{class_notification_a35194bbd844d650efe177d29a9798467} 
+bool Notification\+::is\+Read\+Status (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_notification_a4831f11b0ae0f1c4f9fa29f70403f999}\index{Notification@{Notification}!markAsRead@{markAsRead}}
+\index{markAsRead@{markAsRead}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{markAsRead()}{markAsRead()}}
+{\footnotesize\ttfamily \label{class_notification_a4831f11b0ae0f1c4f9fa29f70403f999} 
+void Notification\+::mark\+As\+Read (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_notification_aabc505b99891d566c09c1ca4e4db0833}\index{Notification@{Notification}!createdAt@{createdAt}}
+\index{createdAt@{createdAt}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{createdAt}{createdAt}}
+{\footnotesize\ttfamily \label{class_notification_aabc505b99891d566c09c1ca4e4db0833} 
+std\+::string Notification\+::created\+At\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda}\index{Notification@{Notification}!id@{id}}
+\index{id@{id}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily \label{class_notification_a825f159c9f3ff32bcbf10e06d7a4dfda} 
+int Notification\+::id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_notification_a6b9dfa3eb1669c4ea3ef1d2b6e92e79f}\index{Notification@{Notification}!isRead@{isRead}}
+\index{isRead@{isRead}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{isRead}{isRead}}
+{\footnotesize\ttfamily \label{class_notification_a6b9dfa3eb1669c4ea3ef1d2b6e92e79f} 
+bool Notification\+::is\+Read\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_notification_a48fa0c3616df8a88245b346f276e5121}\index{Notification@{Notification}!message@{message}}
+\index{message@{message}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{message}{message}}
+{\footnotesize\ttfamily \label{class_notification_a48fa0c3616df8a88245b346f276e5121} 
+std\+::string Notification\+::message\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_notification_a5df01c0d37af8a656d167c992e044b75}\index{Notification@{Notification}!user@{user}}
+\index{user@{user}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{user}{user}}
+{\footnotesize\ttfamily \label{class_notification_a5df01c0d37af8a656d167c992e044b75} 
+std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_user}{User}}$>$ Notification\+::user \{ nullptr \}}
+
+\Hypertarget{class_notification_a26a65b54b7be385076691356ccb967b6}\index{Notification@{Notification}!userId@{userId}}
+\index{userId@{userId}!Notification@{Notification}}
+\doxysubsubsection{\texorpdfstring{userId}{userId}}
+{\footnotesize\ttfamily \label{class_notification_a26a65b54b7be385076691356ccb967b6} 
+int Notification\+::user\+Id\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Filigram/include/data/\mbox{\hyperlink{_s_q_l_models_8hpp}{SQLModels.\+hpp}}\end{DoxyCompactItemize}

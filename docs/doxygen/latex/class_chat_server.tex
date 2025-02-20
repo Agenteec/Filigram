@@ -1,0 +1,187 @@
+\doxysection{Chat\+Server Class Reference}
+\hypertarget{class_chat_server}{}\label{class_chat_server}\index{ChatServer@{ChatServer}}
+
+
+Класс для ретрансляции и обработки данных от клиентов Работает на стеке TCP/\+IP с форматом данных JSON.  
+
+
+
+
+{\ttfamily \#include $<$Chat\+Server.\+h$>$}
+
+
+
+Collaboration diagram for Chat\+Server\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=179pt]{class_chat_server__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_chat_server_adfcd1fa7331608f5bc1f4ab5aef3c438}{Chat\+Server}} (unsigned short port=53000)
+\item 
+void \mbox{\hyperlink{class_chat_server_a223e448620bdeb0cfdc51f658dbac4de}{run}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::vector$<$ char $>$ \mbox{\hyperlink{class_chat_server_aab0cb3bbce324e329ae237a16b23d19a}{read\+File}} (const std\+::string \&file\+Path)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_chat_server_abdda428ea49ed09a5353352a021c7793}{handle\+Client}} (std\+::shared\+\_\+ptr$<$ sf\+::\+Tcp\+Socket $>$ client)
+\item 
+void \mbox{\hyperlink{class_chat_server_a34083dfabe100b917ebcae853789d4e0}{broadcast\+Message}} (const std\+::string \&message)
+\item 
+void \mbox{\hyperlink{class_chat_server_a06872ec70beb4089c1d9140c87d907e1}{broadcast\+Message}} (const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&message\+Json, std\+::vector$<$ int $>$ users\+Id)
+\item 
+void \mbox{\hyperlink{class_chat_server_aa69678cd13bc345653e7b083de60248a}{broadcast\+Message\+To\+Chat}} (int chat\+Id, const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&message\+Json)
+\item 
+void \mbox{\hyperlink{class_chat_server_a353c644667da6d1b8ebc33d1b58dd15c}{send\+Response}} (sf\+::\+Tcp\+Socket \texorpdfstring{$\ast$}{*}client, const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&response)
+\item 
+void \mbox{\hyperlink{class_chat_server_aaebad68e54cfeade0adf09e8a37aa1a4}{push\+Media\+To\+Packet}} (sf\+::\+Packet \&packet, const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&message\+Json)
+\item 
+void \mbox{\hyperlink{class_chat_server_a1c4cf6a7e2cba04640c894143fef8277}{start\+Ping\+Thread}} ()
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_media}{Media}} $>$ \mbox{\hyperlink{class_chat_server_acc6ec8f242c19c92bf2392037dc567e7}{generate\+Plot}} (const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&plot\+Data, int message\+Id)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+sf\+::\+Tcp\+Listener \mbox{\hyperlink{class_chat_server_a747ba87512a16b2aefe8c6f663f273fc}{listener}}
+\item 
+\mbox{\hyperlink{class_database_manager}{Database\+Manager}} \mbox{\hyperlink{class_chat_server_afd49703ec6803e20f7a6b801b1fb3718}{db\+Manager}}
+\item 
+std\+::queue$<$ std\+::string $>$ \mbox{\hyperlink{class_chat_server_ad60da32ac25a633c97910bca88a8f7e0}{message\+Queue}}
+\item 
+std\+::mutex \mbox{\hyperlink{class_chat_server_a894c53e36dd7f160c5354b4c2de02051}{queue\+Mutex}}
+\item 
+std\+::condition\+\_\+variable \mbox{\hyperlink{class_chat_server_aed356d88e104c721723791bc7d71df48}{cv}}
+\item 
+std\+::unordered\+\_\+map$<$ int, std\+::shared\+\_\+ptr$<$ sf\+::\+Tcp\+Socket $>$ $>$ \mbox{\hyperlink{class_chat_server_a5bed63ae278d5b68460395196e77bb4a}{client\+Sockets}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Класс для ретрансляции и обработки данных от клиентов Работает на стеке TCP/\+IP с форматом данных JSON. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_chat_server_adfcd1fa7331608f5bc1f4ab5aef3c438}\index{ChatServer@{ChatServer}!ChatServer@{ChatServer}}
+\index{ChatServer@{ChatServer}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{ChatServer()}{ChatServer()}}
+{\footnotesize\ttfamily \label{class_chat_server_adfcd1fa7331608f5bc1f4ab5aef3c438} 
+Chat\+Server\+::\+Chat\+Server (\begin{DoxyParamCaption}\item[{unsigned short}]{port}{ = {\ttfamily 53000}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_chat_server_a06872ec70beb4089c1d9140c87d907e1}\index{ChatServer@{ChatServer}!broadcastMessage@{broadcastMessage}}
+\index{broadcastMessage@{broadcastMessage}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{broadcastMessage()}{broadcastMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_chat_server_a06872ec70beb4089c1d9140c87d907e1} 
+void Chat\+Server\+::broadcast\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&}]{message\+Json}{, }\item[{std\+::vector$<$ int $>$}]{users\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_a34083dfabe100b917ebcae853789d4e0}\index{ChatServer@{ChatServer}!broadcastMessage@{broadcastMessage}}
+\index{broadcastMessage@{broadcastMessage}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{broadcastMessage()}{broadcastMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_chat_server_a34083dfabe100b917ebcae853789d4e0} 
+void Chat\+Server\+::broadcast\+Message (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_aa69678cd13bc345653e7b083de60248a}\index{ChatServer@{ChatServer}!broadcastMessageToChat@{broadcastMessageToChat}}
+\index{broadcastMessageToChat@{broadcastMessageToChat}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{broadcastMessageToChat()}{broadcastMessageToChat()}}
+{\footnotesize\ttfamily \label{class_chat_server_aa69678cd13bc345653e7b083de60248a} 
+void Chat\+Server\+::broadcast\+Message\+To\+Chat (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{, }\item[{const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&}]{message\+Json}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_acc6ec8f242c19c92bf2392037dc567e7}\index{ChatServer@{ChatServer}!generatePlot@{generatePlot}}
+\index{generatePlot@{generatePlot}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{generatePlot()}{generatePlot()}}
+{\footnotesize\ttfamily \label{class_chat_server_acc6ec8f242c19c92bf2392037dc567e7} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_media}{Media}} $>$ Chat\+Server\+::generate\+Plot (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&}]{plot\+Data}{, }\item[{int}]{message\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_abdda428ea49ed09a5353352a021c7793}\index{ChatServer@{ChatServer}!handleClient@{handleClient}}
+\index{handleClient@{handleClient}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{handleClient()}{handleClient()}}
+{\footnotesize\ttfamily \label{class_chat_server_abdda428ea49ed09a5353352a021c7793} 
+void Chat\+Server\+::handle\+Client (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ sf\+::\+Tcp\+Socket $>$}]{client}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_aaebad68e54cfeade0adf09e8a37aa1a4}\index{ChatServer@{ChatServer}!pushMediaToPacket@{pushMediaToPacket}}
+\index{pushMediaToPacket@{pushMediaToPacket}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{pushMediaToPacket()}{pushMediaToPacket()}}
+{\footnotesize\ttfamily \label{class_chat_server_aaebad68e54cfeade0adf09e8a37aa1a4} 
+void Chat\+Server\+::push\+Media\+To\+Packet (\begin{DoxyParamCaption}\item[{sf\+::\+Packet \&}]{packet}{, }\item[{const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&}]{message\+Json}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_aab0cb3bbce324e329ae237a16b23d19a}\index{ChatServer@{ChatServer}!readFile@{readFile}}
+\index{readFile@{readFile}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{readFile()}{readFile()}}
+{\footnotesize\ttfamily \label{class_chat_server_aab0cb3bbce324e329ae237a16b23d19a} 
+std\+::vector$<$ char $>$ Chat\+Server\+::read\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file\+Path}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_chat_server_a223e448620bdeb0cfdc51f658dbac4de}\index{ChatServer@{ChatServer}!run@{run}}
+\index{run@{run}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily \label{class_chat_server_a223e448620bdeb0cfdc51f658dbac4de} 
+void Chat\+Server\+::run (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_chat_server_a353c644667da6d1b8ebc33d1b58dd15c}\index{ChatServer@{ChatServer}!sendResponse@{sendResponse}}
+\index{sendResponse@{sendResponse}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{sendResponse()}{sendResponse()}}
+{\footnotesize\ttfamily \label{class_chat_server_a353c644667da6d1b8ebc33d1b58dd15c} 
+void Chat\+Server\+::send\+Response (\begin{DoxyParamCaption}\item[{sf\+::\+Tcp\+Socket \texorpdfstring{$\ast$}{*}}]{client}{, }\item[{const \mbox{\hyperlink{_chat_server_8h_ab701e3ac61a85b337ec5c1abaad6742d}{json}} \&}]{response}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_a1c4cf6a7e2cba04640c894143fef8277}\index{ChatServer@{ChatServer}!startPingThread@{startPingThread}}
+\index{startPingThread@{startPingThread}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{startPingThread()}{startPingThread()}}
+{\footnotesize\ttfamily \label{class_chat_server_a1c4cf6a7e2cba04640c894143fef8277} 
+void Chat\+Server\+::start\+Ping\+Thread (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_chat_server_a5bed63ae278d5b68460395196e77bb4a}\index{ChatServer@{ChatServer}!clientSockets@{clientSockets}}
+\index{clientSockets@{clientSockets}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{clientSockets}{clientSockets}}
+{\footnotesize\ttfamily \label{class_chat_server_a5bed63ae278d5b68460395196e77bb4a} 
+std\+::unordered\+\_\+map$<$int, std\+::shared\+\_\+ptr$<$sf\+::\+Tcp\+Socket$>$ $>$ Chat\+Server\+::client\+Sockets\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_aed356d88e104c721723791bc7d71df48}\index{ChatServer@{ChatServer}!cv@{cv}}
+\index{cv@{cv}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{cv}{cv}}
+{\footnotesize\ttfamily \label{class_chat_server_aed356d88e104c721723791bc7d71df48} 
+std\+::condition\+\_\+variable Chat\+Server\+::cv\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_afd49703ec6803e20f7a6b801b1fb3718}\index{ChatServer@{ChatServer}!dbManager@{dbManager}}
+\index{dbManager@{dbManager}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{dbManager}{dbManager}}
+{\footnotesize\ttfamily \label{class_chat_server_afd49703ec6803e20f7a6b801b1fb3718} 
+\mbox{\hyperlink{class_database_manager}{Database\+Manager}} Chat\+Server\+::db\+Manager\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_a747ba87512a16b2aefe8c6f663f273fc}\index{ChatServer@{ChatServer}!listener@{listener}}
+\index{listener@{listener}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{listener}{listener}}
+{\footnotesize\ttfamily \label{class_chat_server_a747ba87512a16b2aefe8c6f663f273fc} 
+sf\+::\+Tcp\+Listener Chat\+Server\+::listener\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_ad60da32ac25a633c97910bca88a8f7e0}\index{ChatServer@{ChatServer}!messageQueue@{messageQueue}}
+\index{messageQueue@{messageQueue}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{messageQueue}{messageQueue}}
+{\footnotesize\ttfamily \label{class_chat_server_ad60da32ac25a633c97910bca88a8f7e0} 
+std\+::queue$<$std\+::string$>$ Chat\+Server\+::message\+Queue\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_server_a894c53e36dd7f160c5354b4c2de02051}\index{ChatServer@{ChatServer}!queueMutex@{queueMutex}}
+\index{queueMutex@{queueMutex}!ChatServer@{ChatServer}}
+\doxysubsubsection{\texorpdfstring{queueMutex}{queueMutex}}
+{\footnotesize\ttfamily \label{class_chat_server_a894c53e36dd7f160c5354b4c2de02051} 
+std\+::mutex Chat\+Server\+::queue\+Mutex\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Filigram/server/include/\mbox{\hyperlink{_chat_server_8h}{Chat\+Server.\+h}}\item 
+Filigram/server/src/\mbox{\hyperlink{_chat_server_8cpp}{Chat\+Server.\+cpp}}\end{DoxyCompactItemize}

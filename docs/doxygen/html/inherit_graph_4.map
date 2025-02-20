@@ -1,0 +1,17 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,149,137,192"/>
+<area shape="rect" id="Node000001" href="$class_chat.html" title=" " alt="" coords="208,5,258,32"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="95,135,134,88,183,42,206,27,209,32,186,46,138,92,99,138"/>
+<area shape="rect" id="Node000002" href="$class_chat_member.html" title=" " alt="" coords="185,56,281,83"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="114,138,183,92,204,81,206,85,186,97,116,143"/>
+<area shape="rect" id="Node000003" href="$class_media.html" title=" " alt="" coords="205,107,261,133"/>
+<area shape="poly" id="edge3_Node000000_Node000003" title=" " alt="" coords="151,143,203,126,205,131,152,148"/>
+<area shape="rect" id="Node000004" href="$class_message.html" title=" " alt="" coords="196,157,270,184"/>
+<area shape="poly" id="edge4_Node000000_Node000004" title=" " alt="" coords="152,168,195,168,195,173,152,173"/>
+<area shape="rect" id="Node000005" href="$class_notification.html" title=" " alt="" coords="189,208,276,235"/>
+<area shape="poly" id="edge5_Node000000_Node000005" title=" " alt="" coords="152,193,189,205,188,210,151,198"/>
+<area shape="rect" id="Node000006" href="$class_reaction.html" title=" " alt="" coords="196,259,270,285"/>
+<area shape="poly" id="edge6_Node000000_Node000006" title=" " alt="" coords="116,199,186,244,206,256,204,261,183,249,114,203"/>
+<area shape="rect" id="Node000007" href="$class_user.html" title=" " alt="" coords="208,309,258,336"/>
+<area shape="poly" id="edge7_Node000000_Node000007" title=" " alt="" coords="99,203,138,249,186,295,209,310,206,314,183,299,134,253,95,206"/>
+</map>

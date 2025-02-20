@@ -1,0 +1,196 @@
+\doxysection{Chat Class Reference}
+\hypertarget{class_chat}{}\label{class_chat}\index{Chat@{Chat}}
+
+
+{\ttfamily \#include $<$SQLModels.\+hpp$>$}
+
+
+
+Inheritance diagram for Chat\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=181pt]{class_chat__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Chat\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=181pt]{class_chat__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_chat_ae6c718aa10fa23efced43cd0063bef91}{Chat}} (int \mbox{\hyperlink{class_chat_a6c76b16f73a0c714c670a57a1dadf365}{id}}, const std\+::string \&\mbox{\hyperlink{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}{chat\+Name}}, const std\+::string \&\mbox{\hyperlink{class_chat_add05b2851afdf2b87d2d93272012bdec}{created\+At}}, std\+::optional$<$ std\+::string $>$ \mbox{\hyperlink{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}{last\+Activity}}=std\+::nullopt, const std\+::string \&\mbox{\hyperlink{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}{chat\+Type}}="{}private"{})
+\item 
+int \mbox{\hyperlink{class_chat_a3be9178aa185c3f22a02810906722005}{get\+Id}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_chat_a26ff77f9b91c125dee3cccd5691085f3}{get\+Chat\+Name}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_chat_a3e609292b92d94eb86eaede8feb674c9}{get\+Created\+At}} () const
+\item 
+const std\+::optional$<$ std\+::string $>$ \& \mbox{\hyperlink{class_chat_a81a2786391d601c697153c0728f05aa1}{get\+Last\+Activity}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_chat_a3dbea941afc0e69fcd8f2b2b41eff3d0}{get\+Chat\+Type}} () const
+\item 
+void \mbox{\hyperlink{class_chat_a8a1ef810c37b8770a81fd85ddaf93505}{add\+Member}} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chat_member}{Chat\+Member}} $>$ member)
+\item 
+void \mbox{\hyperlink{class_chat_ab1fc889da29d21eba0739ab738b9134c}{remove\+Member}} (int user\+Id)
+\item 
+void \mbox{\hyperlink{class_chat_abca6cb7ddb742bb4f689d8a17baab05b}{add\+Message}} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_message}{Message}} $>$ message)
+\item 
+void \mbox{\hyperlink{class_chat_a39fc6fda564fc726808f600480219340}{remove\+Message}} (int message\+Id)
+\item 
+const std\+::unordered\+\_\+map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chat_member}{Chat\+Member}} $>$ $>$ \& \mbox{\hyperlink{class_chat_a5c9be31de2b1f8d7ba3dac8b65d13316}{get\+Members}} () const
+\item 
+const std\+::map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_message}{Message}} $>$ $>$ \& \mbox{\hyperlink{class_chat_adc95eb96288034304179b47d8427de6a}{get\+Messages}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{class_chat_a6c76b16f73a0c714c670a57a1dadf365}{id}}
+\item 
+std\+::string \mbox{\hyperlink{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}{chat\+Name}}
+\item 
+std\+::string \mbox{\hyperlink{class_chat_add05b2851afdf2b87d2d93272012bdec}{created\+At}}
+\item 
+std\+::optional$<$ std\+::string $>$ \mbox{\hyperlink{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}{last\+Activity}}
+\item 
+std\+::string \mbox{\hyperlink{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}{chat\+Type}}
+\item 
+std\+::unordered\+\_\+map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chat_member}{Chat\+Member}} $>$ $>$ \mbox{\hyperlink{class_chat_a5b073b33a20e7a99552973023c45bebd}{members}}
+\item 
+std\+::map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_message}{Message}} $>$ $>$ \mbox{\hyperlink{class_chat_abda80ba2ca4f368d020d5337f3a5de73}{messages}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_chat_ae6c718aa10fa23efced43cd0063bef91}\index{Chat@{Chat}!Chat@{Chat}}
+\index{Chat@{Chat}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{Chat()}{Chat()}}
+{\footnotesize\ttfamily \label{class_chat_ae6c718aa10fa23efced43cd0063bef91} 
+Chat\+::\+Chat (\begin{DoxyParamCaption}\item[{int}]{id}{, }\item[{const std\+::string \&}]{chat\+Name}{, }\item[{const std\+::string \&}]{created\+At}{, }\item[{std\+::optional$<$ std\+::string $>$}]{last\+Activity}{ = {\ttfamily std\+:\+:nullopt}, }\item[{const std\+::string \&}]{chat\+Type}{ = {\ttfamily "{}private"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_chat_a8a1ef810c37b8770a81fd85ddaf93505}\index{Chat@{Chat}!addMember@{addMember}}
+\index{addMember@{addMember}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{addMember()}{addMember()}}
+{\footnotesize\ttfamily \label{class_chat_a8a1ef810c37b8770a81fd85ddaf93505} 
+void Chat\+::add\+Member (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chat_member}{Chat\+Member}} $>$}]{member}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_abca6cb7ddb742bb4f689d8a17baab05b}\index{Chat@{Chat}!addMessage@{addMessage}}
+\index{addMessage@{addMessage}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{addMessage()}{addMessage()}}
+{\footnotesize\ttfamily \label{class_chat_abca6cb7ddb742bb4f689d8a17baab05b} 
+void Chat\+::add\+Message (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_message}{Message}} $>$}]{message}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_a26ff77f9b91c125dee3cccd5691085f3}\index{Chat@{Chat}!getChatName@{getChatName}}
+\index{getChatName@{getChatName}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{getChatName()}{getChatName()}}
+{\footnotesize\ttfamily \label{class_chat_a26ff77f9b91c125dee3cccd5691085f3} 
+const std\+::string \& Chat\+::get\+Chat\+Name (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_a3dbea941afc0e69fcd8f2b2b41eff3d0}\index{Chat@{Chat}!getChatType@{getChatType}}
+\index{getChatType@{getChatType}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{getChatType()}{getChatType()}}
+{\footnotesize\ttfamily \label{class_chat_a3dbea941afc0e69fcd8f2b2b41eff3d0} 
+const std\+::string \& Chat\+::get\+Chat\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_a3e609292b92d94eb86eaede8feb674c9}\index{Chat@{Chat}!getCreatedAt@{getCreatedAt}}
+\index{getCreatedAt@{getCreatedAt}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{getCreatedAt()}{getCreatedAt()}}
+{\footnotesize\ttfamily \label{class_chat_a3e609292b92d94eb86eaede8feb674c9} 
+const std\+::string \& Chat\+::get\+Created\+At (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_a3be9178aa185c3f22a02810906722005}\index{Chat@{Chat}!getId@{getId}}
+\index{getId@{getId}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{getId()}{getId()}}
+{\footnotesize\ttfamily \label{class_chat_a3be9178aa185c3f22a02810906722005} 
+int Chat\+::get\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_a81a2786391d601c697153c0728f05aa1}\index{Chat@{Chat}!getLastActivity@{getLastActivity}}
+\index{getLastActivity@{getLastActivity}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{getLastActivity()}{getLastActivity()}}
+{\footnotesize\ttfamily \label{class_chat_a81a2786391d601c697153c0728f05aa1} 
+const std\+::optional$<$ std\+::string $>$ \& Chat\+::get\+Last\+Activity (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_a5c9be31de2b1f8d7ba3dac8b65d13316}\index{Chat@{Chat}!getMembers@{getMembers}}
+\index{getMembers@{getMembers}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{getMembers()}{getMembers()}}
+{\footnotesize\ttfamily \label{class_chat_a5c9be31de2b1f8d7ba3dac8b65d13316} 
+const std\+::unordered\+\_\+map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chat_member}{Chat\+Member}} $>$ $>$ \& Chat\+::get\+Members (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_adc95eb96288034304179b47d8427de6a}\index{Chat@{Chat}!getMessages@{getMessages}}
+\index{getMessages@{getMessages}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{getMessages()}{getMessages()}}
+{\footnotesize\ttfamily \label{class_chat_adc95eb96288034304179b47d8427de6a} 
+const std\+::map$<$ int, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_message}{Message}} $>$ $>$ \& Chat\+::get\+Messages (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_ab1fc889da29d21eba0739ab738b9134c}\index{Chat@{Chat}!removeMember@{removeMember}}
+\index{removeMember@{removeMember}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{removeMember()}{removeMember()}}
+{\footnotesize\ttfamily \label{class_chat_ab1fc889da29d21eba0739ab738b9134c} 
+void Chat\+::remove\+Member (\begin{DoxyParamCaption}\item[{int}]{user\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_chat_a39fc6fda564fc726808f600480219340}\index{Chat@{Chat}!removeMessage@{removeMessage}}
+\index{removeMessage@{removeMessage}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{removeMessage()}{removeMessage()}}
+{\footnotesize\ttfamily \label{class_chat_a39fc6fda564fc726808f600480219340} 
+void Chat\+::remove\+Message (\begin{DoxyParamCaption}\item[{int}]{message\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d}\index{Chat@{Chat}!chatName@{chatName}}
+\index{chatName@{chatName}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{chatName}{chatName}}
+{\footnotesize\ttfamily \label{class_chat_a24a2633966ed8823b7e2fcce1a7c9d7d} 
+std\+::string Chat\+::chat\+Name\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64}\index{Chat@{Chat}!chatType@{chatType}}
+\index{chatType@{chatType}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{chatType}{chatType}}
+{\footnotesize\ttfamily \label{class_chat_a3b5c4c15e80ac67dfad6239ec2a06b64} 
+std\+::string Chat\+::chat\+Type\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_add05b2851afdf2b87d2d93272012bdec}\index{Chat@{Chat}!createdAt@{createdAt}}
+\index{createdAt@{createdAt}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{createdAt}{createdAt}}
+{\footnotesize\ttfamily \label{class_chat_add05b2851afdf2b87d2d93272012bdec} 
+std\+::string Chat\+::created\+At\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_a6c76b16f73a0c714c670a57a1dadf365}\index{Chat@{Chat}!id@{id}}
+\index{id@{id}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily \label{class_chat_a6c76b16f73a0c714c670a57a1dadf365} 
+int Chat\+::id\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_a5f55a61bfafc1cf68d6093cba28ef139}\index{Chat@{Chat}!lastActivity@{lastActivity}}
+\index{lastActivity@{lastActivity}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{lastActivity}{lastActivity}}
+{\footnotesize\ttfamily \label{class_chat_a5f55a61bfafc1cf68d6093cba28ef139} 
+std\+::optional$<$std\+::string$>$ Chat\+::last\+Activity\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_a5b073b33a20e7a99552973023c45bebd}\index{Chat@{Chat}!members@{members}}
+\index{members@{members}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{members}{members}}
+{\footnotesize\ttfamily \label{class_chat_a5b073b33a20e7a99552973023c45bebd} 
+std\+::unordered\+\_\+map$<$int, std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_chat_member}{Chat\+Member}}$>$ $>$ Chat\+::members\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{class_chat_abda80ba2ca4f368d020d5337f3a5de73}\index{Chat@{Chat}!messages@{messages}}
+\index{messages@{messages}!Chat@{Chat}}
+\doxysubsubsection{\texorpdfstring{messages}{messages}}
+{\footnotesize\ttfamily \label{class_chat_abda80ba2ca4f368d020d5337f3a5de73} 
+std\+::map$<$int, std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_message}{Message}}$>$ $>$ Chat\+::messages\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Filigram/include/data/\mbox{\hyperlink{_s_q_l_models_8hpp}{SQLModels.\+hpp}}\end{DoxyCompactItemize}

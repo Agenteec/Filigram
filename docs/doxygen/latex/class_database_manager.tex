@@ -1,0 +1,288 @@
+\doxysection{Database\+Manager Class Reference}
+\hypertarget{class_database_manager}{}\label{class_database_manager}\index{DatabaseManager@{DatabaseManager}}
+
+
+{\ttfamily \#include $<$Database\+Manager.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \{ \newline
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bad0749aaba8b833466dfcbb0428e4f89c}{SUCCESS}}
+, \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf5c81979cff85c3a2c900fe4261baa13}{USER\+\_\+\+ALREADY\+\_\+\+EXISTS}}
+, \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba7e7bca2bccaf500498324e016c04ad12}{INSERT\+\_\+\+ERROR}}
+, \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba442abaa57882f3196101a0885b9a5493}{LOGIN\+\_\+\+FAILED}}
+, \newline
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bae93b8c2f8d82fe495a45678d7c5761e4}{USER\+\_\+\+NOT\+\_\+\+FOUND}}
+, \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba059744e09a6756c2bcd4757f25d007d6}{\+\_\+\+ERROR}}
+, \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf6002bfcb23d09e3ba64d0d2c11a970e}{Insufficient\+\_\+\+Rights\+\_\+\+ERROR}}
+, \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba4905ac9d6a22bdfc1ae096094ce6248d}{COUNT}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_database_manager_ad1d6dec39200221f1958f4d20dcf62aa}{Database\+Manager}} (const std\+::string \&db\+Name="{}data.\+db"{})
+\item 
+\mbox{\hyperlink{class_database_manager_ae9b3a5da1e04fbb00faf8a034da1d063}{\texorpdfstring{$\sim$}{\string~}\+Database\+Manager}} ()
+\item 
+void \mbox{\hyperlink{class_database_manager_a306bc0bd8cc532b7344d6c4e9373abb3}{create\+Tables}} ()
+\item 
+void \mbox{\hyperlink{class_database_manager_a8707702182918a933bb2c335accd2a74}{execute\+SQL}} (const char \texorpdfstring{$\ast$}{*}sql)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_aa9de5cb5f13b0031014b75bd8bac3f48}{register\+User}} (const std\+::string \&username, const std\+::string \&password, int \&id, const std\+::string \&first\+Name="{}Default\+Username"{}, const std\+::string \&profile\+Picture="{}\+:profile\+\_\+photo\+\_\+default"{})
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_aa8779a853ad44dd40fb052a984c4f59a}{login\+User}} (const std\+::string \&username, const std\+::string \&password, int \&id)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_ab2f82ad1b30271ecd916430f8526decf}{create\+Chat}} (const std\+::string \&chat\+Name, int \&chat\+Id, const std\+::string \&chat\+Type="{}private"{})
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_aaafef4468ebc19ffbc54bcea6d6e0a65}{add\+Chat\+Member}} (int chat\+Id, int user\+Id, const std\+::string \&role="{}member"{}, int adder\+Id=-\/1)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_a3e693240511c6ba17f169bafe0ff6997}{remove\+Chat\+Member}} (int chat\+Id, int user\+Id)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_aeefa67d243c30723537f8b62f2cb25cc}{insert\+Message}} (int chat\+Id, int user\+Id, const std\+::string \&message\+Text, int \&message\+Id)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_a2a7ca7a5ce3e4dd47c1b613fdcb2d3f4}{insert\+Media}} (int message\+Id, const std\+::string \&media\+Type, const std\+::string \&media\+Path, const std\+::string \&meta\+Path, int \&media\+Id)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_a47c3e77ae83407952d9f30876b847436}{insert\+Media}} (\mbox{\hyperlink{class_media}{Media}} \&media)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{class_media}{Media}} $>$ \mbox{\hyperlink{class_database_manager_ab6a065a943b39dcd4db774c930fc0f17}{get\+Media\+By\+Message\+Id}} (int message\+Id)
+\item 
+\mbox{\hyperlink{class_media}{Media}} \mbox{\hyperlink{class_database_manager_a2afe05ad0f06405b38b2bd7183f6b1d4}{get\+Media\+By\+Id}} (int media\+Id)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{class_message}{Message}} $>$ \mbox{\hyperlink{class_database_manager_a13ff3ff287033aa578d2385afd6e2b23}{get\+Messages}} (int chat\+Id)
+\item 
+\mbox{\hyperlink{class_message}{Message}} \mbox{\hyperlink{class_database_manager_a05dc0c6728bc0eb8b99209f08425a031}{get\+Message\+By\+Id}} (int message\+Id)
+\item 
+std\+::optional$<$ \mbox{\hyperlink{class_user}{User}} $>$ \mbox{\hyperlink{class_database_manager_a32862608ca8a71286967b8de17f27b62}{Get\+User}} (int user\+Id)
+\item 
+std\+::optional$<$ \mbox{\hyperlink{class_chat}{Chat}} $>$ \mbox{\hyperlink{class_database_manager_af59d5ab0a9e660879bdcf6d470351033}{Get\+Chat}} (int chat\+Id)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{class_chat_member}{Chat\+Member}} $>$ \mbox{\hyperlink{class_database_manager_a5a40e09b37d37e234d5241764fe3c887}{get\+Chat\+Members}} (int chat\+Id)
+\item 
+bool \mbox{\hyperlink{class_database_manager_aba53d39b50b6f22a7102b69d411f9e28}{is\+User\+In\+Chat}} (int chat\+Id, int user\+Id)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_a49f1049c62119f0444118b48f4f65dd0}{delete\+User}} (int user\+Id)
+\item 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} \mbox{\hyperlink{class_database_manager_a260d0561acf5b99596a3044f2b3aa0e9}{update\+User\+Profile}} (int user\+Id, const std\+::string \&field\+Name, const std\+::string \&new\+Value)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{class_chat}{Chat}} $>$ \mbox{\hyperlink{class_database_manager_ab90118986ccf36b0ee6ca4932aafcf3b}{get\+User\+Chats}} (int user\+Id)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{class_database_manager_a66227120d4e9b3405f927c920b2d2f0e}{get\+Current\+Time}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+sqlite3 \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_database_manager_a5341532377ae75614a5e9ccf81e18355}{db}} = nullptr
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}\index{DatabaseManager@{DatabaseManager}!StatusCode@{StatusCode}}
+\index{StatusCode@{StatusCode}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{StatusCode}{StatusCode}}
+{\footnotesize\ttfamily \label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b} 
+enum class \mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Database\+Manager\+::\+Status\+Code}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SUCCESS@{SUCCESS}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!SUCCESS@{SUCCESS}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bad0749aaba8b833466dfcbb0428e4f89c}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bad0749aaba8b833466dfcbb0428e4f89c} 
+SUCCESS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{USER\_ALREADY\_EXISTS@{USER\_ALREADY\_EXISTS}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!USER\_ALREADY\_EXISTS@{USER\_ALREADY\_EXISTS}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf5c81979cff85c3a2c900fe4261baa13}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf5c81979cff85c3a2c900fe4261baa13} 
+USER\+\_\+\+ALREADY\+\_\+\+EXISTS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INSERT\_ERROR@{INSERT\_ERROR}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!INSERT\_ERROR@{INSERT\_ERROR}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba7e7bca2bccaf500498324e016c04ad12}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba7e7bca2bccaf500498324e016c04ad12} 
+INSERT\+\_\+\+ERROR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LOGIN\_FAILED@{LOGIN\_FAILED}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!LOGIN\_FAILED@{LOGIN\_FAILED}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba442abaa57882f3196101a0885b9a5493}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba442abaa57882f3196101a0885b9a5493} 
+LOGIN\+\_\+\+FAILED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{USER\_NOT\_FOUND@{USER\_NOT\_FOUND}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!USER\_NOT\_FOUND@{USER\_NOT\_FOUND}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bae93b8c2f8d82fe495a45678d7c5761e4}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399bae93b8c2f8d82fe495a45678d7c5761e4} 
+USER\+\_\+\+NOT\+\_\+\+FOUND&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{\_ERROR@{\_ERROR}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!\_ERROR@{\_ERROR}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba059744e09a6756c2bcd4757f25d007d6}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba059744e09a6756c2bcd4757f25d007d6} 
+\+\_\+\+ERROR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Insufficient\_Rights\_ERROR@{Insufficient\_Rights\_ERROR}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!Insufficient\_Rights\_ERROR@{Insufficient\_Rights\_ERROR}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf6002bfcb23d09e3ba64d0d2c11a970e}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399baf6002bfcb23d09e3ba64d0d2c11a970e} 
+Insufficient\+\_\+\+Rights\+\_\+\+ERROR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{COUNT@{COUNT}!DatabaseManager@{DatabaseManager}}\index{DatabaseManager@{DatabaseManager}!COUNT@{COUNT}}}\Hypertarget{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba4905ac9d6a22bdfc1ae096094ce6248d}\label{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399ba4905ac9d6a22bdfc1ae096094ce6248d} 
+COUNT&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_database_manager_ad1d6dec39200221f1958f4d20dcf62aa}\index{DatabaseManager@{DatabaseManager}!DatabaseManager@{DatabaseManager}}
+\index{DatabaseManager@{DatabaseManager}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{DatabaseManager()}{DatabaseManager()}}
+{\footnotesize\ttfamily \label{class_database_manager_ad1d6dec39200221f1958f4d20dcf62aa} 
+Database\+Manager\+::\+Database\+Manager (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{db\+Name}{ = {\ttfamily "{}data.db"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_database_manager_ae9b3a5da1e04fbb00faf8a034da1d063}\index{DatabaseManager@{DatabaseManager}!````~DatabaseManager@{\texorpdfstring{$\sim$}{\string~}DatabaseManager}}
+\index{````~DatabaseManager@{\texorpdfstring{$\sim$}{\string~}DatabaseManager}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}DatabaseManager()}{\string~DatabaseManager()}}
+{\footnotesize\ttfamily \label{class_database_manager_ae9b3a5da1e04fbb00faf8a034da1d063} 
+Database\+Manager\+::\texorpdfstring{$\sim$}{\string~}\+Database\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_database_manager_aaafef4468ebc19ffbc54bcea6d6e0a65}\index{DatabaseManager@{DatabaseManager}!addChatMember@{addChatMember}}
+\index{addChatMember@{addChatMember}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{addChatMember()}{addChatMember()}}
+{\footnotesize\ttfamily \label{class_database_manager_aaafef4468ebc19ffbc54bcea6d6e0a65} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::add\+Chat\+Member (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{, }\item[{int}]{user\+Id}{, }\item[{const std\+::string \&}]{role}{ = {\ttfamily "{}member"{}}, }\item[{int}]{adder\+Id}{ = {\ttfamily -\/1}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_ab2f82ad1b30271ecd916430f8526decf}\index{DatabaseManager@{DatabaseManager}!createChat@{createChat}}
+\index{createChat@{createChat}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{createChat()}{createChat()}}
+{\footnotesize\ttfamily \label{class_database_manager_ab2f82ad1b30271ecd916430f8526decf} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::create\+Chat (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{chat\+Name}{, }\item[{int \&}]{chat\+Id}{, }\item[{const std\+::string \&}]{chat\+Type}{ = {\ttfamily "{}private"{}}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a306bc0bd8cc532b7344d6c4e9373abb3}\index{DatabaseManager@{DatabaseManager}!createTables@{createTables}}
+\index{createTables@{createTables}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{createTables()}{createTables()}}
+{\footnotesize\ttfamily \label{class_database_manager_a306bc0bd8cc532b7344d6c4e9373abb3} 
+void Database\+Manager\+::create\+Tables (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a49f1049c62119f0444118b48f4f65dd0}\index{DatabaseManager@{DatabaseManager}!deleteUser@{deleteUser}}
+\index{deleteUser@{deleteUser}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{deleteUser()}{deleteUser()}}
+{\footnotesize\ttfamily \label{class_database_manager_a49f1049c62119f0444118b48f4f65dd0} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::delete\+User (\begin{DoxyParamCaption}\item[{int}]{user\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a8707702182918a933bb2c335accd2a74}\index{DatabaseManager@{DatabaseManager}!executeSQL@{executeSQL}}
+\index{executeSQL@{executeSQL}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{executeSQL()}{executeSQL()}}
+{\footnotesize\ttfamily \label{class_database_manager_a8707702182918a933bb2c335accd2a74} 
+void Database\+Manager\+::execute\+SQL (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{sql}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_af59d5ab0a9e660879bdcf6d470351033}\index{DatabaseManager@{DatabaseManager}!GetChat@{GetChat}}
+\index{GetChat@{GetChat}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{GetChat()}{GetChat()}}
+{\footnotesize\ttfamily \label{class_database_manager_af59d5ab0a9e660879bdcf6d470351033} 
+std\+::optional$<$ \mbox{\hyperlink{class_chat}{Chat}} $>$ Database\+Manager\+::\+Get\+Chat (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a5a40e09b37d37e234d5241764fe3c887}\index{DatabaseManager@{DatabaseManager}!getChatMembers@{getChatMembers}}
+\index{getChatMembers@{getChatMembers}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{getChatMembers()}{getChatMembers()}}
+{\footnotesize\ttfamily \label{class_database_manager_a5a40e09b37d37e234d5241764fe3c887} 
+std\+::vector$<$ \mbox{\hyperlink{class_chat_member}{Chat\+Member}} $>$ Database\+Manager\+::get\+Chat\+Members (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a66227120d4e9b3405f927c920b2d2f0e}\index{DatabaseManager@{DatabaseManager}!getCurrentTime@{getCurrentTime}}
+\index{getCurrentTime@{getCurrentTime}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{getCurrentTime()}{getCurrentTime()}}
+{\footnotesize\ttfamily \label{class_database_manager_a66227120d4e9b3405f927c920b2d2f0e} 
+std\+::string Database\+Manager\+::get\+Current\+Time (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_database_manager_a2afe05ad0f06405b38b2bd7183f6b1d4}\index{DatabaseManager@{DatabaseManager}!getMediaById@{getMediaById}}
+\index{getMediaById@{getMediaById}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{getMediaById()}{getMediaById()}}
+{\footnotesize\ttfamily \label{class_database_manager_a2afe05ad0f06405b38b2bd7183f6b1d4} 
+\mbox{\hyperlink{class_media}{Media}} Database\+Manager\+::get\+Media\+By\+Id (\begin{DoxyParamCaption}\item[{int}]{media\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_ab6a065a943b39dcd4db774c930fc0f17}\index{DatabaseManager@{DatabaseManager}!getMediaByMessageId@{getMediaByMessageId}}
+\index{getMediaByMessageId@{getMediaByMessageId}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{getMediaByMessageId()}{getMediaByMessageId()}}
+{\footnotesize\ttfamily \label{class_database_manager_ab6a065a943b39dcd4db774c930fc0f17} 
+std\+::vector$<$ \mbox{\hyperlink{class_media}{Media}} $>$ Database\+Manager\+::get\+Media\+By\+Message\+Id (\begin{DoxyParamCaption}\item[{int}]{message\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a05dc0c6728bc0eb8b99209f08425a031}\index{DatabaseManager@{DatabaseManager}!getMessageById@{getMessageById}}
+\index{getMessageById@{getMessageById}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{getMessageById()}{getMessageById()}}
+{\footnotesize\ttfamily \label{class_database_manager_a05dc0c6728bc0eb8b99209f08425a031} 
+\mbox{\hyperlink{class_message}{Message}} Database\+Manager\+::get\+Message\+By\+Id (\begin{DoxyParamCaption}\item[{int}]{message\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a13ff3ff287033aa578d2385afd6e2b23}\index{DatabaseManager@{DatabaseManager}!getMessages@{getMessages}}
+\index{getMessages@{getMessages}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{getMessages()}{getMessages()}}
+{\footnotesize\ttfamily \label{class_database_manager_a13ff3ff287033aa578d2385afd6e2b23} 
+std\+::vector$<$ \mbox{\hyperlink{class_message}{Message}} $>$ Database\+Manager\+::get\+Messages (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a32862608ca8a71286967b8de17f27b62}\index{DatabaseManager@{DatabaseManager}!GetUser@{GetUser}}
+\index{GetUser@{GetUser}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{GetUser()}{GetUser()}}
+{\footnotesize\ttfamily \label{class_database_manager_a32862608ca8a71286967b8de17f27b62} 
+std\+::optional$<$ \mbox{\hyperlink{class_user}{User}} $>$ Database\+Manager\+::\+Get\+User (\begin{DoxyParamCaption}\item[{int}]{user\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_ab90118986ccf36b0ee6ca4932aafcf3b}\index{DatabaseManager@{DatabaseManager}!getUserChats@{getUserChats}}
+\index{getUserChats@{getUserChats}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{getUserChats()}{getUserChats()}}
+{\footnotesize\ttfamily \label{class_database_manager_ab90118986ccf36b0ee6ca4932aafcf3b} 
+std\+::vector$<$ \mbox{\hyperlink{class_chat}{Chat}} $>$ Database\+Manager\+::get\+User\+Chats (\begin{DoxyParamCaption}\item[{int}]{user\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a2a7ca7a5ce3e4dd47c1b613fdcb2d3f4}\index{DatabaseManager@{DatabaseManager}!insertMedia@{insertMedia}}
+\index{insertMedia@{insertMedia}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{insertMedia()}{insertMedia()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_database_manager_a2a7ca7a5ce3e4dd47c1b613fdcb2d3f4} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::insert\+Media (\begin{DoxyParamCaption}\item[{int}]{message\+Id}{, }\item[{const std\+::string \&}]{media\+Type}{, }\item[{const std\+::string \&}]{media\+Path}{, }\item[{const std\+::string \&}]{meta\+Path}{, }\item[{int \&}]{media\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a47c3e77ae83407952d9f30876b847436}\index{DatabaseManager@{DatabaseManager}!insertMedia@{insertMedia}}
+\index{insertMedia@{insertMedia}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{insertMedia()}{insertMedia()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_database_manager_a47c3e77ae83407952d9f30876b847436} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::insert\+Media (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_media}{Media}} \&}]{media}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_aeefa67d243c30723537f8b62f2cb25cc}\index{DatabaseManager@{DatabaseManager}!insertMessage@{insertMessage}}
+\index{insertMessage@{insertMessage}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{insertMessage()}{insertMessage()}}
+{\footnotesize\ttfamily \label{class_database_manager_aeefa67d243c30723537f8b62f2cb25cc} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::insert\+Message (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{, }\item[{int}]{user\+Id}{, }\item[{const std\+::string \&}]{message\+Text}{, }\item[{int \&}]{message\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_aba53d39b50b6f22a7102b69d411f9e28}\index{DatabaseManager@{DatabaseManager}!isUserInChat@{isUserInChat}}
+\index{isUserInChat@{isUserInChat}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{isUserInChat()}{isUserInChat()}}
+{\footnotesize\ttfamily \label{class_database_manager_aba53d39b50b6f22a7102b69d411f9e28} 
+bool Database\+Manager\+::is\+User\+In\+Chat (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{, }\item[{int}]{user\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_aa8779a853ad44dd40fb052a984c4f59a}\index{DatabaseManager@{DatabaseManager}!loginUser@{loginUser}}
+\index{loginUser@{loginUser}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{loginUser()}{loginUser()}}
+{\footnotesize\ttfamily \label{class_database_manager_aa8779a853ad44dd40fb052a984c4f59a} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::login\+User (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{username}{, }\item[{const std\+::string \&}]{password}{, }\item[{int \&}]{id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_aa9de5cb5f13b0031014b75bd8bac3f48}\index{DatabaseManager@{DatabaseManager}!registerUser@{registerUser}}
+\index{registerUser@{registerUser}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{registerUser()}{registerUser()}}
+{\footnotesize\ttfamily \label{class_database_manager_aa9de5cb5f13b0031014b75bd8bac3f48} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::register\+User (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{username}{, }\item[{const std\+::string \&}]{password}{, }\item[{int \&}]{id}{, }\item[{const std\+::string \&}]{first\+Name}{ = {\ttfamily "{}DefaultUsername"{}}, }\item[{const std\+::string \&}]{profile\+Picture}{ = {\ttfamily "{}\+:profile\+\_\+photo\+\_\+default"{}}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a3e693240511c6ba17f169bafe0ff6997}\index{DatabaseManager@{DatabaseManager}!removeChatMember@{removeChatMember}}
+\index{removeChatMember@{removeChatMember}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{removeChatMember()}{removeChatMember()}}
+{\footnotesize\ttfamily \label{class_database_manager_a3e693240511c6ba17f169bafe0ff6997} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::remove\+Chat\+Member (\begin{DoxyParamCaption}\item[{int}]{chat\+Id}{, }\item[{int}]{user\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_database_manager_a260d0561acf5b99596a3044f2b3aa0e9}\index{DatabaseManager@{DatabaseManager}!updateUserProfile@{updateUserProfile}}
+\index{updateUserProfile@{updateUserProfile}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{updateUserProfile()}{updateUserProfile()}}
+{\footnotesize\ttfamily \label{class_database_manager_a260d0561acf5b99596a3044f2b3aa0e9} 
+\mbox{\hyperlink{class_database_manager_a002e0f2d0e74ca1d7886f4f84201399b}{Status\+Code}} Database\+Manager\+::update\+User\+Profile (\begin{DoxyParamCaption}\item[{int}]{user\+Id}{, }\item[{const std\+::string \&}]{field\+Name}{, }\item[{const std\+::string \&}]{new\+Value}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_database_manager_a5341532377ae75614a5e9ccf81e18355}\index{DatabaseManager@{DatabaseManager}!db@{db}}
+\index{db@{db}!DatabaseManager@{DatabaseManager}}
+\doxysubsubsection{\texorpdfstring{db}{db}}
+{\footnotesize\ttfamily \label{class_database_manager_a5341532377ae75614a5e9ccf81e18355} 
+sqlite3\texorpdfstring{$\ast$}{*} Database\+Manager\+::db = nullptr\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Filigram/include/data/\mbox{\hyperlink{_database_manager_8h}{Database\+Manager.\+h}}\item 
+Filigram/src/data/\mbox{\hyperlink{_database_manager_8cpp}{Database\+Manager.\+cpp}}\end{DoxyCompactItemize}
