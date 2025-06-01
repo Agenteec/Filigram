@@ -3,7 +3,7 @@
 
 
 MainWindow::MainWindow() :
-    window(new sf::RenderWindow(sf::VideoMode(800, 600), L"Filigram", sf::Style::Default)),
+    window(std::make_shared<sf::RenderWindow>(sf::VideoMode({ 800u, 600u }), L"Filigram", sf::Style::Default)),
     onChat(false),
     onRegister(false),
     onLogin(true),
@@ -17,13 +17,13 @@ MainWindow::MainWindow() :
     onProfileEditor(false),
     onPlotEditor(false)
 {
+    serverIp = sf::IpAddress::resolve("127.0.0.1");
     init();
 
 }
 
 MainWindow::~MainWindow() {
     stop();
-    delete window;
 }
 
 void MainWindow::start() {
@@ -41,7 +41,7 @@ void MainWindow::start() {
                     if (client->connect())
                     {
                         connectionStatus = Connected;
-                        spdlog::info("Connected to server {}:{}", client->getServerAddress().toString(), client->getServerPort());
+                        spdlog::info("Connected to server {}:{}", client->getServerAddress()->toString(), client->getServerPort());
                         if (currentUser.isLoad)
                         {
                             sendLoginRequest(currentUser.username,currentUser.password);
@@ -49,7 +49,7 @@ void MainWindow::start() {
                     }
                     else
                     {
-                        spdlog::warn("Failed to connect to server: {}:{}", client->getServerAddress().toString(), client->getServerPort());
+                        spdlog::warn("Failed to connect to server: {}:{}", client->getServerAddress()->toString(), client->getServerPort());
                         std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
                         
                         
@@ -132,7 +132,8 @@ void MainWindow::init()
         configFile >> config;
         configFile.close();
     }
-    if (config.contains("host")){serverIp = config["host"].get<std::string>();}
+
+    if (config.contains("host")){ serverIp->resolve(config["host"].get<std::string>());}
     if (config.contains("port")){serverPort = config["port"].get<unsigned short>();}
     if (config.contains("timeout")){timeout = config["timeout"].get<int>();}
 
@@ -147,9 +148,9 @@ void MainWindow::init()
     loadUser();
     initIMgui(*window);
     window->setVerticalSyncEnabled(true);
-    font.loadFromFile("Assets/fonts/Roboto-Regular.ttf");
-    logo.loadFromFile("Assets/images/logo.png");
-    window->setIcon(202,161, logo.getPixelsPtr());
+    font.openFromFile(R"(Assets/fonts/Roboto-Regular.ttf)");
+    logo.loadFromFile(R"(Assets/images/logo.png)");
+    window->setIcon(logo);
     shaders["ping"] = std::make_shared<ShaderManager>(Shaders::ping);
 }
 
@@ -206,24 +207,18 @@ void MainWindow::handleEvent()
 {
     auto& refWindow = *window;
 
-    sf::Event event;
-    while (refWindow.pollEvent(event))
+    while (const auto & event = refWindow.pollEvent())
     {
-        ImGui::SFML::ProcessEvent(event);
-        switch (event.type)
+        ImGui::SFML::ProcessEvent(refWindow,*event);
+        if (event->is<sf::Event::Closed>())
         {
-        case sf::Event::Closed:
             refWindow.close();
             stop();
-            
-            
-            break;
-        case sf::Event::Resized:
+        }
+        else if (event->is<sf::Event::Resized>())
+        {
             for (auto& shader : shaders)
                 shader.second->handleResize(refWindow.getSize().x, refWindow.getSize().y, refWindow);
-            break;
-        default:
-            break;
         }
     }
 }
@@ -381,7 +376,8 @@ void MainWindow::listChatsImWindow(bool isOpen) {
     auto user = userList[currentUser.id];
     if (user)
     {
-        if (ImGui::ImageButton((void*)reinterpret_cast<ImTextureID>(user->getProfilePictureTexture()->getNativeHandle()), ImVec2(65, 65)))
+        
+        if (ImGui::ImageButton("##UserProfileImage",*user->getProfilePictureTexture(), sf::Vector2f(65, 65)))
         {
             if (!onProfileEditor)
             {
@@ -402,7 +398,31 @@ void MainWindow::listChatsImWindow(bool isOpen) {
 
         }
         ImGui::SameLine();
+        ImGui::BeginGroup();
         ImGui::Text("%s", user->getUsername().c_str());
+        if (ImGui::Button("Выйти"))
+        {
+            sendLogOutRequest();
+            if (std::filesystem::exists("credentials.enc"))
+            {
+                try
+                {
+                    std::filesystem::remove("credentials.enc");
+                }
+                catch (const std::exception& ex)
+                {
+                    spdlog::error("Logout ex: {}",ex.what());
+                }
+            }
+            onLogin = true;
+            onRegister = false;
+            onChat = false;
+            currentUser = MainWindow::CurrentUser();
+            tempUser = MainWindow::CurrentUser();
+            
+        }
+        ImGui::EndGroup();
+       
     }
 
     
@@ -500,7 +520,7 @@ void MainWindow::chatImWindow(bool isOpen) {
         if (!sender) continue;
 
         if (lastSenderId != sender->getId()) {
-            ImGui::Image((void*)reinterpret_cast<ImTextureID>(sender->getProfilePictureTexture()->getNativeHandle()), ImVec2(40, 40));
+            ImGui::Image(*sender->getProfilePictureTexture(), sf::Vector2f(40, 40));
             ImGui::SameLine();
             auto& nameColor =  sender->nameColor;
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(nameColor.r/255.f, nameColor.g/255.f, nameColor.b/255.f, nameColor.a/255.f));
@@ -555,8 +575,9 @@ void MainWindow::chatImWindow(bool isOpen) {
             }
             if (media->getMediaType() == "image")
             {
-                sf::Uint8* xData = reinterpret_cast<sf::Uint8*>(media->data.data());
-                ImGui::Image((void*)media->data.data(), ImVec2(100, 150));
+                UINT8* xData = reinterpret_cast<UINT8*>(media->data.data());
+                
+                ImGui::Image(sf::Texture(xData, 100 * 150), sf::Vector2f(100, 150));
                 //--------------
             }
         }
@@ -677,7 +698,7 @@ void MainWindow::chatInfoWindow(bool isOpen) {
             ImGui::PopStyleColor();
 
             ImGui::SameLine(10.0f);
-            ImGui::Image((void*)reinterpret_cast<ImTextureID>(user->getProfilePictureTexture()->getNativeHandle()), ImVec2(50, 50));
+            ImGui::Image(*user->getProfilePictureTexture(), sf::Vector2f(50, 50));
 
             ImGui::SameLine();
             ImGui::BeginGroup();
@@ -960,6 +981,18 @@ void MainWindow::sendMessage(const std::string& message, const PlotData& plotDat
     cv.notify_one();
 }
 
+void MainWindow::sendLogOutRequest()
+{
+    json request;
+
+    request["action"] = "logout";
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        requestQueue.push(request);
+    }
+    cv.notify_one();
+}
+
 void MainWindow::sendUpdateUserInfoRequest()
 {
 
@@ -1064,11 +1097,11 @@ void MainWindow::sendGetMediaDataRequest()
 
 void MainWindow::GetMessageMedia(sf::Packet& packet, const json& response, std::shared_ptr<Message> newMessage)
 {
-    sf::Uint32 mediaCount;
+    UINT32 mediaCount;
     packet >> mediaCount;
 
     for (size_t i = 0; i < mediaCount; i++) {
-        sf::Uint32 mediaSize;
+        UINT32 mediaSize;
         packet >> mediaSize;
 
         std::vector<char> mediaData(mediaSize);
@@ -1081,13 +1114,13 @@ void MainWindow::GetMessageMedia(sf::Packet& packet, const json& response, std::
             }
             while (packet.getReadPosition() < readPosition + mediaSize)
             {
-                sf::Uint8 temp;
+                UINT8 temp;
                 packet >> temp;
             }
 
         }
 
-        sf::Uint32 metaSize;
+        UINT32 metaSize;
         packet >> metaSize;
 
         std::vector<char> metaData(metaSize);
@@ -1100,7 +1133,7 @@ void MainWindow::GetMessageMedia(sf::Packet& packet, const json& response, std::
             }
             while (packet.getReadPosition() < readPosition + metaSize)
             {
-                sf::Uint8 temp;
+                UINT8 temp;
                 packet >> temp;
             }
         }

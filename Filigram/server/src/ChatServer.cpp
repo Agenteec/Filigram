@@ -19,7 +19,7 @@ std::vector<char> ChatServer::readFile(const std::string& filePath) {
 
 
 ChatServer::ChatServer(unsigned short port) : dbManager("data.db") {
-    if (listener.listen(port) != sf::Socket::Done) {
+    if (listener.listen(port) != sf::Socket::Status::Done) {
         spdlog::error("Error starting server on port {}", port);
     }
     else {
@@ -33,8 +33,8 @@ void ChatServer::run() {
 
     while (true) {
         auto client = std::make_shared<sf::TcpSocket>();
-        if (listener.accept(*client) == sf::Socket::Done) {
-            spdlog::info("New client connected: {}", client->getRemoteAddress().toString());
+        if (listener.accept(*client) == sf::Socket::Status::Done) {
+            spdlog::info("New client connected: {}", client->getRemoteAddress()->toString());
             std::thread(&ChatServer::handleClient, this, client).detach();
         }
     }
@@ -45,8 +45,8 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
     sf::Packet packet;
 
     while (true) {
-        if (client->receive(packet) != sf::Socket::Done) {
-            spdlog::info("Client disconnected: {}", client->getRemoteAddress().toString());
+        if (client->receive(packet) != sf::Socket::Status::Done) {
+            spdlog::info("Client disconnected: {}", client->getRemoteAddress()->toString());
             break;
         }
         json response;
@@ -502,6 +502,12 @@ void ChatServer::handleClient(std::shared_ptr<sf::TcpSocket> client) {
                     response["message"] = "Registration failed.";
                 }
             }
+            else if (request["action"] == "logout")
+            {
+                currentUser = std::nullopt;
+                response["status"] = "success";
+                response["message"] = "Loguot successful.";
+            }
             else {
                 response["status"] = "error";
                 response["message"] = "Unknown action.";
@@ -562,7 +568,7 @@ void ChatServer::broadcastMessageToChat(int chatId, const json& messageJson) {
 
         if (clientSockets.find(memberId) != clientSockets.end()) {
             auto client = clientSockets[memberId];
-            if (client->send(packet) != sf::Socket::Done) {
+            if (client->send(packet) != sf::Socket::Status::Done) {
                 spdlog::error("Failed to send message to user {} in chat {}", memberId, chatId);
             }
             else {
@@ -602,7 +608,7 @@ void ChatServer::pushMediaToPacket(sf::Packet& packet, const json& messageJson)
         }
     }
 
-    sf::Uint32 mediaCount = static_cast<sf::Uint32>(mediaDataList.size());
+    UINT32 mediaCount = static_cast<UINT32>(mediaDataList.size());
     packet << mediaCount;
 
 
@@ -610,12 +616,12 @@ void ChatServer::pushMediaToPacket(sf::Packet& packet, const json& messageJson)
         const auto& mediaData = mediaDataList[i];
         const auto& metaData = metaDataList[i];
         size_t mediaSize = mediaData.size();
-        packet << static_cast<sf::Uint32>(mediaSize);
+        packet << static_cast<UINT32>(mediaSize);
         if (mediaSize > 0) {
             packet.append(mediaData.data(), mediaSize);
         }
         size_t metaSize = metaData.size();
-        packet << static_cast<sf::Uint32>(metaSize);
+        packet << static_cast<UINT32>(metaSize);
         if (metaSize > 0) {
             packet.append(metaData.data(), metaSize);
         }
@@ -627,8 +633,8 @@ void ChatServer::broadcastMessage(const std::string& message) {
     for (const auto& [userId, client] : clientSockets) {
         sf::Packet packet;
         packet << message;
-        if (client->send(packet) != sf::Socket::Done) {
-            spdlog::error("Failed to send message to client: {}", client->getRemoteAddress().toString());
+        if (client->send(packet) != sf::Socket::Status::Done) {
+            spdlog::error("Failed to send message to client: {}", client->getRemoteAddress()->toString());
         }
     }
     cv.notify_all();

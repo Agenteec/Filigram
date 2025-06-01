@@ -14,17 +14,17 @@ using json = nlohmann::json;
 
 class ServerClient {
 public:
-    explicit ServerClient(const sf::IpAddress& serverAddress, unsigned short port);
+    explicit ServerClient(const std::optional<sf::IpAddress>& serverAddress, unsigned short port);
     bool connect();
     bool sendRequest(const json& request);
     bool receiveResponse(sf::Packet& packet);
 
-    const sf::IpAddress& getServerAddress() const { return serverAddress; }
+    const std::optional < sf::IpAddress>& getServerAddress() const { return serverAddress; }
     unsigned short getServerPort() const { return serverPort; }
 
 private:
     sf::TcpSocket socket;
-    sf::IpAddress serverAddress;
+    std::optional<sf::IpAddress> serverAddress;
     unsigned short serverPort;
     std::queue<json> responseQueue;
     std::mutex queueMutex;

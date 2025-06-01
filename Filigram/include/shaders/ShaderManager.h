@@ -6,13 +6,13 @@
 class ShaderManager {
 public:
     ShaderManager(const std::string& fragmentShaderSource) {
-        if (!shader.loadFromMemory(fragmentShaderSource, sf::Shader::Fragment)) {
+        if (!shader.loadFromMemory(fragmentShaderSource, sf::Shader::Type::Fragment)) {
             throw std::runtime_error("Error loading shader");
         }
         
-        texture.create(800, 600); 
+        texture.resize({ 800, 600 }, true);
         shader.setUniform("resolution", sf::Glsl::Vec2(800, 600));
-        sprite.setTexture(texture);
+        sprite = std::make_shared<sf::Sprite> (texture);
     }
 
     void handleResize(int width, int height, sf::RenderWindow& window) {
@@ -21,9 +21,9 @@ public:
         {
             return;
         }
-        texture.create(width, height);
+        texture.resize(sf::Vector2u( width, height ), true);
         texture.update(window);
-        sprite.setTexture(texture);
+        sprite->setTexture(texture);
         shader.setUniform("resolution", sf::Glsl::Vec2(width, height));
     }
 
@@ -31,7 +31,7 @@ public:
         if (!isActive)return;
         shaderTime += time;
         shader.setUniform("time", shaderTime);
-        shader.setUniform("stopingTime", stopingTime);
+        shader.setUniform("stoppingTime", stopingTime);
         if (stoping)
         {
             stopingTime += time*10.f;
@@ -57,7 +57,7 @@ public:
     void draw(sf::RenderWindow& window) {
         if (!isActive)return;
         
-        window.draw(sprite, &shader);
+        window.draw(*sprite, &shader);
     }
     void start()
     {
@@ -87,5 +87,5 @@ private:
     float stopingTime{1.f};
     sf::Shader shader;
     sf::Texture texture;
-    sf::Sprite sprite;
+    std::shared_ptr<sf::Sprite> sprite;
 };

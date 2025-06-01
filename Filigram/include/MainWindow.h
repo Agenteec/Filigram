@@ -10,8 +10,9 @@
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
+#include "../../imgui-sfml/imgui-SFML.h"
 #include <imgui.h>
-#include <imgui-SFML.h>
+
 #include <imgui_stdlib.h>
 #include <implot.h>
 #include <spdlog/spdlog.h>
@@ -121,7 +122,7 @@ class MainWindow
         Connecting
     };
 
-    sf::IpAddress serverIp = "127.0.0.1";
+    std::optional < sf::IpAddress> serverIp = std::optional<sf::IpAddress>();
     unsigned short serverPort = 53000;
     int timeout = 1000;
 
@@ -134,7 +135,7 @@ class MainWindow
 
     ServerClient* client;
     std::vector<unsigned char> key;
-    sf::RenderWindow* window;
+    std::shared_ptr<sf::RenderWindow> window;
     sf::Image logo;
 
     sf::Font font;
@@ -226,5 +227,6 @@ private:
     void GetMessageMedia(sf::Packet& packet, const json& response, std::shared_ptr<Message> newMessage = nullptr);
     void sendMessage(const std::string& message);
     void sendMessage(const std::string& message, const PlotData& plotData);
+    void sendLogOutRequest();
     void processServerResponse(sf::Packet& packet);
 };
