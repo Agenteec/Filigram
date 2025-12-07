@@ -1,5 +1,6 @@
 ﻿#include <MainWindow.h>
 #include <fileDialog.h>
+#include <cstdint>
 
 
 MainWindow::MainWindow() :
@@ -132,11 +133,12 @@ void MainWindow::init()
         configFile >> config;
         configFile.close();
     }
-
-    if (config.contains("host")){ serverIp->resolve(config["host"].get<std::string>());}
+    
+    if (config.contains("host")){ serverIp = sf::IpAddress::resolve(config["host"].get<std::string>());}
     if (config.contains("port")){serverPort = config["port"].get<unsigned short>();}
     if (config.contains("timeout")){timeout = config["timeout"].get<int>();}
-
+    spdlog::info("{}", serverIp.value().toString());
+    spdlog::info("{}", config["host"].get<std::string>());
 
 
     sendMessageTexture.loadFromFile("Assets/images/send.png");
@@ -336,7 +338,7 @@ void MainWindow::registerImWindow(bool isOpen)
     }
 
 
-    passwordsDoNotMatch = !password1._Equal(password2);
+    passwordsDoNotMatch = !(password1 == password2);
     
 
 
@@ -575,7 +577,7 @@ void MainWindow::chatImWindow(bool isOpen) {
             }
             if (media->getMediaType() == "image")
             {
-                UINT8* xData = reinterpret_cast<UINT8*>(media->data.data());
+                uint8_t* xData = reinterpret_cast<uint8_t*>(media->data.data());
                 
                 ImGui::Image(sf::Texture(xData, 100 * 150), sf::Vector2f(100, 150));
                 //--------------
@@ -1097,11 +1099,11 @@ void MainWindow::sendGetMediaDataRequest()
 
 void MainWindow::GetMessageMedia(sf::Packet& packet, const json& response, std::shared_ptr<Message> newMessage)
 {
-    UINT32 mediaCount;
+    uint32_t mediaCount;
     packet >> mediaCount;
 
     for (size_t i = 0; i < mediaCount; i++) {
-        UINT32 mediaSize;
+        uint32_t mediaSize;
         packet >> mediaSize;
 
         std::vector<char> mediaData(mediaSize);
@@ -1114,13 +1116,13 @@ void MainWindow::GetMessageMedia(sf::Packet& packet, const json& response, std::
             }
             while (packet.getReadPosition() < readPosition + mediaSize)
             {
-                UINT8 temp;
+                uint8_t temp;
                 packet >> temp;
             }
 
         }
 
-        UINT32 metaSize;
+        uint32_t metaSize;
         packet >> metaSize;
 
         std::vector<char> metaData(metaSize);
@@ -1133,7 +1135,7 @@ void MainWindow::GetMessageMedia(sf::Packet& packet, const json& response, std::
             }
             while (packet.getReadPosition() < readPosition + metaSize)
             {
-                UINT8 temp;
+                uint8_t temp;
                 packet >> temp;
             }
         }

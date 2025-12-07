@@ -608,7 +608,7 @@ void ChatServer::pushMediaToPacket(sf::Packet& packet, const json& messageJson)
         }
     }
 
-    UINT32 mediaCount = static_cast<UINT32>(mediaDataList.size());
+    uint32_t mediaCount = static_cast<uint32_t>(mediaDataList.size());
     packet << mediaCount;
 
 
@@ -616,12 +616,12 @@ void ChatServer::pushMediaToPacket(sf::Packet& packet, const json& messageJson)
         const auto& mediaData = mediaDataList[i];
         const auto& metaData = metaDataList[i];
         size_t mediaSize = mediaData.size();
-        packet << static_cast<UINT32>(mediaSize);
+        packet << static_cast<uint32_t>(mediaSize);
         if (mediaSize > 0) {
             packet.append(mediaData.data(), mediaSize);
         }
         size_t metaSize = metaData.size();
-        packet << static_cast<UINT32>(metaSize);
+        packet << static_cast<uint32_t>(metaSize);
         if (metaSize > 0) {
             packet.append(metaData.data(), metaSize);
         }

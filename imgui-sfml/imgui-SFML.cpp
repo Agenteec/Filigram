@@ -17,7 +17,7 @@
 
 #include <cassert>
 #include <cmath>
-#include <string>
+#include <cstring>
 
 #include <algorithm>
 #include <memory>
@@ -50,10 +50,10 @@ int openKeyboardIME()
     jclass natact  = env->FindClass("android/app/NativeActivity");
     jclass context = env->FindClass("android/content/Context");
 
-    jfieldID fid    = env->GetStaticFieldID(context, "INPUT_METHOD_SERVICE", "Ljava/lang/string;");
+    jfieldID fid    = env->GetStaticFieldID(context, "INPUT_METHOD_SERVICE", "Ljava/lang/String;");
     jobject  svcstr = env->GetStaticObjectField(context, fid);
 
-    jmethodID getss   = env->GetMethodID(natact, "getSystemService", "(Ljava/lang/string;)Ljava/lang/Object;");
+    jmethodID getss   = env->GetMethodID(natact, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;");
     jobject   imm_obj = env->CallObjectMethod(activity->clazz, getss, svcstr);
 
     jclass    imm_cls         = env->GetObjectClass(imm_obj);
@@ -88,10 +88,10 @@ int closeKeyboardIME()
     jclass natact  = env->FindClass("android/app/NativeActivity");
     jclass context = env->FindClass("android/content/Context");
 
-    jfieldID fid    = env->GetStaticFieldID(context, "INPUT_METHOD_SERVICE", "Ljava/lang/string;");
+    jfieldID fid    = env->GetStaticFieldID(context, "INPUT_METHOD_SERVICE", "Ljava/lang/String;");
     jobject  svcstr = env->GetStaticObjectField(context, fid);
 
-    jmethodID getss   = env->GetMethodID(natact, "getSystemService", "(Ljava/lang/string;)Ljava/lang/Object;");
+    jmethodID getss   = env->GetMethodID(natact, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;");
     jobject   imm_obj = env->CallObjectMethod(activity->clazz, getss, svcstr);
 
     jclass    imm_cls         = env->GetObjectClass(imm_obj);

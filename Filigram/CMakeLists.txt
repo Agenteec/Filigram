@@ -1,20 +1,20 @@
-﻿if(DEFINED ENV{VCPKG_HOME})
-    include("$ENV{VCPKG_HOME}/scripts/buildsystems/vcpkg.cmake")
+﻿include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/vcpkg.cmake")
+set(CMAKE_TOOLCHAIN_FILE "${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain")
+
+if(EXISTS "${CMAKE_TOOLCHAIN_FILE}")
+    include("${CMAKE_TOOLCHAIN_FILE}")
 else()
-    include("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    message(FATAL_ERROR "vcpkg.cmake not found at: ${CMAKE_TOOLCHAIN_FILE}")
 endif()
 
-set(VCPKG_INCLUDE_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/include") 
-set(VCPKG_LIBRARY_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/lib") 
-set(VCPKG_BIN_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/bin") 
-set(VCPKG_DEBUG_BIN_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/debug/bin") 
-set(VCPKG_DEBUG_LIBRARY_DIR "$ENV{VCPKG_HOME}/installed/${VCPKG_TARGET_TRIPLET}/debug/lib") 
 
-#include_directories(${VCPKG_INCLUDE_DIR})
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(nlohmann_json CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-#find_package(ImGui-SFML CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(implot CONFIG REQUIRED)
 find_package(SFML COMPONENTS Graphics Window Audio Network System CONFIG REQUIRED)
@@ -23,60 +23,78 @@ find_package(unofficial-sqlite3 CONFIG REQUIRED)
 find_package(unofficial-argon2 CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
-   
-  
-file(GLOB_RECURSE SOURCES "src/*.*"  "include/*.h" "include/*.hpp")
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(Freetype CONFIG REQUIRED)
 
-add_library(FiligramCalc SHARED "Calc/Calc.cpp" "Calc/Calc.h")
-file(GLOB_RECURSE Imgui_SFML_SOURCES "../imgui-sfml/*.*")
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.*" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 
-
-
-add_executable (Filigram "main.cpp" ${SOURCES} ${Imgui_SFML_SOURCES})
-file(GLOB_RECURSE SERVER_SOURCES "server/src/*.cpp"  "server/include/*.h" "server/include/*.hpp"
-"include/data/DatabaseManager.h"
-"src/data/DatabaseManager.cpp"
-"include/data/SQLModels.hpp")
-add_executable (FiligramServer "server.cpp" ${SERVER_SOURCES})
-
+add_library(FiligramCalc SHARED 
+    "calc/Calc.cpp"
+    "calc/Calc.h")
 target_link_libraries(FiligramCalc PRIVATE muparser::muparser)
 target_compile_definitions(FiligramCalc PRIVATE FILIGRAMCALC_EXPORTS)
+target_include_directories(FiligramCalc PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_options(FiligramCalc PRIVATE -Wl,--allow-multiple-definition)
 
-target_link_libraries(Filigram PRIVATE unofficial::sqlite3::sqlite3)
+file(GLOB_RECURSE Imgui_SFML_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../imgui-sfml/*.*")
 
-target_link_libraries(Filigram PRIVATE SFML::Graphics SFML::Network SFML::Window SFML::System)
-target_link_libraries(Filigram PRIVATE imgui::imgui)
-#target_link_libraries(Filigram PRIVATE imgui-sfml)
-target_link_libraries(Filigram PRIVATE implot::implot)
-target_link_libraries(Filigram PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(Filigram PRIVATE spdlog::spdlog)
-target_link_libraries(Filigram PRIVATE unofficial::argon2::libargon2)
-target_link_libraries(Filigram PRIVATE unofficial-sodium::sodium)
-target_link_libraries(Filigram PRIVATE FiligramCalc)
-target_link_libraries(Filigram PRIVATE muparser::muparser)
-target_link_libraries(Filigram PRIVATE OpenGL::GL)
+add_executable(Filigram 
+    "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+    ${SOURCES}
+    ${Imgui_SFML_SOURCES})
+target_include_directories(Filigram PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(Filigram PRIVATE 
+    unofficial::sqlite3::sqlite3
+    Freetype::Freetype
+    SFML::Graphics SFML::Network SFML::Window SFML::System
+    imgui::imgui
+    implot::implot
+    nlohmann_json::nlohmann_json
+    spdlog::spdlog
+    unofficial::argon2::libargon2
+    unofficial-sodium::sodium
+    FiligramCalc
+    muparser::muparser
+    OpenGL::GL)
 
-target_link_libraries(FiligramServer PRIVATE unofficial::sqlite3::sqlite3)
-target_link_libraries(FiligramServer PRIVATE SFML::Graphics SFML::Network SFML::System)
-target_link_libraries(FiligramServer PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(FiligramServer PRIVATE spdlog::spdlog)
-target_link_libraries(FiligramServer PRIVATE unofficial::argon2::libargon2)
-target_link_libraries(FiligramServer PRIVATE unofficial-sodium::sodium)
-target_link_libraries(FiligramServer PRIVATE FiligramCalc)
-target_link_libraries(FiligramServer PRIVATE muparser::muparser)
+file(GLOB_RECURSE SERVER_SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/server/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/server/include/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/server/include/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/data/DatabaseManager.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/data/DatabaseManager.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/data/SQLModels.hpp")
+add_executable(FiligramServer 
+    "${CMAKE_CURRENT_SOURCE_DIR}/server.cpp"
+    ${SERVER_SOURCES})
+target_include_directories(FiligramServer PRIVATE 
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/server/include")
+target_link_libraries(FiligramServer PRIVATE 
+    unofficial::sqlite3::sqlite3
+    SFML::Graphics SFML::Network SFML::System
+    nlohmann_json::nlohmann_json
+    spdlog::spdlog
+    unofficial::argon2::libargon2
+    unofficial-sodium::sodium
+    FiligramCalc
+    muparser::muparser)
+    target_link_options(FiligramServer PRIVATE -Wl,--allow-multiple-definition)
+    target_link_options(Filigram PRIVATE -Wl,--allow-multiple-definition)
+# Копирование ресурсов в директорию сборки
+set(ASSETS_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Assets")
+set(ASSETS_DEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/Assets")
 
-
-target_include_directories(Filigram PRIVATE "include")
-target_include_directories(FiligramServer PRIVATE "include" "server/include")
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET Filigram PROPERTY CXX_STANDARD 23)
-  set_property(TARGET FiligramServer PROPERTY CXX_STANDARD 23)
-  set_property(TARGET FiligramCalc PROPERTY CXX_STANDARD 23)
+if(EXISTS ${ASSETS_SOURCE_DIR})
+    add_custom_command(TARGET Filigram POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${ASSETS_SOURCE_DIR}
+        ${ASSETS_DEST_DIR}
+        COMMENT "Copying assets to build directory")
+    
+    add_custom_command(TARGET FiligramServer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${ASSETS_SOURCE_DIR}
+        ${ASSETS_DEST_DIR}
+        COMMENT "Copying assets to build directory")
 endif()
-
-#Resources copy
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/Assets)
-set(DESTINATION_DIR ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME})
-file(COPY ${SOURCE_DIR} DESTINATION ${DESTINATION_DIR})
-#Resources copy
